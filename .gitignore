@@ -1,6 +1,6 @@
 # Backend
 backend/build/
-backend/.gradle/
+backend/target/
 backend/bin/
 backend/out/
 backend/*.iml
