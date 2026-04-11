@@ -28,7 +28,7 @@ type BaseFieldProps<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = Pick<
   BaseFieldConfig<TFieldValues, TName>,
-  'name' | 'label' | 'placeholder' | 'disabled' | 'required' | 'rules'
+  'name' | 'label' | 'labelClassName' | 'fieldClassName' | 'placeholder' | 'disabled' | 'required' | 'rules'
 > & {
   defaultValue: TFieldValues[TName]
   isValuePresent: (value: TFieldValues[TName]) => boolean
@@ -41,6 +41,8 @@ export const BaseField = <
 >({
   name,
   label,
+  labelClassName,
+  fieldClassName,
   disabled,
   required,
   defaultValue,
@@ -62,16 +64,22 @@ export const BaseField = <
         const hasValue = isValuePresent(field.value as TFieldValues[TName])
         const ariaDescribedBy = errorMessage ? `${id}-error` : undefined
         const inputClassName = clsx(
-          'w-full rounded-md border bg-white px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500',
-          errorMessage ? 'border-red-500 focus:border-red-500' : 'border-slate-300 focus:border-slate-900',
+          'w-full placeholder:text-placeholder disabled:cursor-not-allowed',
+          errorMessage
+            ? 'border-red-500 focus:border-red-500'
+            : 'border-slate-300 focus:border-slate-900',
           'pr-8',
+          fieldClassName,
         )
 
         return (
           <div className="flex w-full flex-col gap-1.5">
-            <label className="text-sm font-medium text-slate-900" htmlFor={id}>
+            <label
+              className={clsx('font-inter font-medium', labelClassName)}
+              htmlFor={id}
+            >
               {label}
-              {required ? ' *' : ''}
+                {required ? <span className="text-error"> *</span> : ''}
             </label>
 
             <div className="relative">
