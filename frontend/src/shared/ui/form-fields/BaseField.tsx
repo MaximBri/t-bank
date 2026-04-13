@@ -73,7 +73,7 @@ export const BaseField = <
         )
 
         return (
-          <div className="flex w-full flex-col gap-1.5">
+          <div className="relative flex w-full flex-col gap-1.5">
             <label
               className={clsx('font-inter font-medium', labelClassName)}
               htmlFor={id}
@@ -106,7 +106,11 @@ export const BaseField = <
             </div>
 
             {errorMessage ? (
-              <span id={ariaDescribedBy} className="text-sm text-red-600" role="alert">
+              <span
+                id={ariaDescribedBy}
+                className="absolute left-0 top-full mt-1 text-sm text-red-600"
+                role="alert"
+              >
                 {errorMessage}
               </span>
             ) : null}

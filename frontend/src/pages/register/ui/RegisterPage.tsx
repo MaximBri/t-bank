@@ -9,7 +9,7 @@ const submitSignUpForm: SignUpByCredentialsSubmit = async (payload) => {
 
 export const RegisterPage = () => {
   return (
-    <main className="flex min-h-screen items-center justify-center">
+    <main className="py-[20px] flex min-h-screen items-center justify-center">
       <LogoWithForm>
         <SignUpForm onSubmit={submitSignUpForm} />
       </LogoWithForm>
