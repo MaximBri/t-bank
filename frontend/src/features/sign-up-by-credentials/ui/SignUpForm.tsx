@@ -98,7 +98,7 @@ export const SignUpForm = ({ onSubmit = defaultSubmit }: SignUpFormProps) => {
       >
         <div className="gap-[10px]">
           <h3 className="font-inter text-[20px] font-medium text-primary">Регистрация</h3>
-          <p className="font-inter text-[16px] font-medium text-[#666666]">
+          <p className="font-inter text-[14px] font-medium text-muted">
             Создайте свой аккаунт
           </p>
         </div>
@@ -108,7 +108,7 @@ export const SignUpForm = ({ onSubmit = defaultSubmit }: SignUpFormProps) => {
             <TextField key={field.name} {...field} />
           ))}
           {submitError ? (
-              <p className="text-sm text-red-700">
+              <p className="text-sm text-error">
                 {submitError}
               </p>
           ) : null}

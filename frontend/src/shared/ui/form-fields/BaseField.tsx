@@ -108,7 +108,7 @@ export const BaseField = <
             {errorMessage ? (
               <span
                 id={ariaDescribedBy}
-                className="absolute left-0 top-full mt-1 text-sm text-red-600"
+                className="absolute left-0 top-full mt-1 text-sm text-error"
                 role="alert"
               >
                 {errorMessage}
