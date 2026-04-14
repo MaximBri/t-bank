@@ -2,7 +2,29 @@
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
+    screens: {
+      xs: '480px',
+      sm: '640px',
+      md: '768px',
+      lg: '900px',
+      xl: '1280px',
+      'max-lg': { max: '899px' },
+    },
     extend: {
+      fontSize: {
+        // mobile default
+        h1: ['28px', { lineHeight: '36px' }],
+        h2: ['24px', { lineHeight: '30px' }],
+        h3: ['16px', { lineHeight: '26px' }],
+        body: ['16px', { lineHeight: '24px' }],
+        small: ['14px', { lineHeight: '20px' }],
+        caption: ['12px', { lineHeight: '16px' }],
+
+        // desktop tokens
+        'h1-d': ['32px', { lineHeight: '40px' }],
+        'h2-d': ['24px', { lineHeight: '32px' }],
+        'h3-d': ['20px', { lineHeight: '28px' }],
+      },
       colors: {
         yellow: '#ffdd2d',
         primary: '#f3f4f6',
@@ -23,6 +45,9 @@ export default {
       borderColor: {
         yellow: '#ffe566',
         primary: '#c1c1c1',
+      },
+      spacing: {
+        medium: '30px',
       },
     },
   },
