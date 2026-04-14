@@ -18,6 +18,8 @@ export type BaseFieldConfig<
   name: TName
   type: BaseFieldType
   label: string
+  labelClassName?: string
+  fieldClassName?: string
   placeholder?: string
   disabled?: boolean
   required?: boolean

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import {parseNumberValue} from "@/shared/lib/number/parse-number.ts";
+import { parseNumberValue } from '@/shared/lib/number/parse-number.ts'
 
 export const requiredString = (message = 'Поле обязательно') => z.string().min(1, message)
 

@@ -19,16 +19,17 @@ export default {
       },
       colors: {
         yellow: '#ffdd2d',
-        'header-bg': '#ececec',
-        'header-text': '#161616',
         primary: '#f3f4f6',
         secondary: '#ffffff',
         'yellow-disabled': '#ffeb83',
         error: '#f6465d',
+        'error-light': '#fff1f1',
+        'green-light': '#eaf8e8',
       },
       textColor: {
         primary: '#000000',
         placeholder: '#999999',
+        muted: '#666666',
       },
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
