@@ -1,6 +1,7 @@
-import { Outlet } from 'react-router-dom'
+import { Link, Outlet } from 'react-router-dom'
 
 import LogoIcon from '@/shared/assets/icons/logo.svg?react'
+import { APP_ROUTES } from '@/shared/routes'
 
 export const AppLayout = () => {
   return (
@@ -10,12 +11,14 @@ export const AppLayout = () => {
         role="banner"
       >
         <div className="flex items-center gap-4 max-lg:gap-3">
-          <LogoIcon
-            className="block h-[50px] w-[50px] shrink-0 max-md:h-10 max-md:w-10"
-            width={50}
-            height={50}
-            aria-label="Логотип Т-Ивент"
-          />
+          <Link to={APP_ROUTES.HOME} aria-label="Перейти на главную">
+            <LogoIcon
+              className="block h-[50px] w-[50px] shrink-0 max-md:h-10 max-md:w-10"
+              width={50}
+              height={50}
+              aria-hidden="true"
+            />
+          </Link>
           <div className="flex flex-col">
             <p className="m-0 text-[20px] md:leading-[29px] md:text-h3-d">
               Т-Ивент
