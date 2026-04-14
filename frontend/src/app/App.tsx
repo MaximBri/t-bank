@@ -1,7 +1,9 @@
-import { RouterProvider } from 'react-router-dom'
-
-import { appRouter } from './providers/router'
+import { AppRouter } from './providers/router'
 
 export function App() {
-  return <RouterProvider router={appRouter} />
+  return (
+    <div className="bg-primary">
+      <AppRouter />
+    </div>
+  )
 }
