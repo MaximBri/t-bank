@@ -2,6 +2,14 @@
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
+    screens: {
+      xs: '480px',
+      sm: '640px',
+      md: '768px',
+      lg: '900px',
+      xl: '1280px',
+      'max-lg': { max: '899px' },
+    },
     extend: {
       fontSize: {
         // mobile default
