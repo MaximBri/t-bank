@@ -93,17 +93,17 @@ export const SignUpForm = ({ onSubmit = defaultSubmit }: SignUpFormProps) => {
   return (
     <FormProvider {...methods}>
       <form
-        className="flex w-[400px] flex-col gap-[10px] rounded-[24px] bg-secondary p-[25px]"
+        className="flex w-[310px] sm:w-[400px] flex-col gap-[12px] rounded-[12px] sm:rounded-[24px] bg-secondary p-[16px] sm:p-[25px]"
         onSubmit={submitForm}
       >
-        <div className="gap-[10px]">
-          <h3 className="font-inter text-[20px] font-medium text-primary">Регистрация</h3>
+        <div>
+          <p className="font-inter text-[20px] font-medium text-primary">Регистрация</p>
           <p className="font-inter text-[14px] font-medium text-muted">
             Создайте свой аккаунт
           </p>
         </div>
 
-        <div className="flex flex-col gap-[27px]">
+        <div className="flex flex-col gap-[16px] sm:gap-[27px]">
           {signUpFields.map((field) => (
             <TextField key={field.name} {...field} />
           ))}
@@ -113,7 +113,7 @@ export const SignUpForm = ({ onSubmit = defaultSubmit }: SignUpFormProps) => {
               </p>
           ) : null}
 
-          <div className="flex flex-col items-center justify-center gap-[21px]">
+          <div className="flex flex-col items-center justify-center gap-[14px] sm:gap-[21px]">
             <button
                 type="submit"
                 disabled={isSubmitting}
@@ -121,7 +121,7 @@ export const SignUpForm = ({ onSubmit = defaultSubmit }: SignUpFormProps) => {
             >
               {isSubmitting ? 'Отправка...' : 'Зарегистрироваться'}
             </button>
-            <p className="font-inter">
+            <p className="text-[14px] sm:text-[16px] font-inter">
               Есть аккаунт?{' '}
               <Link to={APP_ROUTES.LOGIN} replace className="font-semibold underline">
                 Войти
