@@ -14,6 +14,8 @@ export const TextField = <
 >({
   name,
   label,
+  labelClassName,
+  fieldClassName,
   placeholder,
   disabled,
   required,
@@ -25,6 +27,8 @@ export const TextField = <
     <BaseField
       name={name}
       label={label}
+      labelClassName={labelClassName}
+      fieldClassName={fieldClassName}
       placeholder={placeholder}
       disabled={disabled}
       required={required}
