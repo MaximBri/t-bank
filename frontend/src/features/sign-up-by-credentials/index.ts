@@ -1,4 +1,5 @@
 export { SignUpForm } from './ui/SignUpForm.tsx'
+export { getSignUpFormFields } from './lib/get-sign-up-form-fields.ts'
 export type {
   SignUpByCredentialsFormValues,
   SignUpByCredentialsPayload,

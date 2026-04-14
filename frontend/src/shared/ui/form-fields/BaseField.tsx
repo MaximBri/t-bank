@@ -28,7 +28,14 @@ type BaseFieldProps<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = Pick<
   BaseFieldConfig<TFieldValues, TName>,
-  'name' | 'label' | 'labelClassName' | 'fieldClassName' | 'placeholder' | 'disabled' | 'required' | 'rules'
+  | 'name'
+  | 'label'
+  | 'labelClassName'
+  | 'fieldClassName'
+  | 'placeholder'
+  | 'disabled'
+  | 'required'
+  | 'rules'
 > & {
   defaultValue: TFieldValues[TName]
   isValuePresent: (value: TFieldValues[TName]) => boolean
@@ -74,12 +81,9 @@ export const BaseField = <
 
         return (
           <div className="relative flex w-full flex-col gap-1.5">
-            <label
-              className={clsx('font-inter font-medium', labelClassName)}
-              htmlFor={id}
-            >
+            <label className={clsx('font-inter font-medium', labelClassName)} htmlFor={id}>
               {label}
-                {required ? <span className="text-error"> *</span> : ''}
+              {required ? <span className="text-error"> *</span> : ''}
             </label>
 
             <div className="relative">

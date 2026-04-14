@@ -10,19 +10,19 @@ export default {
         'yellow-disabled': '#ffeb83',
         error: '#f6465d',
         'error-light': '#fff1f1',
-        'green-light': '#eaf8e8'
+        'green-light': '#eaf8e8',
       },
       textColor: {
         primary: '#000000',
         placeholder: '#999999',
-        muted: '#666666'
+        muted: '#666666',
       },
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
       },
       borderColor: {
         yellow: '#ffe566',
-        primary: '#c1c1c1'
+        primary: '#c1c1c1',
       },
     },
   },

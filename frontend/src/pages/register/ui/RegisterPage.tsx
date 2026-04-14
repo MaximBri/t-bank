@@ -1,5 +1,5 @@
 import { SignUpForm, type SignUpByCredentialsSubmit } from '@/features/sign-up-by-credentials'
-import {LogoWithForm} from "@/shared/ui/LogoWithForm.tsx";
+import { LogoWithForm } from '@/shared/ui/LogoWithForm.tsx'
 
 const submitSignUpForm: SignUpByCredentialsSubmit = async (payload) => {
   // Placeholder for future API integration.
