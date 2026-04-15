@@ -1,8 +1,13 @@
-export type EventStatusId = 'all' | 'active' | 'planned' | 'completed'
+export enum EventStatusIds {
+  All = 'all',
+  Active = 'active',
+  Planned = 'planned',
+  Completed = 'completed',
+}
 
 export type EventFiltersState = {
   search: string
-  status: EventStatusId
+  status: EventStatusIds
   startDate: string
   endDate: string
   minParticipants: string
@@ -11,7 +16,7 @@ export type EventFiltersState = {
 
 export type EventFiltersStore = EventFiltersState & {
   setSearch: (search: string) => void
-  setStatus: (status: EventStatusId) => void
+  setStatus: (status: EventStatusIds) => void
   setStartDate: (startDate: string) => void
   setEndDate: (endDate: string) => void
   setMinParticipants: (minParticipants: string) => void

@@ -1,17 +1,10 @@
-import type { EventFiltersState, EventStatusId } from './types.ts'
+import { EventStatusIds, type EventFiltersState } from './types.ts'
 
 export const eventFiltersStorageKey = 'event-filters'
 
-export const eventStatusIds = [
-  'all',
-  'active',
-  'planned',
-  'completed',
-] as const satisfies ReadonlyArray<EventStatusId>
-
 export const initialEventFiltersState: EventFiltersState = {
   search: '',
-  status: 'all',
+  status: EventStatusIds.All,
   startDate: '',
   endDate: '',
   minParticipants: '',
