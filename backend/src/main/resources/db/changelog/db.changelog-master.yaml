@@ -1,7 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: 001-initial-schema-placeholder
-      author: codex
-      changes:
-        - sql:
-            sql: SELECT 1;

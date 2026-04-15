@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: tevent
+  datasource:
+    url: jdbc:postgresql://localhost:5432/my_database
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
