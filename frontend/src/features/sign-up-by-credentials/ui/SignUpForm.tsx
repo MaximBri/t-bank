@@ -7,13 +7,11 @@ import { TextField } from '@/shared/ui/form-fields'
 
 import { signUpByCredentialsSchema } from '../model/schema.ts'
 
-import type {
-  SignUpByCredentialsFormValues,
-  SignUpByCredentialsSubmit,
-} from '../model/types.ts'
+import type { SignUpByCredentialsFormValues, SignUpByCredentialsSubmit } from '../model/types.ts'
 
 import { getSignUpFormFields } from '../lib/get-sign-up-form-fields.ts'
 import { signUpFormDefaultValues } from '@/features/sign-up-by-credentials/ui/sign-up-form.constants.ts'
+import { Button } from '@/shared/ui/button/Button.tsx'
 
 type SignUpFormProps = {
   onSubmit: SignUpByCredentialsSubmit
@@ -48,39 +46,40 @@ export const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
   })
 
   return (
-    <FormProvider {...methods}>
-      <form
-        className="flex w-[310px] sm:w-[400px] flex-col gap-[12px] rounded-[12px] sm:rounded-[24px] bg-secondary p-[16px] sm:p-[25px]"
-        onSubmit={submitForm}
-      >
-        <div>
-          <p className="font-inter text-[20px] font-medium text-primary">Регистрация</p>
-          <p className="font-inter text-[14px] font-medium text-muted">Создайте свой аккаунт</p>
-        </div>
-
-        <div className="flex flex-col gap-[16px] sm:gap-[27px]">
-          {signUpFields.map((field) => (
-            <TextField key={field.name} {...field} />
-          ))}
-          {submitError ? <p className="text-sm text-error">{submitError}</p> : null}
-
-          <div className="flex flex-col items-center justify-center gap-[14px] sm:gap-[21px]">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full rounded-[16px] border-[2px] border-yellow bg-yellow py-[10px] font-inter font-medium text-primary disabled:bg-yellow-disabled"
-            >
-              {isSubmitting ? 'Отправка...' : 'Зарегистрироваться'}
-            </button>
-            <p className="text-[14px] sm:text-[16px] font-inter">
-              Есть аккаунт?{' '}
-              <Link to={APP_ROUTES.LOGIN} replace className="font-semibold underline">
-                Войти
-              </Link>
-            </p>
+      <FormProvider {...methods}>
+        <form
+            className="flex w-[310px] sm:w-[400px] flex-col gap-[12px] rounded-[12px] sm:rounded-[24px] bg-secondary p-[16px] sm:p-[25px]"
+            onSubmit={submitForm}
+        >
+          <div>
+            <p className="font-inter text-[20px] font-medium text-primary">Регистрация</p>
+            <p className="font-inter text-[14px] font-medium text-muted">Создайте свой аккаунт</p>
           </div>
-        </div>
-      </form>
-    </FormProvider>
+
+          <div className="flex flex-col gap-[16px] sm:gap-[27px]">
+            {signUpFields.map((field) => (
+                <TextField key={field.name} {...field} />
+            ))}
+            {submitError ? <p className="text-sm text-error">{submitError}</p> : null}
+
+            <div className="flex flex-col items-center justify-center gap-[14px] sm:gap-[21px]">
+              <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  isLoading={isSubmitting}
+                  className="w-full rounded-[16px] border-[2px] border-yellow bg-yellow py-[10px] font-inter font-medium text-primary disabled:bg-yellow-disabled"
+              >
+                Зарегистрироваться
+              </Button>
+              <p className="text-[14px] sm:text-[16px] font-inter">
+                Есть аккаунт?{' '}
+                <Link to={APP_ROUTES.LOGIN} replace className="font-semibold underline">
+                  Войти
+                </Link>
+              </p>
+            </div>
+          </div>
+        </form>
+      </FormProvider>
   )
 }

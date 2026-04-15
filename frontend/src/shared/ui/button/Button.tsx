@@ -30,8 +30,7 @@ export const Button = ({
           aria-hidden="true"
         />
       )}
-
-      <span className={clsx(isLoading && 'invisible')}>{children}</span>
+      <span className={clsx('contents', isLoading && 'invisible')}>{children}</span>
     </button>
   )
 }
