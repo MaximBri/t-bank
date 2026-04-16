@@ -4,8 +4,10 @@ import type {
   BaseFieldConfig,
   BooleanFieldConfig,
   DateFieldConfig,
+  ImageFieldConfig,
   NumberFieldConfig,
   SelectFieldConfig,
+  TextAreaFieldConfig,
   TextFieldConfig,
   FormFieldConfig,
 } from './types.ts'
@@ -16,6 +18,10 @@ export const createFieldConfig = <TFieldValues extends FieldValues>(
 
 export const createTextField = <TFieldValues extends FieldValues>(
   config: TextFieldConfig<TFieldValues>,
+) => config
+
+export const createTextAreaField = <TFieldValues extends FieldValues>(
+  config: TextAreaFieldConfig<TFieldValues>,
 ) => config
 
 export const createNumberField = <TFieldValues extends FieldValues>(
@@ -32,6 +38,10 @@ export const createBooleanField = <TFieldValues extends FieldValues>(
 
 export const createDateField = <TFieldValues extends FieldValues>(
   config: DateFieldConfig<TFieldValues>,
+) => config
+
+export const createImageField = <TFieldValues extends FieldValues>(
+  config: ImageFieldConfig<TFieldValues>,
 ) => config
 
 export const createFields = <TFieldValues extends FieldValues>(

@@ -6,8 +6,10 @@ export type {
   FormFieldConfig,
   FormOption,
   FormSchema,
+  ImageFieldConfig,
   NumberFieldConfig,
   SelectFieldConfig,
+  TextAreaFieldConfig,
   TextFieldConfig,
 } from './types'
 
@@ -26,8 +28,10 @@ export {
   createDateField,
   createFieldConfig,
   createFields,
+  createImageField,
   createNumberField,
   createSelectField,
+  createTextAreaField,
   createTextField,
   withRequired,
 } from './create-field-config'

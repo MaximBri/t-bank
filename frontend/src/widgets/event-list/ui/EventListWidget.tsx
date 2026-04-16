@@ -8,9 +8,14 @@ import { EventListCard } from './EventListCard.tsx'
 export type EventListWidgetProps = {
   isLoading?: boolean
   items: EventListItem[]
+  onCreateEvent?: () => void
 }
 
-export const EventListWidget = ({ items, isLoading = false }: EventListWidgetProps) => {
+export const EventListWidget = ({
+  items,
+  isLoading = false,
+  onCreateEvent,
+}: EventListWidgetProps) => {
   if (isLoading) {
     return (
       <div className="grid gap-[20px] [grid-template-columns:repeat(auto-fit,minmax(450px,1fr))]">
@@ -25,7 +30,10 @@ export const EventListWidget = ({ items, isLoading = false }: EventListWidgetPro
     return (
       <div className="flex flex-col items-center gap-[20px]">
         <p className="text-[32px]">У вас пока нет событий</p>
-        <Button className="rounded-[16px] border-[3px] border-yellow bg-yellow px-[38px] py-[9px] text-[24px]">
+        <Button
+          className="rounded-[16px] border-[3px] border-yellow bg-yellow px-[38px] py-[9px] text-[24px]"
+          onClick={onCreateEvent}
+        >
           Создать
         </Button>
       </div>

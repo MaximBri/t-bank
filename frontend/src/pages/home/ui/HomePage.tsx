@@ -1,3 +1,6 @@
+import { useState } from 'react'
+
+import { CreateEventModal } from '@/features/create-event'
 import clsx from 'clsx'
 
 import AddEventIcon from '@/shared/assets/icons/add.svg?react'
@@ -57,30 +60,45 @@ const mockEvents: EventListItem[] = [
 ]
 
 export const HomePage = () => {
+  const [isCreateEventModalOpen, setCreateEventModalOpen] = useState(false)
   const events = mockEvents
   const isLoading = false
 
   return (
-    <main className="px-[30px] py-[20px]">
-      <section className="mx-auto flex w-full flex-col gap-[22px]">
-        <div className="flex flex-row items-center justify-between gap-4">
-          <p className="m-0 text-h1 text-primary md:text-h1-d">Мои события</p>
-          <Button className="flex h-[47px] w-[216px] flex-row gap-[10px] rounded-[16px] bg-yellow font-inter text-[16px] text-primary">
+    <>
+      <main className="px-[30px] py-[20px]">
+        <section className="mx-auto flex w-full flex-col gap-[22px]">
+          <div className="flex flex-row items-center justify-between gap-4">
+            <p className="m-0 text-h1 text-primary md:text-h1-d">Мои события</p>
+            <Button
+              className="flex h-[47px] w-[216px] flex-row gap-[10px] rounded-[16px] bg-yellow font-inter text-[16px] text-primary"
+              onClick={() => setCreateEventModalOpen(true)}
+            >
             <AddEventIcon width="24px" height="24px" />
             <span>Создать событие</span>
-          </Button>
-        </div>
+            </Button>
+          </div>
 
-        <div
-          className={clsx(
-            'grid gap-[25px] grid-cols-[445px_minmax(0,1fr)]',
-            events.length === 0 ? 'items-center' : 'items-start',
-          )}
-        >
-          <EventFiltersWidget />
-          <EventListWidget items={events} isLoading={isLoading} />
-        </div>
-      </section>
-    </main>
+          <div
+            className={clsx(
+              'grid gap-[25px] grid-cols-[445px_minmax(0,1fr)]',
+              events.length === 0 ? 'items-center' : 'items-start',
+            )}
+          >
+            <EventFiltersWidget />
+            <EventListWidget
+              items={events}
+              isLoading={isLoading}
+              onCreateEvent={() => setCreateEventModalOpen(true)}
+            />
+          </div>
+        </section>
+      </main>
+
+      <CreateEventModal
+        isOpen={isCreateEventModalOpen}
+        onClose={() => setCreateEventModalOpen(false)}
+      />
+    </>
   )
 }

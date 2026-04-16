@@ -35,7 +35,8 @@ export default {
         'error-light': '#fff1f1',
         'green-light': '#eaf8e8',
         green: '#34ff97',
-        skeleton: '#e6e6e6'
+        skeleton: '#e6e6e6',
+        modal: '#d9d9d9'
       },
       textColor: {
         primary: '#000000',

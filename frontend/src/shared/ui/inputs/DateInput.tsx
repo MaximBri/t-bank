@@ -2,14 +2,26 @@ import clsx from 'clsx'
 import CalendarIcon from '@/shared/assets/icons/calendar.svg?react'
 import { BaseInput, BaseInputProps } from './BaseInput.tsx'
 
-type DateInputProps = Omit<BaseInputProps, 'type'>
+type DateInputProps = Omit<BaseInputProps, 'type'> & {
+  calendarIconSize?: number | string
+}
 
-export const DateInput = ({ className, ...props }: DateInputProps) => {
+export const DateInput = ({
+  className,
+  calendarIconSize = 18,
+  ...props
+}: DateInputProps) => {
   return (
     <BaseInput
       {...props}
       type="date"
-      icon={<CalendarIcon className="h-[18px] w-[18px] text-primary" />}
+      icon={
+        <CalendarIcon
+          width={calendarIconSize}
+          height={calendarIconSize}
+          className="text-primary"
+        />
+      }
       className={clsx(
         '[&::-webkit-calendar-picker-indicator]:cursor-pointer',
         '[&::-webkit-calendar-picker-indicator]:opacity-0',
