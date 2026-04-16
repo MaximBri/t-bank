@@ -93,7 +93,6 @@ export type ImageFieldConfig<
 > = BaseFieldConfig<TFieldValues, TName> & {
   type: 'image'
   accept?: string
-  buttonClassName?: string
   emptyState?: ReactNode
   previewClassName?: string
 }

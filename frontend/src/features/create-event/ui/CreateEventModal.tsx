@@ -71,13 +71,13 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
   })
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} className="w-[964px] overflow-hidden rounded-[24px]">
-      <div className="overflow-y-auto px-[30px] py-[24px]">
+    <Modal isOpen={isOpen} onClose={handleClose} className="w-[320px] sm:w-[964px] rounded-[24px] bg-primary">
+      <div className="p-[15px] sm:px-[30px] sm:py-[24px]">
         <div className="mb-[10px] flex items-center justify-between gap-4">
-          <p className="text-h2-d font-medium text-primary">Создание события</p>
+          <p className="text-h3-d sm:text-h2-d font-medium text-primary">Создание события</p>
           <Button
             aria-label="close-create-event-modal"
-            className="text-[42px] leading-none text-primary transition-opacity hover:opacity-70"
+            className="leading-none text-primary transition-opacity hover:opacity-70"
             onClick={handleClose}
           >
             <CloseIcon width="24px" height="24px" />
@@ -85,12 +85,12 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
         </div>
 
         <FormProvider {...methods}>
-          <form className="flex flex-col gap-[20px]" onSubmit={submitForm}>
+          <form className="flex flex-col gap-[10px] sm:gap-[20px]" onSubmit={submitForm}>
             {titleField ? renderFormField(titleField) : null}
 
-            <div className="flex flex-row gap-[23px]">{dateFields.map(renderFormField)}</div>
+            <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[23px]">{dateFields.map(renderFormField)}</div>
 
-            <div className="flex flex-row gap-[20px]">
+            <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[20px]">
               {descriptionField ? (
                     renderFormField(descriptionField)
               ) : null}
@@ -104,7 +104,7 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
               onRemoveCategory={removeCategory}
             />
 
-            <div className="pt-[12px]">
+            <div className="sm:pt-[12px]">
               <Button
                 type="submit"
                 className="rounded-[16px] border-[2px] border-yellow bg-yellow px-[45px] py-[8px] text-h3 font-medium text-primary"

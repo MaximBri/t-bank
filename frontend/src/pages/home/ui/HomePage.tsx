@@ -4,8 +4,10 @@ import { CreateEventModal } from '@/features/create-event'
 import clsx from 'clsx'
 
 import AddEventIcon from '@/shared/assets/icons/add.svg?react'
+import FilterIcon from '@/shared/assets/icons/filter.svg?react'
+
 import { Button } from '@/shared/ui/button/Button'
-import { EventFiltersWidget } from '@/widgets/event-filters'
+import { EventFiltersWidget, MobileEventFiltersModal } from '@/widgets/event-filters'
 import { EventListWidget, type EventListItem } from '@/widgets/event-list'
 
 const mockEvents: EventListItem[] = [
@@ -61,31 +63,43 @@ const mockEvents: EventListItem[] = [
 
 export const HomePage = () => {
   const [isCreateEventModalOpen, setCreateEventModalOpen] = useState(false)
+  const [isFiltersModalOpen, setFiltersModalOpen] = useState(false)
   const events = mockEvents
   const isLoading = false
 
   return (
     <>
-      <main className="px-[30px] py-[20px]">
+      <main className="px-[10px] py-[10px] sm:px-[30px] sm:py-[20px]">
         <section className="mx-auto flex w-full flex-col gap-[22px]">
-          <div className="flex flex-row items-center justify-between gap-4">
-            <p className="m-0 text-h1 text-primary md:text-h1-d">Мои события</p>
-            <Button
-              className="flex h-[47px] w-[216px] flex-row gap-[10px] rounded-[16px] bg-yellow font-inter text-[16px] text-primary"
-              onClick={() => setCreateEventModalOpen(true)}
-            >
-            <AddEventIcon width="24px" height="24px" />
-            <span>Создать событие</span>
-            </Button>
+          <div className="flex flex-col gap-[10px] sm:flex-row items-start sm:items-center sm:justify-between sm:gap-0">
+            <p className="text-h1 text-primary sm:text-h1-d">Мои события</p>
+            <div className="flex w-full sm:w-auto flex-row justify-between">
+              <Button
+                className="flex h-[30px] w-[200px] sm:h-[47px] sm:w-[216px] flex-row gap-[10px] rounded-[10px] sm:rounded-[16px] bg-yellow text-body text-primary"
+                onClick={() => setCreateEventModalOpen(true)}
+              >
+                <AddEventIcon width="24px" height="24px" />
+                <span>Создать событие</span>
+              </Button>
+              <Button
+                className="flex flex-row gap-[10px] justify-between text-center rounded-[10px] h-[30px] border border-primary px-[6px] sm:hidden"
+                onClick={() => setFiltersModalOpen(true)}
+              >
+                <FilterIcon width="16px" height="16px" />
+                <span>Фильтры</span>
+              </Button>
+            </div>
           </div>
 
           <div
             className={clsx(
-              'grid gap-[25px] grid-cols-[445px_minmax(0,1fr)]',
-              events.length === 0 ? 'items-center' : 'items-start',
+              'sm:grid sm:grid-cols-[445px_minmax(0,1fr)] sm:gap-[25px]',
+              events.length > 0 && 'sm:items-start',
             )}
           >
-            <EventFiltersWidget />
+            <div className="hidden sm:block">
+              <EventFiltersWidget />
+            </div>
             <EventListWidget
               items={events}
               isLoading={isLoading}
@@ -98,6 +112,10 @@ export const HomePage = () => {
       <CreateEventModal
         isOpen={isCreateEventModalOpen}
         onClose={() => setCreateEventModalOpen(false)}
+      />
+      <MobileEventFiltersModal
+        isOpen={isFiltersModalOpen}
+        onClose={() => setFiltersModalOpen(false)}
       />
     </>
   )

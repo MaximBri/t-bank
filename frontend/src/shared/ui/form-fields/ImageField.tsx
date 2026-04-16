@@ -74,7 +74,7 @@ export const ImageField = <
         }
 
         return (
-          <div className="flex flex-col gap-1.5">
+          <div className="flex w-full flex-col gap-1.5 sm:w-auto">
             <label className={clsx('font-inter font-medium', labelClassName)} htmlFor={id}>
               {label}
               {required ? <span className="text-error"> *</span> : ''}
@@ -103,7 +103,7 @@ export const ImageField = <
                 disabled={disabled}
                 onClick={() => inputRef.current?.click()}
                 className={clsx(
-                  'flex h-[150px] w-[150px] items-center justify-center overflow-hidden',
+                  'flex h-[150px] w-full items-center justify-center overflow-hidden sm:w-[150px]',
                   fieldClassName,
                 )}
               >

@@ -39,7 +39,7 @@ export const Modal = ({ children, className, isOpen, onClose }: ModalProps) => {
     <div
       aria-modal="true"
       role="dialog"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-modal/45 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-modal/45 px-[20px] py-[20px] backdrop-blur-sm sm:items-center sm:px-0 sm:py-0"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose()
@@ -48,7 +48,7 @@ export const Modal = ({ children, className, isOpen, onClose }: ModalProps) => {
     >
       <div
         className={clsx(
-          'bg-secondary shadow-[0_24px_60px_rgba(0,0,0,0.18)]',
+          'my-auto',
           className,
         )}
       >

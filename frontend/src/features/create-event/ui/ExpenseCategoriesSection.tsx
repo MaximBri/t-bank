@@ -33,12 +33,12 @@ export const ExpenseCategoriesSection = ({
     <div className="flex flex-col gap-[10px]">
       <p className="text-h3-d font-medium text-primary">Категории расходов</p>
 
-      <div className="flex flex-wrap gap-[15px]">
+      <div className="flex flex-wrap gap-[5px] sm:gap-[15px]">
         {categories.map((category) => (
           <Button
             key={category}
             type="button"
-            className="inline-flex items-center gap-[15px] rounded-[24px] bg-yellow px-[17px] py-[5px] text-h3 font-medium text-primary"
+            className="inline-flex items-center gap-[15px] rounded-[24px] bg-yellow px-[10px] sm:px-[17px] py-[1px] sm:py-[5px] text-h3 font-medium text-primary"
             onClick={() => onRemoveCategory(category)}
           >
             <span>{category}</span>
@@ -47,7 +47,7 @@ export const ExpenseCategoriesSection = ({
         ))}
       </div>
 
-      <div className="flex flex-row gap-[15px]">
+      <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[15px]">
         <div className="flex-1">
         <TextInput
           value={categoryInput}
@@ -59,7 +59,7 @@ export const ExpenseCategoriesSection = ({
         </div>
         <Button
           type="button"
-          className="gap-[10px] rounded-[16px] bg-yellow px-[30px] py-[10px] text-h3 font-medium text-primary justify-self-end"
+          className="w-[125px] sm:w-auto gap-[10px] rounded-[16px] bg-yellow px-[15px] sm:px-[30px] py-[4px] sm:py-[10px] text-h3 font-medium text-primary justify-self-end"
           onClick={onAddCategory}
         >
           <AddIcon className="text-h3 h-[16px] w-[16px]" />
@@ -67,7 +67,7 @@ export const ExpenseCategoriesSection = ({
         </Button>
       </div>
 
-      <p className="text-h3 font-medium text-primary">
+      <p className="text-small sm:text-h3 font-medium text-primary">
           Категории помогут организовать учёт расходов по направлениям
       </p>
     </div>

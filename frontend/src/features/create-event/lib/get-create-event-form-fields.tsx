@@ -48,7 +48,7 @@ export const getCreateEventFormFields = (): FormFieldConfig<CreateEventFormValue
       type: 'textarea',
       label: 'Описание',
       labelClassName: createEventFieldLabelClassName,
-      fieldClassName: `${createEventFieldInputClassName} h-[150px] resize-none`,
+      fieldClassName: `${createEventFieldInputClassName} h-[146px] sm:h-[150px] resize-none`,
       placeholder: 'Опишите детали события...',
       rows: 4,
     }),
@@ -57,7 +57,7 @@ export const getCreateEventFormFields = (): FormFieldConfig<CreateEventFormValue
       type: 'image',
       label: 'Аватарка',
       labelClassName: createEventFieldLabelClassName,
-      fieldClassName: `${createEventFieldInputClassName} px-0 py-0`,
+      fieldClassName: `${createEventFieldInputClassName} h-[155px] w-full px-[0px] py-[0px] sm:w-[150px]`,
       accept: 'image/*',
     }),
   ])
