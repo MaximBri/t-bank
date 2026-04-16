@@ -8,6 +8,7 @@ export default {
       md: '768px',
       lg: '900px',
       xl: '1280px',
+      '2xl': '1528px',
       'max-lg': { max: '899px' },
     },
     extend: {
@@ -33,6 +34,8 @@ export default {
         error: '#f6465d',
         'error-light': '#fff1f1',
         'green-light': '#eaf8e8',
+        green: '#34ff97',
+        skeleton: '#e6e6e6'
       },
       textColor: {
         primary: '#000000',

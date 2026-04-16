@@ -34,7 +34,7 @@ export const EventFiltersWidget = () => {
             onChange={(event) => setSearch(event.target.value)}
             className="h-[44px] w-full rounded-[16px] border border-primary pl-[50px] pr-[16px] text-[16px] text-primary placeholder:text-placeholder focus:border-primary"
             placeholder="Поиск по событиям"
-            icon={<SearchIcon className="text-[#b0b0b0]" />}
+            icon={<SearchIcon className="text-placeholder" />}
             iconPosition="left"
           />
         </div>
