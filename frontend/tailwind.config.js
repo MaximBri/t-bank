@@ -8,6 +8,7 @@ export default {
       md: '768px',
       lg: '900px',
       xl: '1280px',
+      '2xl': '1528px',
       'max-lg': { max: '899px' },
     },
     extend: {
@@ -33,6 +34,10 @@ export default {
         error: '#f6465d',
         'error-light': '#fff1f1',
         'green-light': '#eaf8e8',
+        green: '#34ff97',
+        skeleton: '#e6e6e6',
+        'input-primary': '#f5f5f5',
+        modal: '#d9d9d9'
       },
       textColor: {
         primary: '#000000',
@@ -45,6 +50,7 @@ export default {
       borderColor: {
         yellow: '#ffe566',
         primary: '#c1c1c1',
+        secondary: '#e6e6e6'
       },
       spacing: {
         medium: '30px',

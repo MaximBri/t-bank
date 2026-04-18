@@ -1,3 +1,6 @@
 export { BaseField } from './BaseField.tsx'
-export { TextField } from './TextField.tsx'
+export { DateField } from './DateField.tsx'
+export { ImageField } from './ImageField.tsx'
 export { NumberField } from './NumberField.tsx'
+export { TextAreaField } from './TextAreaField.tsx'
+export { TextField } from './TextField.tsx'
