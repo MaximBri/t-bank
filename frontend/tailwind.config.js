@@ -36,6 +36,7 @@ export default {
         'green-light': '#eaf8e8',
         green: '#34ff97',
         skeleton: '#e6e6e6',
+        'input-primary': '#f5f5f5',
         modal: '#d9d9d9'
       },
       textColor: {
@@ -49,6 +50,7 @@ export default {
       borderColor: {
         yellow: '#ffe566',
         primary: '#c1c1c1',
+        secondary: '#e6e6e6'
       },
       spacing: {
         medium: '30px',

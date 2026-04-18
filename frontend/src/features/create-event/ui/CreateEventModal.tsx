@@ -1,19 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import CloseIcon from '@/shared/assets/icons/close.svg?react'
 import { Button } from '@/shared/ui/button/Button.tsx'
-import { renderFormField } from "@/shared/ui/form";
-
+import { renderFormField } from '@/shared/ui/form'
 import { Modal } from '@/shared/ui/modal'
 
 import { getCreateEventFormFields } from '../lib/get-create-event-form-fields.tsx'
 import { useExpenseCategories } from '../lib/use-expense-categories.ts'
 import { createEventSchema } from '../model/schema.ts'
 import type { CreateEventFormValues } from '../model/types.ts'
-import { createEventFormDefaultValues } from './create-event-form.constants.tsx'
 import { ExpenseCategoriesSection } from './ExpenseCategoriesSection.tsx'
-
-import CloseIcon from '@/shared/assets/icons/close.svg?react'
+import { createEventFormDefaultValues } from "../model/constants.ts";
 
 type CreateEventModalProps = {
   isOpen: boolean
@@ -33,15 +31,15 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
     removeCategory,
     resetCategories,
     setCategoryInput,
-  } = useExpenseCategories()
+  } = useExpenseCategories(methods)
 
-  const createEventFields = getCreateEventFormFields()
-  const titleField = createEventFields.find((field) => field.name === 'title')
-  const dateFields = createEventFields.filter((field) => field.type === 'date')
-  const descriptionField = createEventFields.find((field) => field.name === 'description')
-  const avatarField = createEventFields.find((field) => field.name === 'avatar')
+  const { titleField, dateFields, descriptionField, avatarField } = getCreateEventFormFields()
 
-  const { handleSubmit, reset } = methods
+  const {
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = methods
 
   const resetModalState = () => {
     reset(createEventFormDefaultValues)
@@ -56,8 +54,6 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
   const submitForm = handleSubmit((values) => {
     const data = {
       ...values,
-      categories,
-      categoryInput,
       avatar: values.avatar
         ? {
             name: values.avatar.name,
@@ -71,10 +67,10 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
   })
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} className="w-[320px] sm:w-[964px] rounded-[24px] bg-primary">
+    <Modal isOpen={isOpen} onClose={handleClose} className="w-[320px] rounded-[24px] bg-secondary sm:w-[964px]">
       <div className="p-[15px] sm:px-[30px] sm:py-[24px]">
         <div className="mb-[10px] flex items-center justify-between gap-4">
-          <p className="text-h3-d sm:text-h2-d font-medium text-primary">Создание события</p>
+          <p className="text-h3-d font-medium text-primary sm:text-h2-d">Создание события</p>
           <Button
             aria-label="close-create-event-modal"
             className="leading-none text-primary transition-opacity hover:opacity-70"
@@ -86,19 +82,19 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
 
         <FormProvider {...methods}>
           <form className="flex flex-col gap-[10px] sm:gap-[20px]" onSubmit={submitForm}>
-            {titleField ? renderFormField(titleField) : null}
+            {renderFormField(titleField)}
 
             <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[23px]">{dateFields.map(renderFormField)}</div>
 
             <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[20px]">
-              {descriptionField ? (
-                    renderFormField(descriptionField)
-              ) : null}
-              {avatarField ?  renderFormField(avatarField) : null}
-              </div>
+              {renderFormField(descriptionField)}
+              {renderFormField(avatarField)}
+            </div>
+
             <ExpenseCategoriesSection
               categories={categories}
               categoryInput={categoryInput}
+              errorMessage={errors.categories?.message}
               onAddCategory={addCategory}
               onCategoryInputChange={setCategoryInput}
               onRemoveCategory={removeCategory}

@@ -1,29 +1,54 @@
 import { useState } from 'react'
+import { useWatch, type UseFormReturn } from 'react-hook-form'
 
-import { defaultExpenseCategories } from '../ui/create-event.constants.ts'
+import type { CreateEventFormValues } from '../model/types.ts'
+import { defaultExpenseCategories } from "../model/constants.ts";
 
-export const useExpenseCategories = () => {
+type UseExpenseCategoriesParams = Pick<
+  UseFormReturn<CreateEventFormValues>,
+  'control' | 'getValues' | 'setValue'
+>
+
+export const useExpenseCategories = ({ control, getValues, setValue }: UseExpenseCategoriesParams) => {
   const [categoryInput, setCategoryInput] = useState('')
-  const [categories, setCategories] = useState(defaultExpenseCategories)
+  const categories = useWatch({
+    control,
+    name: 'categories',
+    defaultValue: defaultExpenseCategories,
+  })
 
   const resetCategories = () => {
     setCategoryInput('')
-    setCategories(defaultExpenseCategories)
   }
 
   const addCategory = () => {
     const trimmedValue = categoryInput.trim()
+    const currentCategories = getValues('categories')
 
-    if (!trimmedValue || categories.includes(trimmedValue)) {
+    if (!trimmedValue || currentCategories.includes(trimmedValue)) {
       return
     }
 
-    setCategories((current) => [...current, trimmedValue])
+    setValue('categories', [...currentCategories, trimmedValue], {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    })
     setCategoryInput('')
   }
 
   const removeCategory = (categoryToRemove: string) => {
-    setCategories((current) => current.filter((category) => category !== categoryToRemove))
+    const currentCategories = getValues('categories')
+
+    setValue(
+      'categories',
+      currentCategories.filter((category) => category !== categoryToRemove),
+      {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      },
+    )
   }
 
   return {

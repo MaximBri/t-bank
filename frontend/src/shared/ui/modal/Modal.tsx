@@ -9,6 +9,12 @@ type ModalProps = PropsWithChildren<{
 }>
 
 export const Modal = ({ children, className, isOpen, onClose }: ModalProps) => {
+  const handleEscape = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      onClose()
+    }
+  }
+
   useEffect(() => {
     if (!isOpen) {
       return
@@ -16,12 +22,6 @@ export const Modal = ({ children, className, isOpen, onClose }: ModalProps) => {
 
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose()
-      }
-    }
 
     window.addEventListener('keydown', handleEscape)
 
