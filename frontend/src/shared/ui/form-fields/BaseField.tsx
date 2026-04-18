@@ -71,11 +71,11 @@ export const BaseField = <
         const hasValue = isValuePresent(field.value as TFieldValues[TName])
         const ariaDescribedBy = errorMessage ? `${id}-error` : undefined
         const inputClassName = clsx(
-          'w-full placeholder:text-placeholder disabled:cursor-not-allowed',
+          'bg-input-primary border-secondary  w-full placeholder:text-placeholder disabled:cursor-not-allowed',
           errorMessage
-            ? 'border-red-500 focus:border-red-500'
-            : 'border-slate-300 focus:border-slate-900',
-          'pr-8',
+            ? 'border-error focus:border-error'
+              : 'border-primary focus:border-primary',
+            hasValue && 'pr-8',
           fieldClassName,
         )
 
