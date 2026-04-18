@@ -1,0 +1,3233 @@
+{
+  "info": {
+    "_postman_id": "30ca5b96-15ab-466f-b0d8-77f11a7b0eb7",
+    "name": "T-Event",
+    "description": "API для управления совместными событиями, расходами и взаиморасчетами.\nСистема позволяет создавать события (группы), добавлять участников, \nвести учет расходов и автоматически рассчитывать долги между участниками.\n\n\nContact Support:\n Name: T-Event Team\n Email: support@t-event.ru",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "33361274"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Регистрация нового пользователя",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user123\",\n  \"password\": \"securePassword123\",\n  \"inviteCode\": \"group-xyz\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Создание нового аккаунта пользователя.\nЕсли передан `inviteCode`, пользователь сразу вступает в соответствующую группу.\n"
+          },
+          "response": [
+            {
+              "name": "201 - Пользователь создан, установлены cookie с токенами",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"user123\",\n  \"password\": \"securePassword123\",\n  \"inviteCode\": \"group-xyz\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "disabled": true,
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  },
+                  "key": "Set-Cookie",
+                  "value": "accessToken=eyJ...; HttpOnly; Secure; SameSite=Strict"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"userId\": 42,\n  \"joinedGroupId\": 15\n}"
+            },
+            {
+              "name": "400 - Неверные данные запроса",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"user123\",\n  \"password\": \"securePassword123\",\n  \"inviteCode\": \"group-xyz\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "409 - Пользователь с таким username уже существует",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"user123\",\n  \"password\": \"securePassword123\",\n  \"inviteCode\": \"group-xyz\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Вход в систему",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user123\",\n  \"password\": \"securePassword123\",\n  \"inviteCode\": \"group-xyz\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Аутентификация существующего пользователя"
+          },
+          "response": [
+            {
+              "name": "200 - Успешный вход, установлены cookie с токенами",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"user123\",\n  \"password\": \"securePassword123\",\n  \"inviteCode\": \"group-xyz\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "disabled": true,
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  },
+                  "key": "Set-Cookie",
+                  "value": "accessToken=eyJ...; HttpOnly; Secure; SameSite=Strict"
+                }
+              ],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "401 - Неверные учетные данные",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"user123\",\n  \"password\": \"securePassword123\",\n  \"inviteCode\": \"group-xyz\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Проверка текущей сессии",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Возвращает данные текущего пользователя если сессия активна"
+          },
+          "response": [
+            {
+              "name": "200 - Сессия активна",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"username\": \"user123\",\n  \"userId\": 42\n}"
+            },
+            {
+              "name": "401 - Пользователь не авторизован",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "me"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Обновление Access Token",
+          "request": {
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "refreshToken",
+                  "type": "string"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}",
+                  "type": "string"
+                },
+                {
+                  "key": "in",
+                  "value": "header",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "Получение нового access token с использованием refresh token"
+          },
+          "response": [
+            {
+              "name": "200 - Токен успешно обновлен",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/refresh",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "disabled": true,
+                  "description": {
+                    "content": "",
+                    "type": "text/plain"
+                  },
+                  "key": "Set-Cookie",
+                  "value": "accessToken=eyJ...; HttpOnly; Secure; SameSite=Strict"
+                }
+              ],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "401 - Refresh token невалиден или истек",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/refresh",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ],
+      "description": "Регистрация, вход, обновление токенов и управление сессиями"
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Создать новое событие",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Поездка в горы 2026\",\n  \"startDate\": \"2026-04-20T10:00:00Z\",\n  \"endDate\": \"2026-04-25T18:00:00Z\",\n  \"category\": [\n    \"TRAVEL\",\n    \"FOOD\"\n  ],\n  \"description\": \"Совместный выезд на выходные, делим расходы на жилье и еду.\",\n  \"imageKey\": \"covers/events/uuid-filename.jpg\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            },
+            "description": "Создание события (группы) для учета совместных расходов"
+          },
+          "response": [
+            {
+              "name": "201 - Событие успешно создано",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Поездка в горы 2026\",\n  \"startDate\": \"2026-04-20T10:00:00Z\",\n  \"endDate\": \"2026-04-25T18:00:00Z\",\n  \"category\": [\n    \"TRAVEL\",\n    \"FOOD\"\n  ],\n  \"description\": \"Совместный выезд на выходные, делим расходы на жилье и еду.\",\n  \"imageKey\": \"covers/events/uuid-filename.jpg\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/events",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 501,\n  \"title\": \"string\",\n  \"description\": \"string\",\n  \"startDate\": \"2026-01-05T03:21:57.979Z\",\n  \"endDate\": \"2016-02-25T00:20:23.430Z\",\n  \"category\": [\n    \"TRAVEL\",\n    \"FOOD\"\n  ],\n  \"status\": \"PLANNED\",\n  \"imageUrl\": \"https://minio.t-event.ru/events/uuid?X-Amz-Signature=...\",\n  \"ownerId\": 42\n}"
+            },
+            {
+              "name": "400 - Ошибка валидации данных",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Поездка в горы 2026\",\n  \"startDate\": \"2026-04-20T10:00:00Z\",\n  \"endDate\": \"2026-04-25T18:00:00Z\",\n  \"category\": [\n    \"TRAVEL\",\n    \"FOOD\"\n  ],\n  \"description\": \"Совместный выезд на выходные, делим расходы на жилье и еду.\",\n  \"imageKey\": \"covers/events/uuid-filename.jpg\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/events",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Получить информацию о событии",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId"
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Информация о событии",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 501,\n  \"title\": \"string\",\n  \"description\": \"string\",\n  \"startDate\": \"2026-01-05T03:21:57.979Z\",\n  \"endDate\": \"2016-02-25T00:20:23.430Z\",\n  \"category\": [\n    \"TRAVEL\",\n    \"FOOD\"\n  ],\n  \"status\": \"PLANNED\",\n  \"imageUrl\": \"https://minio.t-event.ru/events/uuid?X-Amz-Signature=...\",\n  \"ownerId\": 42\n}"
+            },
+            {
+              "name": "404 - Событие не найдено",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Редактировать событие",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Новое название поездки\",\n  \"description\": \"Обновленное описание\",\n  \"startDate\": \"2016-09-09T09:35:51.812Z\",\n  \"endDate\": \"2000-04-09T19:27:09.116Z\",\n  \"category\": [\n    \"RENT\",\n    \"OTHER\"\n  ],\n  \"imageKey\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId"
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Частичное обновление данных события (доступно только владельцу)"
+          },
+          "response": [
+            {
+              "name": "200 - Событие успешно обновлено",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Новое название поездки\",\n  \"description\": \"Обновленное описание\",\n  \"startDate\": \"2016-09-09T09:35:51.812Z\",\n  \"endDate\": \"2000-04-09T19:27:09.116Z\",\n  \"category\": [\n    \"RENT\",\n    \"OTHER\"\n  ],\n  \"imageKey\": \"string\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 501,\n  \"title\": \"string\",\n  \"description\": \"string\",\n  \"startDate\": \"2026-01-05T03:21:57.979Z\",\n  \"endDate\": \"2016-02-25T00:20:23.430Z\",\n  \"category\": [\n    \"TRAVEL\",\n    \"FOOD\"\n  ],\n  \"status\": \"PLANNED\",\n  \"imageUrl\": \"https://minio.t-event.ru/events/uuid?X-Amz-Signature=...\",\n  \"ownerId\": 42\n}"
+            },
+            {
+              "name": "403 - Недостаточно прав (не являетесь владельцем)",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Новое название поездки\",\n  \"description\": \"Обновленное описание\",\n  \"startDate\": \"2016-09-09T09:35:51.812Z\",\n  \"endDate\": \"2000-04-09T19:27:09.116Z\",\n  \"category\": [\n    \"RENT\",\n    \"OTHER\"\n  ],\n  \"imageKey\": \"string\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "404 - Событие не найдено",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Новое название поездки\",\n  \"description\": \"Обновленное описание\",\n  \"startDate\": \"2016-09-09T09:35:51.812Z\",\n  \"endDate\": \"2000-04-09T19:27:09.116Z\",\n  \"category\": [\n    \"RENT\",\n    \"OTHER\"\n  ],\n  \"imageKey\": \"string\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Получить список событий пользователя",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "events"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "string",
+                  "description": "Поиск по подстроке в названии события",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "PLANNED",
+                  "description": "Фильтр по статусу (можно несколько через запятую)",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "ACTIVE",
+                  "description": "Фильтр по статусу (можно несколько через запятую)",
+                  "disabled": true
+                },
+                {
+                  "key": "startDate",
+                  "value": "1983-08-10",
+                  "description": "События, начинающиеся после этой даты",
+                  "disabled": true
+                },
+                {
+                  "key": "endDate",
+                  "value": "1983-08-10",
+                  "description": "События, заканчивающиеся до этой даты",
+                  "disabled": true
+                },
+                {
+                  "key": "minParticipants",
+                  "value": "7162",
+                  "description": "Минимальное количество участников в событии",
+                  "disabled": true
+                },
+                {
+                  "key": "maxParticipants",
+                  "value": "7162",
+                  "description": "Максимальное количество участников в событии",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Возвращает события, в которых участвует текущий пользователь"
+          },
+          "response": [
+            {
+              "name": "200 - Список событий пользователя",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/events",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "events"
+                  ],
+                  "query": [
+                    {
+                      "description": "Поиск по подстроке в названии события",
+                      "key": "search",
+                      "value": "string",
+                      "disabled": true
+                    },
+                    {
+                      "description": "Фильтр по статусу (можно несколько через запятую)",
+                      "key": "status",
+                      "value": "ACTIVE",
+                      "disabled": true
+                    },
+                    {
+                      "description": "События, начинающиеся после этой даты",
+                      "key": "startDate",
+                      "value": "1983-08-10",
+                      "disabled": true
+                    },
+                    {
+                      "description": "События, заканчивающиеся до этой даты",
+                      "key": "endDate",
+                      "value": "1983-08-10",
+                      "disabled": true
+                    },
+                    {
+                      "description": "Минимальное количество участников в событии",
+                      "key": "minParticipants",
+                      "value": "7162",
+                      "disabled": true
+                    },
+                    {
+                      "description": "Максимальное количество участников в событии",
+                      "key": "maxParticipants",
+                      "value": "7162",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 42,\n    \"title\": \"Майские в Питере\",\n    \"startDate\": \"2026-05-01\",\n    \"endDate\": \"2026-05-05\",\n    \"participantsCount\": 4,\n    \"status\": \"PLANNED\",\n    \"imageUrl\": \"https://s3.t-event.ru/events/pic_123.jpg?X-Amz-Signature=...\"\n  },\n  {\n    \"id\": 42,\n    \"title\": \"Майские в Питере\",\n    \"startDate\": \"2026-05-01\",\n    \"endDate\": \"2026-05-05\",\n    \"participantsCount\": 4,\n    \"status\": \"PLANNED\",\n    \"imageUrl\": \"https://s3.t-event.ru/events/pic_123.jpg?X-Amz-Signature=...\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Получить историю действий в событии",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId/history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "string",
+                  "description": "Поиск по названию действия или имени участника",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "PARTICIPANTS",
+                  "description": "Фильтр по категории лога",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Возвращает ленту истории событий с фильтрацией"
+          },
+          "response": [
+            {
+              "name": "200 - Лента истории",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/history",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "history"
+                  ],
+                  "query": [
+                    {
+                      "description": "Поиск по названию действия или имени участника",
+                      "key": "search",
+                      "value": "string",
+                      "disabled": true
+                    },
+                    {
+                      "description": "Фильтр по категории лога",
+                      "key": "type",
+                      "value": "PARTICIPANTS",
+                      "disabled": true
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"totalRecords\": 15,\n  \"items\": [\n    {\n      \"id\": 1001,\n      \"title\": \"Добавлен расход «Экскурсия по городу»\",\n      \"actorName\": \"Дмитрий Волков\",\n      \"actionLabel\": \"Создание расхода\",\n      \"type\": \"PARTICIPANTS\",\n      \"timestamp\": \"2026-05-14T18:45:00Z\"\n    },\n    {\n      \"id\": 1001,\n      \"title\": \"Добавлен расход «Экскурсия по городу»\",\n      \"actorName\": \"Дмитрий Волков\",\n      \"actionLabel\": \"Создание расхода\",\n      \"type\": \"EVENT_STATUS\",\n      \"timestamp\": \"2026-05-14T18:45:00Z\"\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Создание, редактирование и управление событиями (группами)"
+    },
+    {
+      "name": "Participants",
+      "item": [
+        {
+          "name": "Получить список участников события",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId/participants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId",
+                "participants"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "INVITED",
+                  "description": "Фильтр по статусу участия",
+                  "disabled": true
+                }
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Возвращает список всех участников события"
+          },
+          "response": [
+            {
+              "name": "200 - Список участников",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/participants",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "participants"
+                  ],
+                  "query": [
+                    {
+                      "description": "Фильтр по статусу участия",
+                      "key": "status",
+                      "value": "INVITED",
+                      "disabled": true
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"participants\": [\n    {\n      \"id\": 15,\n      \"fullName\": \"Иван Петров\",\n      \"email\": \"ivan@email.com\",\n      \"avatarUrl\": \"http://BmDMV.ggrwZ+EbFD03iYzHghT.iGV,gqWYyXAmeWm2GHKeSYgyahCQOoVOCOkVjZtQWCbNdSa\",\n      \"initials\": \"И.П.\",\n      \"role\": \"PARTICIPANT\",\n      \"status\": \"INVITED\"\n    },\n    {\n      \"id\": 15,\n      \"fullName\": \"Иван Петров\",\n      \"email\": \"ivan@email.com\",\n      \"avatarUrl\": \"http://BbAYcCE.ocgdrbNFZYBy0q9\",\n      \"initials\": \"И.П.\",\n      \"role\": \"PARTICIPANT\",\n      \"status\": \"INVITED\"\n    }\n  ],\n  \"totalCount\": 5\n}"
+            }
+          ]
+        },
+        {
+          "name": "Пригласить пользователя в событие",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user123\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId/participants/invite",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId",
+                "participants",
+                "invite"
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Создание приглашения для пользователя по username"
+          },
+          "response": [
+            {
+              "name": "201 - Приглашение успешно создано",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"user123\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/participants/invite",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "participants",
+                    "invite"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "404 - Пользователь не найден",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"user123\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/participants/invite",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "participants",
+                    "invite"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "409 - Пользователь уже приглашен или является участником",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"user123\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/participants/invite",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "participants",
+                    "invite"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Удалить участника или отозвать приглашение",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId/participants/:userId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId",
+                "participants",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                },
+                {
+                  "key": "userId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Удаление участника из события или отзыв приглашения (только для владельца)"
+          },
+          "response": [
+            {
+              "name": "204 - Участник удален / приглашение отозвано",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/participants/:userId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "participants",
+                    ":userId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    },
+                    {
+                      "key": "userId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "403 - Недостаточно прав",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/participants/:userId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "participants",
+                    ":userId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    },
+                    {
+                      "key": "userId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "404 - Участник не найден",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/participants/:userId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "participants",
+                    ":userId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    },
+                    {
+                      "key": "userId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Подать заявку на вступление в группу",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"inviteCode\": \"trip-2026\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/groups/join",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "groups",
+                "join"
+              ]
+            },
+            "description": "Пользователь может подать заявку на вступление в группу по инвайт-коду.\nЗаявка требует подтверждения от владельца группы.\n"
+          },
+          "response": [
+            {
+              "name": "202 - Заявка принята и ожидает рассмотрения владельцем",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"inviteCode\": \"trip-2026\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/groups/join",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "groups",
+                    "join"
+                  ]
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "409 - Вы уже подали заявку в эту группу",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"inviteCode\": \"trip-2026\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/groups/join",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "groups",
+                    "join"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "410 - Ссылка просрочена (прошло > 48 часов)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"inviteCode\": \"trip-2026\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/groups/join",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "groups",
+                    "join"
+                  ]
+                }
+              },
+              "status": "Gone",
+              "code": 410,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Проверить наличие приглашений",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/invitations/pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "invitations",
+                "pending"
+              ]
+            },
+            "description": "Возвращает список приглашений, ожидающих ответа пользователя"
+          },
+          "response": [
+            {
+              "name": "200 - Список активных приглашений",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/invitations/pending",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "invitations",
+                    "pending"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"invitationId\": 505,\n    \"groupName\": \"Поездка в Турцию\",\n    \"ownerName\": \"Александр (Admin)\",\n    \"status\": \"REJECTED\"\n  },\n  {\n    \"invitationId\": 505,\n    \"groupName\": \"Поездка в Турцию\",\n    \"ownerName\": \"Александр (Admin)\",\n    \"status\": \"REJECTED\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Принять или отклонить приглашение",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"ACCEPT\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/invitations/:invitationId/resolve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "invitations",
+                ":invitationId",
+                "resolve"
+              ],
+              "variable": [
+                {
+                  "key": "invitationId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Ответ на приглашение от владельца группы"
+          },
+          "response": [
+            {
+              "name": "200 - Решение принято",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"ACCEPT\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/invitations/:invitationId/resolve",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "invitations",
+                    ":invitationId",
+                    "resolve"
+                  ],
+                  "variable": [
+                    {
+                      "key": "invitationId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "403 - Приглашение адресовано не вам",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"ACCEPT\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/invitations/:invitationId/resolve",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "invitations",
+                    ":invitationId",
+                    "resolve"
+                  ],
+                  "variable": [
+                    {
+                      "key": "invitationId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "404 - Приглашение не найдено",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"ACCEPT\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/invitations/:invitationId/resolve",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "invitations",
+                    ":invitationId",
+                    "resolve"
+                  ],
+                  "variable": [
+                    {
+                      "key": "invitationId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Проверить возможность выхода из события",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId/leave/check",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId",
+                "leave",
+                "check"
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Проверяет наличие долгов и роль пользователя перед выходом"
+          },
+          "response": [
+            {
+              "name": "200 - Результат проверки",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/leave/check",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "leave",
+                    "check"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"canLeave\": true,\n  \"reason\": \"У вас есть 2 непогашенных долга\",\n  \"hasDebts\": false,\n  \"isOwner\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Подтвердить выход из события",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId/leave",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId",
+                "leave"
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Окончательный выход пользователя из события"
+          },
+          "response": [
+            {
+              "name": "204 - Вы успешно покинули событие",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/leave",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "leave"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "409 - Конфликт (появились новые долги во время подтверждения)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/leave",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "leave"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ],
+      "description": "Управление участниками событий, приглашения и членство"
+    },
+    {
+      "name": "Expenses",
+      "item": [
+        {
+          "name": "Получить список расходов события",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId/expenses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId",
+                "expenses"
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Возвращает данные события и список всех расходов"
+          },
+          "response": [
+            {
+              "name": "200 - Данные события и список расходов",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/expenses",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "expenses"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"eventHeader\": {\n    \"title\": \"Поездка в Сочи\",\n    \"startDate\": \"2026-06-15\",\n    \"endDate\": \"2026-06-20\",\n    \"status\": \"PLANNED\",\n    \"participantsCount\": 5,\n    \"participantAvatars\": [\n      \"https://IewTyKuQcNLSzeEHnwoQXQIMOK.nmIPShZPvwW67I,\",\n      \"https://UfkgNvXeP.itnBv.vvsF-hn.p7LG.rDZRght40JukTCkG\"\n    ]\n  },\n  \"expenses\": [\n    {\n      \"id\": 101,\n      \"title\": \"Бронирование отеля\",\n      \"category\": \"ACCOMMODATION\",\n      \"approvalStatus\": \"PENDING\",\n      \"payerName\": \"Иван Петров\",\n      \"splitBetweenCount\": 5,\n      \"createdAt\": \"2008-08-05T00:48:09.324Z\",\n      \"totalAmount\": 45000,\n      \"perPersonAmount\": 9000,\n      \"disputeInfo\": {\n        \"reason\": \"Сумма указана неверно...\",\n        \"timestamp\": \"1949-06-01T07:50:18.973Z\"\n      }\n    },\n    {\n      \"id\": 101,\n      \"title\": \"Бронирование отеля\",\n      \"category\": \"ENTERTAINMENT\",\n      \"approvalStatus\": \"DISPUTED\",\n      \"payerName\": \"Иван Петров\",\n      \"splitBetweenCount\": 5,\n      \"createdAt\": \"1957-04-03T16:21:45.329Z\",\n      \"totalAmount\": 45000,\n      \"perPersonAmount\": 9000,\n      \"disputeInfo\": {\n        \"reason\": \"Сумма указана неверно...\",\n        \"timestamp\": \"1951-02-05T20:00:52.637Z\"\n      }\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Добавить новый расход",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Аренда машины\",\n  \"amount\": 15000,\n  \"category\": \"TRANSPORT\",\n  \"participantIds\": [\n    15,\n    23,\n    42\n  ],\n  \"imageKey\": \"receipts/event_42/uuid.jpg\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId/expenses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId",
+                "expenses"
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Создание нового расхода в событии"
+          },
+          "response": [
+            {
+              "name": "201 - Расход успешно создан",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Аренда машины\",\n  \"amount\": 15000,\n  \"category\": \"TRANSPORT\",\n  \"participantIds\": [\n    15,\n    23,\n    42\n  ],\n  \"imageKey\": \"receipts/event_42/uuid.jpg\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/expenses",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "expenses"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 101,\n  \"title\": \"Бронирование отеля\",\n  \"category\": \"TRANSPORT\",\n  \"approvalStatus\": \"CONFIRMED\",\n  \"payerName\": \"Иван Петров\",\n  \"splitBetweenCount\": 5,\n  \"createdAt\": \"2026-01-02T02:15:55.740Z\",\n  \"totalAmount\": 45000,\n  \"perPersonAmount\": 9000,\n  \"disputeInfo\": {\n    \"reason\": \"Сумма указана неверно...\",\n    \"timestamp\": \"1972-11-16T06:11:20.201Z\"\n  }\n}"
+            },
+            {
+              "name": "400 - Ошибка валидации данных",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Аренда машины\",\n  \"amount\": 15000,\n  \"category\": \"TRANSPORT\",\n  \"participantIds\": [\n    15,\n    23,\n    42\n  ],\n  \"imageKey\": \"receipts/event_42/uuid.jpg\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/expenses",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "expenses"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Изменить статус подтверждения расхода",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONFIRMED\",\n  \"comment\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/expenses/:expenseId/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "expenses",
+                ":expenseId",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "expenseId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Подтверждение или оспаривание расхода участником"
+          },
+          "response": [
+            {
+              "name": "200 - Статус успешно обновлен",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"CONFIRMED\",\n  \"comment\": \"string\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/expenses/:expenseId/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "expenses",
+                    ":expenseId",
+                    "status"
+                  ],
+                  "variable": [
+                    {
+                      "key": "expenseId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "403 - Недостаточно прав",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"CONFIRMED\",\n  \"comment\": \"string\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/expenses/:expenseId/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "expenses",
+                    ":expenseId",
+                    "status"
+                  ],
+                  "variable": [
+                    {
+                      "key": "expenseId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "404 - Расход не найден",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"CONFIRMED\",\n  \"comment\": \"string\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/expenses/:expenseId/status",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "expenses",
+                    ":expenseId",
+                    "status"
+                  ],
+                  "variable": [
+                    {
+                      "key": "expenseId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ],
+      "description": "Добавление, редактирование и подтверждение расходов"
+    },
+    {
+      "name": "Settlements",
+      "item": [
+        {
+          "name": "Получить список взаиморасчетов",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId/settlements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId",
+                "settlements"
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Возвращает оптимизированный список переводов для закрытия долгов"
+          },
+          "response": [
+            {
+              "name": "200 - Список расчетов",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/settlements",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "settlements"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"eventHeader\": {\n    \"title\": \"Поездка в Сочи\",\n    \"startDate\": \"2026-06-15\",\n    \"endDate\": \"2026-06-20\",\n    \"status\": \"COMPLETED\",\n    \"participantsCount\": 5,\n    \"participantAvatars\": [\n      \"https://CkFdExIMWKyJFlxfzJYkhXOpONKQLtKhP.atbK2e.Fl6C,PM3i3c9sNzqqu,Mb6rX5LBrSyunNEylmiMj+6Rq+N8\",\n      \"https://QsuoSzI.dxRUUdlqXwofJHi2BRlCmupeZt6g-JaWX+EEHO,8TnLU-mUmujOD.j2-XADbVbvgbDyCAc4OrYOr\"\n    ]\n  },\n  \"settlements\": [\n    {\n      \"id\": 701,\n      \"fromUser\": {\n        \"id\": 15,\n        \"fullName\": \"Мария Сидорова\",\n        \"avatarUrl\": \"https://HZUaI.akrvK\",\n        \"initials\": \"М.С.\"\n      },\n      \"toUser\": {\n        \"id\": 15,\n        \"fullName\": \"Мария Сидорова\",\n        \"avatarUrl\": \"http://LUNYADXbHsdnJaAPIawfymlpmLMfcAS.ujLYncU2SGb9jDSKY3+s6htUK8tFklC3rot1pDU238j4eM3lVU5noUMUFF\",\n        \"initials\": \"М.С.\"\n      },\n      \"amount\": 2000,\n      \"status\": \"WAITING_CONFIRMATION\"\n    },\n    {\n      \"id\": 701,\n      \"fromUser\": {\n        \"id\": 15,\n        \"fullName\": \"Мария Сидорова\",\n        \"avatarUrl\": \"https://meGZA.otami01zMh81Ndf0mhapFC1pio,-hGM\",\n        \"initials\": \"М.С.\"\n      },\n      \"toUser\": {\n        \"id\": 15,\n        \"fullName\": \"Мария Сидорова\",\n        \"avatarUrl\": \"https://xOahNOhyrbHzVuNOC.ruvEyQ\",\n        \"initials\": \"М.С.\"\n      },\n      \"amount\": 2000,\n      \"status\": \"WAITING_CONFIRMATION\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Отметить долг как оплаченный",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/settlements/:settlementId/pay",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settlements",
+                ":settlementId",
+                "pay"
+              ],
+              "variable": [
+                {
+                  "key": "settlementId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Должник отмечает, что перевел деньги получателю"
+          },
+          "response": [
+            {
+              "name": "200 - Статус обновлен на WAITING_CONFIRMATION",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/settlements/:settlementId/pay",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "settlements",
+                    ":settlementId",
+                    "pay"
+                  ],
+                  "variable": [
+                    {
+                      "key": "settlementId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "400 - Нельзя отметить как оплаченный (неверный статус)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/settlements/:settlementId/pay",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "settlements",
+                    ":settlementId",
+                    "pay"
+                  ],
+                  "variable": [
+                    {
+                      "key": "settlementId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "404 - Расчет не найден",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/settlements/:settlementId/pay",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "settlements",
+                    ":settlementId",
+                    "pay"
+                  ],
+                  "variable": [
+                    {
+                      "key": "settlementId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Подтвердить получение средств",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/settlements/:settlementId/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settlements",
+                ":settlementId",
+                "confirm"
+              ],
+              "variable": [
+                {
+                  "key": "settlementId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Получатель подтверждает получение денег от должника"
+          },
+          "response": [
+            {
+              "name": "200 - Долг успешно закрыт (статус COMPLETED)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/settlements/:settlementId/confirm",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "settlements",
+                    ":settlementId",
+                    "confirm"
+                  ],
+                  "variable": [
+                    {
+                      "key": "settlementId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "400 - Нельзя подтвердить (неверный статус)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/settlements/:settlementId/confirm",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "settlements",
+                    ":settlementId",
+                    "confirm"
+                  ],
+                  "variable": [
+                    {
+                      "key": "settlementId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "404 - Расчет не найден",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/settlements/:settlementId/confirm",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "settlements",
+                    ":settlementId",
+                    "confirm"
+                  ],
+                  "variable": [
+                    {
+                      "key": "settlementId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ],
+      "description": "Взаиморасчеты между участниками, оплата долгов"
+    },
+    {
+      "name": "User Profile",
+      "item": [
+        {
+          "name": "Получить данные профиля",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Данные профиля",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"firstName\": \"Иван\",\n  \"lastName\": \"Петров\",\n  \"username\": \"@username\",\n  \"email\": \"ivan.petrov@example.com\",\n  \"avatarUrl\": \"https://z.lryA7UJOZFJKSnpJt8QuWuCGVJlzm+m-f6Z3eEAEWjJm8SFuxymTV9BI\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Редактировать профиль",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"email\": \"hHZ6xo@YNlcRHufapizYtCDjBstuljbOPvAurYQN.kd\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me"
+              ]
+            },
+            "description": "Обновление имени, фамилии и email пользователя"
+          },
+          "response": [
+            {
+              "name": "200 - Профиль успешно обновлен",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"email\": \"hHZ6xo@YNlcRHufapizYtCDjBstuljbOPvAurYQN.kd\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Изменить пароль",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"string\",\n  \"newPassword\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/me/password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "me",
+                "password"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "204 - Пароль успешно изменен",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"string\",\n  \"newPassword\": \"string\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/me/password",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "me",
+                    "password"
+                  ]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "400 - Текущий пароль неверен или новые пароли не совпадают",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"string\",\n  \"newPassword\": \"string\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/me/password",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "me",
+                    "password"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ],
+      "description": "Управление профилем пользователя и настройками"
+    },
+    {
+      "name": "Invitations",
+      "item": [
+        {
+          "name": "Получить текущую пригласительную ссылку и QR-код",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId/invite-link",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId",
+                "invite-link"
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 - Данные пригласительной ссылки",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/invite-link",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "invite-link"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"fullUrl\": \"https://t-event.ru/join/zp1v56...\",\n  \"token\": \"zp1v56uxy8rdx5ypatb96i45\",\n  \"qrCodeBase64\": \"string\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Перегенерировать пригласительную ссылку",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/:eventId/invite-link",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                ":eventId",
+                "invite-link"
+              ],
+              "variable": [
+                {
+                  "key": "eventId",
+                  "value": "4052"
+                }
+              ]
+            },
+            "description": "Создание новой ссылки, старая становится недействительной"
+          },
+          "response": [
+            {
+              "name": "201 - Новая ссылка создана",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/events/:eventId/invite-link",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "events",
+                    ":eventId",
+                    "invite-link"
+                  ],
+                  "variable": [
+                    {
+                      "key": "eventId",
+                      "value": "4052"
+                    }
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"fullUrl\": \"https://t-event.ru/join/zp1v56...\",\n  \"token\": \"zp1v56uxy8rdx5ypatb96i45\",\n  \"qrCodeBase64\": \"string\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Генерация и управление пригласительными ссылками"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.t-event.ru/v1"
+    }
+  ]
+}
