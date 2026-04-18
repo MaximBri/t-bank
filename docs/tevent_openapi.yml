@@ -1,0 +1,1228 @@
+openapi: 3.0.3
+info:
+  title: T-Event API
+  description: |
+    API для управления совместными событиями, расходами и взаиморасчетами.
+    Система позволяет создавать события (группы), добавлять участников, 
+    вести учет расходов и автоматически рассчитывать долги между участниками.
+  version: 1.0.0
+  contact:
+    name: T-Event Team
+    email: support@t-event.ru
+
+servers:
+  - url: https://api.t-event.ru/v1
+    description: Production server
+  - url: http://localhost:8080/v1
+    description: Local development server
+
+security:
+  - cookieAccessToken: []
+
+tags:
+  - name: Authentication
+    description: Регистрация, вход, обновление токенов и управление сессиями
+  - name: Events
+    description: Создание, редактирование и управление событиями (группами)
+  - name: Participants
+    description: Управление участниками событий, приглашения и членство
+  - name: Expenses
+    description: Добавление, редактирование и подтверждение расходов
+  - name: Settlements
+    description: Взаиморасчеты между участниками, оплата долгов
+  - name: User Profile
+    description: Управление профилем пользователя и настройками
+  - name: Invitations
+    description: Генерация и управление пригласительными ссылками
+
+paths:
+  # ==================== АВТОРИЗАЦИЯ ====================
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Регистрация нового пользователя
+      description: |
+        Создание нового аккаунта пользователя.
+        Если передан `inviteCode`, пользователь сразу вступает в соответствующую группу.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '201':
+          description: Пользователь создан, установлены cookie с токенами
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: "accessToken=eyJ...; HttpOnly; Secure; SameSite=Strict"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: integer
+                    example: 42
+                  joinedGroupId:
+                    type: integer
+                    nullable: true
+                    example: 15
+        '400':
+          description: Неверные данные запроса
+        '409':
+          description: Пользователь с таким username уже существует
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Вход в систему
+      description: Аутентификация существующего пользователя
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Успешный вход, установлены cookie с токенами
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: "accessToken=eyJ...; HttpOnly; Secure; SameSite=Strict"
+        '401':
+          description: Неверные учетные данные
+
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Проверка текущей сессии
+      description: Возвращает данные текущего пользователя если сессия активна
+      responses:
+        '200':
+          description: Сессия активна
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: "user123"
+                  userId:
+                    type: integer
+                    example: 42
+        '401':
+          description: Пользователь не авторизован
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Обновление Access Token
+      description: Получение нового access token с использованием refresh token
+      security:
+        - cookieRefreshToken: []
+      responses:
+        '200':
+          description: Токен успешно обновлен
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: "accessToken=eyJ...; HttpOnly; Secure; SameSite=Strict"
+        '401':
+          description: Refresh token невалиден или истек
+
+  # ==================== СОБЫТИЯ (ГРУППЫ) ====================
+  /events:
+    post:
+      tags:
+        - Events
+      summary: Создать новое событие
+      description: Создание события (группы) для учета совместных расходов
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventRequest'
+      responses:
+        '201':
+          description: Событие успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '400':
+          description: Ошибка валидации данных
+
+  /events/{eventId}:
+    get:
+      tags:
+        - Events
+      summary: Получить информацию о событии
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация о событии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '404':
+          description: Событие не найдено
+
+    patch:
+      tags:
+        - Events
+      summary: Редактировать событие
+      description: Частичное обновление данных события (доступно только владельцу)
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEventRequest'
+      responses:
+        '200':
+          description: Событие успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '403':
+          description: Недостаточно прав (не являетесь владельцем)
+        '404':
+          description: Событие не найдено
+
+  /user/events:
+    get:
+      tags:
+        - Events
+      summary: Получить список событий пользователя
+      description: Возвращает события, в которых участвует текущий пользователь
+      parameters:
+        - name: search
+          in: query
+          description: Поиск по подстроке в названии события
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Фильтр по статусу (можно несколько через запятую)
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [PLANNED, ACTIVE, COMPLETED]
+        - name: startDate
+          in: query
+          description: События, начинающиеся после этой даты
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: События, заканчивающиеся до этой даты
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: minParticipants
+          in: query
+          description: Минимальное количество участников в событии
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - name: maxParticipants
+          in: query
+          description: Максимальное количество участников в событии
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Список событий пользователя
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserEventDTO'
+
+  # ==================== УЧАСТНИКИ ====================
+  /events/{eventId}/participants:
+    get:
+      tags:
+        - Participants
+      summary: Получить список участников события
+      description: Возвращает список всех участников события
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: status
+          in: query
+          description: Фильтр по статусу участия
+          required: false
+          schema:
+            type: string
+            enum: [ACCEPTED, INVITED]
+      responses:
+        '200':
+          description: Список участников
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  participants:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ParticipantDTO'
+                  totalCount:
+                    type: integer
+                    example: 5
+
+  /events/{eventId}/participants/invite:
+    post:
+      tags:
+        - Participants
+      summary: Пригласить пользователя в событие
+      description: Создание приглашения для пользователя по username
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username]
+              properties:
+                username:
+                  type: string
+                  example: "user123"
+      responses:
+        '201':
+          description: Приглашение успешно создано
+        '404':
+          description: Пользователь не найден
+        '409':
+          description: Пользователь уже приглашен или является участником
+
+  /events/{eventId}/participants/{userId}:
+    delete:
+      tags:
+        - Participants
+      summary: Удалить участника или отозвать приглашение
+      description: Удаление участника из события или отзыв приглашения (только для владельца)
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Участник удален / приглашение отозвано
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Участник не найден
+
+  # ==================== ВСТУПЛЕНИЕ В ГРУППУ ====================
+  /groups/join:
+    post:
+      tags:
+        - Participants
+      summary: Подать заявку на вступление в группу
+      description: |
+        Пользователь может подать заявку на вступление в группу по инвайт-коду.
+        Заявка требует подтверждения от владельца группы.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inviteCode]
+              properties:
+                inviteCode:
+                  type: string
+                  example: "trip-2026"
+      responses:
+        '202':
+          description: Заявка принята и ожидает рассмотрения владельцем
+        '409':
+          description: Вы уже подали заявку в эту группу
+        '410':
+          description: Ссылка просрочена (прошло > 48 часов)
+
+  /user/invitations/pending:
+    get:
+      tags:
+        - Participants
+      summary: Проверить наличие приглашений
+      description: Возвращает список приглашений, ожидающих ответа пользователя
+      responses:
+        '200':
+          description: Список активных приглашений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PendingInvitationResponse'
+
+  /user/invitations/{invitationId}/resolve:
+    post:
+      tags:
+        - Participants
+      summary: Принять или отклонить приглашение
+      description: Ответ на приглашение от владельца группы
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action:
+                  type: string
+                  enum: [ACCEPT, DECLINE]
+                  example: "ACCEPT"
+      responses:
+        '200':
+          description: Решение принято
+        '404':
+          description: Приглашение не найдено
+        '403':
+          description: Приглашение адресовано не вам
+
+  # ==================== РАСХОДЫ ====================
+  /events/{eventId}/expenses:
+    get:
+      tags:
+        - Expenses
+      summary: Получить список расходов события
+      description: Возвращает данные события и список всех расходов
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Данные события и список расходов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  eventHeader:
+                    $ref: '#/components/schemas/EventHeaderDTO'
+                  expenses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExpenseDTO'
+
+    post:
+      tags:
+        - Expenses
+      summary: Добавить новый расход
+      description: Создание нового расхода в событии
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExpenseRequest'
+      responses:
+        '201':
+          description: Расход успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExpenseDTO'
+        '400':
+          description: Ошибка валидации данных
+
+  /expenses/{expenseId}/status:
+    patch:
+      tags:
+        - Expenses
+      summary: Изменить статус подтверждения расхода
+      description: Подтверждение или оспаривание расхода участником
+      parameters:
+        - name: expenseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [CONFIRMED, DISPUTED]
+                comment:
+                  type: string
+                  description: Причина оспаривания (обязательно для DISPUTED)
+      responses:
+        '200':
+          description: Статус успешно обновлен
+        '404':
+          description: Расход не найден
+        '403':
+          description: Недостаточно прав
+
+  # ==================== ВЗАИМОРАСЧЕТЫ ====================
+  /events/{eventId}/settlements:
+    get:
+      tags:
+        - Settlements
+      summary: Получить список взаиморасчетов
+      description: Возвращает оптимизированный список переводов для закрытия долгов
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список расчетов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  eventHeader:
+                    $ref: '#/components/schemas/EventHeaderDTO'
+                  settlements:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SettlementDTO'
+
+  /settlements/{settlementId}/pay:
+    post:
+      tags:
+        - Settlements
+      summary: Отметить долг как оплаченный
+      description: Должник отмечает, что перевел деньги получателю
+      parameters:
+        - name: settlementId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Статус обновлен на WAITING_CONFIRMATION
+        '404':
+          description: Расчет не найден
+        '400':
+          description: Нельзя отметить как оплаченный (неверный статус)
+
+  /settlements/{settlementId}/confirm:
+    post:
+      tags:
+        - Settlements
+      summary: Подтвердить получение средств
+      description: Получатель подтверждает получение денег от должника
+      parameters:
+        - name: settlementId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Долг успешно закрыт (статус COMPLETED)
+        '404':
+          description: Расчет не найден
+        '400':
+          description: Нельзя подтвердить (неверный статус)
+
+  # ==================== ИСТОРИЯ ====================
+  /events/{eventId}/history:
+    get:
+      tags:
+        - Events
+      summary: Получить историю действий в событии
+      description: Возвращает ленту истории событий с фильтрацией
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: search
+          in: query
+          description: Поиск по названию действия или имени участника
+          required: false
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Фильтр по категории лога
+          required: false
+          schema:
+            type: string
+            enum: [EXPENSES, PARTICIPANTS, EVENT_STATUS]
+      responses:
+        '200':
+          description: Лента истории
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalRecords:
+                    type: integer
+                    example: 15
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HistoryItemDTO'
+
+  # ==================== ВЫХОД ИЗ СОБЫТИЯ ====================
+  /events/{eventId}/leave/check:
+    get:
+      tags:
+        - Participants
+      summary: Проверить возможность выхода из события
+      description: Проверяет наличие долгов и роль пользователя перед выходом
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Результат проверки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveCheckResponse'
+
+  /events/{eventId}/leave:
+    post:
+      tags:
+        - Participants
+      summary: Подтвердить выход из события
+      description: Окончательный выход пользователя из события
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Вы успешно покинули событие
+        '409':
+          description: Конфликт (появились новые долги во время подтверждения)
+
+  # ==================== ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ====================
+  /me:
+    get:
+      tags:
+        - User Profile
+      summary: Получить данные профиля
+      responses:
+        '200':
+          description: Данные профиля
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileDTO'
+
+    patch:
+      tags:
+        - User Profile
+      summary: Редактировать профиль
+      description: Обновление имени, фамилии и email пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Профиль успешно обновлен
+
+  /me/password:
+    post:
+      tags:
+        - User Profile
+      summary: Изменить пароль
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+      responses:
+        '204':
+          description: Пароль успешно изменен
+        '400':
+          description: Текущий пароль неверен или новые пароли не совпадают
+
+  # ==================== ПРИГЛАСИТЕЛЬНЫЕ ССЫЛКИ ====================
+  /events/{eventId}/invite-link:
+    get:
+      tags:
+        - Invitations
+      summary: Получить текущую пригласительную ссылку и QR-код
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Данные пригласительной ссылки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteLinkDTO'
+
+    post:
+      tags:
+        - Invitations
+      summary: Перегенерировать пригласительную ссылку
+      description: Создание новой ссылки, старая становится недействительной
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Новая ссылка создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteLinkDTO'
+
+components:
+  securitySchemes:
+    cookieAccessToken:
+      type: apiKey
+      in: cookie
+      name: accessToken
+      description: Access token для аутентификации
+    cookieRefreshToken:
+      type: apiKey
+      in: cookie
+      name: refreshToken
+      description: Refresh token для обновления access token
+
+  schemas:
+    # ==================== АВТОРИЗАЦИЯ ====================
+    AuthRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          example: "user123"
+        password:
+          type: string
+          format: password
+          example: "securePassword123"
+        inviteCode:
+          type: string
+          nullable: true
+          example: "group-xyz"
+
+    # ==================== СОБЫТИЯ ====================
+    CreateEventRequest:
+      type: object
+      required: [title, startDate, endDate, category]
+      properties:
+        title:
+          type: string
+          minLength: 3
+          example: "Поездка в горы 2026"
+        description:
+          type: string
+          maxLength: 1000
+          example: "Совместный выезд на выходные, делим расходы на жилье и еду."
+        startDate:
+          type: string
+          format: date-time
+          example: "2026-04-20T10:00:00Z"
+        endDate:
+          type: string
+          format: date-time
+          example: "2026-04-25T18:00:00Z"
+        category:
+          type: array
+          items:
+            type: string
+            enum: [TRAVEL, FOOD, PARTY, RENT, OTHER]
+          example: ["TRAVEL", "FOOD"]
+          description: Массив категорий события (можно указать несколько)
+        imageKey:
+          type: string
+          description: Ключ объекта в MinIO, полученный после предварительной загрузки файла
+          example: "covers/events/uuid-filename.jpg"
+
+    UpdateEventRequest:
+      type: object
+      description: Все поля опциональны. Присылайте только то, что изменилось.
+      properties:
+        title:
+          type: string
+          example: "Новое название поездки"
+        description:
+          type: string
+          example: "Обновленное описание"
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        category:
+          type: array
+          items:
+            type: string
+            enum: [TRAVEL, FOOD, PARTY, RENT, OTHER]
+          description: Массив категорий события (можно указать несколько)
+        imageKey:
+          type: string
+          description: Ключ новой картинки в MinIO (если она менялась)
+
+    EventResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 501
+        title:
+          type: string
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        category:
+          type: array
+          items:
+            type: string
+            enum: [TRAVEL, FOOD, PARTY, RENT, OTHER]
+          example: ["TRAVEL", "FOOD"]
+        status:
+          type: string
+          enum: [PLANNED, ACTIVE, COMPLETED]
+          example: "PLANNED"
+          description: Статус события определяется автоматически на бэкенде на основе дат начала и окончания
+        imageUrl:
+          type: string
+          format: uri
+          description: Полная временная ссылка (Pre-signed URL) для отображения на фронтенде
+          example: "https://minio.t-event.ru/events/uuid?X-Amz-Signature=..."
+        ownerId:
+          type: integer
+          example: 42
+
+    UserEventDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 42
+        title:
+          type: string
+          example: "Майские в Питере"
+        startDate:
+          type: string
+          format: date
+          example: "2026-05-01"
+        endDate:
+          type: string
+          format: date
+          example: "2026-05-05"
+        participantsCount:
+          type: integer
+          description: Количество подтвержденных участников
+          example: 4
+        status:
+          type: string
+          enum: [PLANNED, ACTIVE, COMPLETED]
+          example: "PLANNED"
+        imageUrl:
+          type: string
+          format: uri
+          description: Временная или проксированная ссылка на обложку в MinIO
+          example: "https://s3.t-event.ru/events/pic_123.jpg?X-Amz-Signature=..."
+
+    EventHeaderDTO:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Поездка в Сочи"
+        startDate:
+          type: string
+          format: date
+          example: "2026-06-15"
+        endDate:
+          type: string
+          format: date
+          example: "2026-06-20"
+        status:
+          type: string
+          enum: [ACTIVE, COMPLETED, PLANNED]
+          description: Статус события определяется автоматически на бэкенде на основе дат начала и окончания
+        participantsCount:
+          type: integer
+          example: 5
+        participantAvatars:
+          type: array
+          items:
+            type: string
+            format: uri
+            description: Pre-signed URL из MinIO
+
+    # ==================== УЧАСТНИКИ ====================
+    ParticipantDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 15
+        fullName:
+          type: string
+          example: "Иван Петров"
+        email:
+          type: string
+          example: "ivan@email.com"
+        avatarUrl:
+          type: string
+          format: uri
+        initials:
+          type: string
+          example: "И.П."
+        role:
+          type: string
+          enum: [OWNER, PARTICIPANT]
+          example: "PARTICIPANT"
+        status:
+          type: string
+          enum: [ACCEPTED, INVITED]
+          description: ACCEPTED - уже в группе, INVITED - еще не принял инвайт
+          example: "INVITED"
+
+    PendingInvitationResponse:
+      type: object
+      properties:
+        invitationId:
+          type: integer
+          example: 505
+        groupName:
+          type: string
+          example: "Поездка в Турцию"
+        ownerName:
+          type: string
+          example: "Александр (Admin)"
+        status:
+          type: string
+          enum: [PENDING_APPROVAL, INVITED, REJECTED]
+          description: |
+            PENDING_APPROVAL - вы постучались, ждете овнера.
+            INVITED - овнер сам вас позвал, ждет вашего "Да".
+            REJECTED - овнер отклонил вашу заявку.
+
+    # ==================== РАСХОДЫ ====================
+    ExpenseDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 101
+        title:
+          type: string
+          example: "Бронирование отеля"
+        category:
+          type: string
+          enum: [ACCOMMODATION, TRANSPORT, FOOD, ENTERTAINMENT, OTHER]
+        approvalStatus:
+          type: string
+          enum: [CONFIRMED, PENDING, DISPUTED]
+        payerName:
+          type: string
+          example: "Иван Петров"
+        splitBetweenCount:
+          type: integer
+          example: 5
+        createdAt:
+          type: string
+          format: date-time
+        totalAmount:
+          type: number
+          format: double
+          example: 45000.00
+        perPersonAmount:
+          type: number
+          format: double
+          example: 9000.00
+        disputeInfo:
+          type: object
+          nullable: true
+          properties:
+            reason:
+              type: string
+              example: "Сумма указана неверно..."
+            timestamp:
+              type: string
+              format: date-time
+
+    CreateExpenseRequest:
+      type: object
+      required: [title, amount, category, participantIds]
+      properties:
+        title:
+          type: string
+          example: "Аренда машины"
+        amount:
+          type: number
+          format: double
+          example: 15000.00
+        category:
+          type: string
+          enum: [ACCOMMODATION, TRANSPORT, FOOD, ENTERTAINMENT, OTHER]
+          example: "TRANSPORT"
+        participantIds:
+          type: array
+          items:
+            type: integer
+          description: ID участников, между которыми будет разделена сумма расхода
+          example: [15, 23, 42]
+          minItems: 1
+        imageKey:
+          type: string
+          description: Ключ чека в MinIO
+          example: "receipts/event_42/uuid.jpg"
+
+    # ==================== ВЗАИМОРАСЧЕТЫ ====================
+    SettlementDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 701
+        fromUser:
+          $ref: '#/components/schemas/UserShortDTO'
+        toUser:
+          $ref: '#/components/schemas/UserShortDTO'
+        amount:
+          type: number
+          format: double
+          example: 2000.00
+        status:
+          type: string
+          enum: [PENDING, WAITING_CONFIRMATION, COMPLETED]
+          description: |
+            PENDING - долг висит (кнопка "Оплатить").
+            WAITING_CONFIRMATION - должник нажал "Оплатить" (кнопка "Подтвердить" у получателя).
+            COMPLETED - деньги получены (кнопка исчезает).
+
+    UserShortDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 15
+        fullName:
+          type: string
+          example: "Мария Сидорова"
+        avatarUrl:
+          type: string
+          format: uri
+        initials:
+          type: string
+          example: "М.С."
+
+    # ==================== ИСТОРИЯ ====================
+    HistoryItemDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1001
+        title:
+          type: string
+          example: "Добавлен расход «Экскурсия по городу»"
+        actorName:
+          type: string
+          example: "Дмитрий Волков"
+        actionLabel:
+          type: string
+          description: Текст в правой части (тип действия)
+          example: "Создание расхода"
+        type:
+          type: string
+          enum: [EXPENSES, PARTICIPANTS, EVENT_STATUS]
+        timestamp:
+          type: string
+          format: date-time
+          example: "2026-05-14T18:45:00Z"
+
+    # ==================== ВЫХОД ИЗ СОБЫТИЯ ====================
+    LeaveCheckResponse:
+      type: object
+      properties:
+        canLeave:
+          type: boolean
+          example: true
+          description: true, если долгов нет и роль позволяет выйти
+        reason:
+          type: string
+          nullable: true
+          example: "У вас есть 2 непогашенных долга"
+          description: Текст ошибки, если canLeave = false
+        hasDebts:
+          type: boolean
+          example: false
+        isOwner:
+          type: boolean
+          example: false
+
+    # ==================== ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ====================
+    UserProfileDTO:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: "Иван"
+        lastName:
+          type: string
+          example: "Петров"
+        username:
+          type: string
+          example: "@username"
+        email:
+          type: string
+          example: "ivan.petrov@example.com"
+        avatarUrl:
+          type: string
+          format: uri
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+          description: Email пользователя (можно редактировать, так как не задается при регистрации)
+
+    PasswordChangeRequest:
+      type: object
+      required: [currentPassword, newPassword]
+      properties:
+        currentPassword:
+          type: string
+          format: password
+        newPassword:
+          type: string
+          format: password
+
+    # ==================== ПРИГЛАСИТЕЛЬНЫЕ ССЫЛКИ ====================
+    InviteLinkDTO:
+      type: object
+      properties:
+        fullUrl:
+          type: string
+          example: "https://t-event.ru/join/zp1v56..."
+        token:
+          type: string
+          example: "zp1v56uxy8rdx5ypatb96i45"
+        qrCodeBase64:
+          type: string
+          description: Картинка QR-кода в base64 или ссылка
+
+    # ==================== ОШИБКИ ====================
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "DEBTS_EXIST"
+        message:
+          type: string
+          example: "Нельзя покинуть группу с долгами."
+        details:
+          type: object
+          nullable: true
