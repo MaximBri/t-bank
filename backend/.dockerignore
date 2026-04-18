@@ -1,0 +1,6 @@
+.DS_Store
+build
+target
+tevent/.idea
+tevent/.vscode
+tevent/target
