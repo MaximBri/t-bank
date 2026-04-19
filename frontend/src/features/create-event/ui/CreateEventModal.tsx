@@ -1,17 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import { ExpenseCategoriesSection, useExpenseCategories } from '@/entities/expense'
 import CloseIcon from '@/shared/assets/icons/close.svg?react'
 import { Button } from '@/shared/ui/button/Button.tsx'
 import { renderFormField } from '@/shared/ui/form'
 import { Modal } from '@/shared/ui/modal'
 
 import { getCreateEventFormFields } from '../lib/get-create-event-form-fields.tsx'
-import { useExpenseCategories } from '../lib/use-expense-categories.ts'
+import { createEventFormDefaultValues } from '../model/constants.ts'
 import { createEventSchema } from '../model/schema.ts'
 import type { CreateEventFormValues } from '../model/types.ts'
-import { ExpenseCategoriesSection } from './ExpenseCategoriesSection.tsx'
-import { createEventFormDefaultValues } from "../model/constants.ts";
 
 type CreateEventModalProps = {
   isOpen: boolean
@@ -100,7 +99,7 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
               onRemoveCategory={removeCategory}
             />
 
-            <div className="sm:pt-[12px]">
+            <div className="sm:pt-[10px]">
               <Button
                 type="submit"
                 className="rounded-[16px] border-[2px] border-yellow bg-yellow px-[45px] py-[8px] text-h3 font-medium text-primary"

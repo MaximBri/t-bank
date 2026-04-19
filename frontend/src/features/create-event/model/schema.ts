@@ -1,15 +1,11 @@
 import { z } from 'zod'
 
+import { expenseCategoriesSchema } from '@/entities/expense'
 import { createFormSchema, requiredString } from '@/shared/lib/forms'
 
 export const createEventSchema = createFormSchema({
   avatar: z.instanceof(File).optional(),
-  categories: z
-    .array(requiredString())
-    .min(1, 'Добавьте хотя бы одну категорию')
-    .refine((categories) => new Set(categories).size === categories.length, {
-      message: 'Категории не должны повторяться',
-    }),
+  categories: expenseCategoriesSchema,
   description: z.string().optional(),
   startDate: requiredString(),
   endDate: z.string().optional(),

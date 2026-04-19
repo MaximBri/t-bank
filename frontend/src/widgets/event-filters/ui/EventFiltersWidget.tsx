@@ -76,13 +76,13 @@ export const EventFiltersWidget = ({onClose}: EventFiltersWidgetProps) => {
 
         <div className="grid grid-cols-2 gap-[10px] sm:gap-[15px]">
           <label className="flex flex-col gap-[10px]">
-            <span className="sm:text-[20px] text-primary">Дата от</span>
+            <span className="sm:text-[20px] text-primary">Дата до</span>
             <DateInput
-              name="start-date"
-              value={startDate}
-              onChange={(event) => setStartDate(event.target.value)}
-              placeholder="дд.мм.гггг"
-              className="border border-primary bg-secondary px-[16px] py-[10px] text-primary outline-none transition-colors placeholder:text-placeholder focus:border-[#8f8f8f]"
+                name="start-date"
+                value={startDate}
+                onChange={(event) => setStartDate(event.target.value)}
+                placeholder="дд.мм.гггг"
+                className="text-body border border-primary bg-secondary px-[16px] py-[10px] text-primary outline-none transition-colors placeholder:text-placeholder focus:border-[#8f8f8f]"
             />
           </label>
           <label className="flex flex-col gap-[10px]">

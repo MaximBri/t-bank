@@ -1,8 +1,10 @@
-import { EventStatusIds } from '../model/types.ts'
+import { EventStatus, eventStatusMap } from '@/entities/event'
+
+import { EventFilterStatus } from '../model/types.ts'
 
 export const eventFilterStatusOptions = [
-  { id: EventStatusIds.All, label: 'Все' },
-  { id: EventStatusIds.Active, label: 'Активно' },
-  { id: EventStatusIds.Planned, label: 'Запланировано' },
-  { id: EventStatusIds.Completed, label: 'Завершено' },
-] as const satisfies ReadonlyArray<{ id: EventStatusIds; label: string }>
+  { id: EventFilterStatus.All, label: 'Все' },
+  { id: EventFilterStatus.Active, label: eventStatusMap[EventStatus.Active].label },
+  { id: EventFilterStatus.Planned, label: eventStatusMap[EventStatus.Planned].label },
+  { id: EventFilterStatus.Completed, label: eventStatusMap[EventStatus.Completed].label },
+] as const satisfies ReadonlyArray<{ id: EventFilterStatus; label: string }>

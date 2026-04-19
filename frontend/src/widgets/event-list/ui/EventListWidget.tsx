@@ -1,6 +1,6 @@
+import type { EventListItem } from '@/entities/event'
 import { Button } from '@/shared/ui/button/Button.tsx'
 import { skeletonItems } from '@/widgets/event-list/model/constants.ts'
-import type { EventListItem } from '@/widgets/event-list/model/types.ts'
 
 import { EventCardSkeleton } from './EventCardSkeleton.tsx'
 import { EventListCard } from './EventListCard.tsx'
@@ -18,7 +18,7 @@ export const EventListWidget = ({
 }: EventListWidgetProps) => {
   if (isLoading) {
     return (
-        <div className="grid gap-[10px] [grid-template-columns:repeat(auto-fit,minmax(341px,1fr))] sm:gap-[20px] sm:[grid-template-columns:repeat(auto-fit,minmax(450px,1fr))]">
+      <div className="grid gap-[10px] [grid-template-columns:repeat(auto-fit,minmax(341px,1fr))] sm:gap-[20px] sm:[grid-template-columns:repeat(auto-fit,minmax(450px,1fr))]">
         {skeletonItems.map((item) => (
           <EventCardSkeleton key={item} />
         ))}

@@ -2,11 +2,13 @@ import type { KeyboardEvent } from 'react'
 
 import AddIcon from '@/shared/assets/icons/add.svg?react'
 import CloseIcon from '@/shared/assets/icons/close.svg?react'
-import { Button } from '@/shared/ui/button/Button.tsx'
+import { Button } from '@/shared/ui/button/Button'
 import { TextInput } from '@/shared/ui/inputs'
 
+import type { ExpenseCategoryList } from '../model/types'
+
 type ExpenseCategoriesSectionProps = {
-  categories: string[]
+  categories: ExpenseCategoryList
   categoryInput: string
   errorMessage?: string
   onAddCategory: () => void
@@ -34,19 +36,21 @@ export const ExpenseCategoriesSection = ({
   return (
     <div className="flex flex-col gap-[10px]">
       <p className="text-h3-d font-medium text-primary">Категории расходов</p>
-      { categories.length !== 0 ?  <div className="flex flex-wrap gap-[5px] sm:gap-[15px]">
-        {categories.map((category) => (
-          <Button
-            key={category}
-            type="button"
-            className="inline-flex items-center gap-[15px] rounded-[24px] bg-yellow px-[10px] py-[1px] text-h3 font-medium text-primary sm:px-[17px] sm:py-[5px]"
-            onClick={() => onRemoveCategory(category)}
-          >
-            <span>{category}</span>
-            <CloseIcon width="14px" height="14px" />
-          </Button>
-        ))}
-      </div> : null}
+      {categories.length !== 0 ? (
+        <div className="flex flex-wrap gap-[5px] sm:gap-[15px]">
+          {categories.map((category) => (
+            <Button
+              key={category}
+              type="button"
+              className="inline-flex items-center gap-[15px] rounded-[24px] bg-yellow px-[10px] py-[1px] text-h3 font-medium text-primary sm:px-[17px] sm:py-[5px]"
+              onClick={() => onRemoveCategory(category)}
+            >
+              <span>{category}</span>
+              <CloseIcon width="14px" height="14px" />
+            </Button>
+          ))}
+        </div>
+      ) : null}
 
       <div className="relative flex flex-col gap-[15px] sm:flex-row sm:gap-[15px]">
         <div className="flex-1">
@@ -60,21 +64,22 @@ export const ExpenseCategoriesSection = ({
         </div>
         <Button
           type="button"
-          className="w-[125px] mt-[10px] justify-self-end gap-[10px] rounded-[16px] bg-yellow px-[15px] py-[4px] text-h3 font-medium text-primary sm:mt-0 sm:w-auto sm:px-[30px] sm:py-[10px]"
+          className="mt-[10px] w-[125px] justify-self-end gap-[10px] rounded-[16px] bg-yellow px-[15px] py-[4px] text-h3 font-medium text-primary sm:mt-0 sm:w-auto sm:px-[30px] sm:py-[10px]"
           onClick={onAddCategory}
         >
           <AddIcon className="h-[16px] w-[16px] text-h3" />
           Добавить
         </Button>
-        {errorMessage ? <p className="absolute bottom-auto top-[48%] sm:top-auto sm:-bottom-[25px] text-[10px] text-error sm:text-sm">{errorMessage}</p> : null}
+        {errorMessage ? (
+          <p className="absolute bottom-auto top-[48%] text-[10px] text-error sm:-bottom-[25px] sm:top-auto sm:text-sm">
+            {errorMessage}
+          </p>
+        ) : null}
       </div>
 
-
-      <p className="text-small font-medium text-primary sm:text-h3">
+      <p className="sm:pt-[10px] text-small font-medium text-primary sm:text-h3">
         Категории помогут организовать учёт расходов по направлениям
       </p>
-
-
     </div>
   )
 }
