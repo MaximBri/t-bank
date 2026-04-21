@@ -21,6 +21,12 @@ export type BaseFieldType =
   | 'date'
   | 'image'
 
+export enum FormFieldVariant {
+  Filled = 'filled',
+  Outlined = 'outlined',
+  Standart = 'standart',
+}
+
 export type BaseFieldConfig<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -35,6 +41,8 @@ export type BaseFieldConfig<
   required?: boolean
   defaultValue?: unknown
   rules?: RegisterOptions<TFieldValues, TName>
+  variant?: FormFieldVariant
+  withoutClearButton?: boolean
 }
 
 export type TextFieldConfig<

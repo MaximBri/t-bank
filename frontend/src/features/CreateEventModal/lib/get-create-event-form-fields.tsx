@@ -11,6 +11,7 @@ import {
   createEventFieldInputClassName,
   createEventFieldLabelClassName
 } from "../model/constants.ts";
+import { FormFieldVariant } from '@/shared/lib/forms/types.ts';
 
 type CreateEventFormFields = {
   titleField: FormFieldConfig<CreateEventFormValues>
@@ -66,8 +67,9 @@ export const getCreateEventFormFields = (): CreateEventFormFields => {
     type: 'image',
     label: 'Аватарка',
     labelClassName: createEventFieldLabelClassName,
-    fieldClassName: `${createEventFieldInputClassName} h-[155px] w-full px-[0px] py-[0px] sm:w-[150px]`,
+    fieldClassName: `bg-secondary h-[155px] w-full px-[0px] py-[0px] sm:w-[150px]`,
     accept: 'image/*',
+    variant: FormFieldVariant.Outlined,
   })
 
   return {

@@ -4,13 +4,13 @@ import clsx from 'clsx'
 import { Button } from '@/shared/ui/button/Button.tsx'
 import { DateInput, NumberInput, TextInput } from '@/shared/ui/inputs'
 import { useEventFiltersStore } from '../model/useEventFiltersStore.ts'
-import { eventFilterStatusOptions } from './event-filters.constants.ts'
+import { eventFilterStatusOptions } from './constants.ts'
 
 type EventFiltersWidgetProps = {
   onClose?: () => void
 }
 
-export const EventFiltersWidget = ({onClose}: EventFiltersWidgetProps) => {
+export const EventFiltersWidget = ({ onClose }: EventFiltersWidgetProps) => {
   const {
     search,
     status,
@@ -28,27 +28,26 @@ export const EventFiltersWidget = ({onClose}: EventFiltersWidgetProps) => {
   } = useEventFiltersStore()
 
   return (
-    <div className="text-h3 sm:text-h3-d rounded-[16px] sm:rounded-[24px] border-[2px] sm:border border-primary bg-secondary p-[15px] sm:p-[20px]">
+    <div className="text-h3 sm:text-h3-d rounded-md sm:rounded-lg border-[2px] sm:border border-primary bg-secondary p-[15px] sm:p-[20px]">
       <div className="flex flex-col gap-[14px] sm:gap-[20px]">
         <div className="flex flex-col gap-[14px] sm:gap-[20px]">
           <div className="flex w-full justify-between flex-row sm:block">
             <h1 className="text-h3-d sm:text-h2 font-medium text-primary">Фильтры и поиск</h1>
             <Button
-                type="button"
-                aria-label="close-filters-modal"
-                className="text-primary sm:hidden"
-                onClick={onClose}
+              type="button"
+              aria-label="close-filters-modal"
+              className="text-primary sm:hidden"
+              onClick={onClose}
             >
               <CloseIcon width="20px" height="20px" />
             </Button>
-
           </div>
 
           <TextInput
             name="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="text-body h-[44px] w-full rounded-[16px] border border-primary pl-[50px] pr-[16px] text-primary placeholder:text-placeholder focus:border-primary"
+            className="text-body h-[44px] w-full rounded-md border border-primary pl-[50px] pr-[16px] text-primary placeholder:text-placeholder focus:border-primary"
             placeholder="Поиск по событиям"
             icon={<SearchIcon width="24px" height="24px" className="text-placeholder" />}
             iconPosition="left"
@@ -64,7 +63,7 @@ export const EventFiltersWidget = ({onClose}: EventFiltersWidgetProps) => {
                 type="button"
                 onClick={() => setStatus(option.id)}
                 className={clsx(
-                  'rounded-[10px] sm:rounded-[16px] px-[8px] sm:px-[16px] py-[2px] sm:py-[8px] text-primary',
+                  'rounded-[10px] sm:rounded-md px-[8px] sm:px-[16px] py-[2px] sm:py-[8px] text-primary',
                   option.id === status ? 'bg-yellow' : 'bg-primary',
                 )}
               >
@@ -76,7 +75,7 @@ export const EventFiltersWidget = ({onClose}: EventFiltersWidgetProps) => {
 
         <div className="grid grid-cols-2 gap-[10px] sm:gap-[15px]">
           <label className="flex flex-col gap-[10px]">
-            <span className="sm:text-[20px] text-primary">Дата от</span>
+            <span className="sm:text-h3-d text-primary">Дата от</span>
             <DateInput
               name="start-date"
               value={startDate}
@@ -86,7 +85,7 @@ export const EventFiltersWidget = ({onClose}: EventFiltersWidgetProps) => {
             />
           </label>
           <label className="flex flex-col gap-[10px]">
-            <span className="sm:text-[20px] text-primary">Дата до</span>
+            <span className="sm:text-h3-d text-primary">Дата до</span>
             <DateInput
               name="end-date"
               value={endDate}
@@ -98,7 +97,7 @@ export const EventFiltersWidget = ({onClose}: EventFiltersWidgetProps) => {
         </div>
 
         <div className="flex flex-col gap-[14px] sm:gap-[10px]">
-          <span className="sm:text-[20px] text-primary">Количество участников</span>
+          <span className="sm:text-h3-d text-primary">Количество участников</span>
           <div className="grid w-full grid-cols-2 gap-[10px] sm:gap-[15px]">
             <NumberInput
               name="min-count"
@@ -121,7 +120,7 @@ export const EventFiltersWidget = ({onClose}: EventFiltersWidgetProps) => {
       <Button
         type="button"
         onClick={reset}
-        className="text-body mt-[14px] sm:mt-[20px] rounded-[10px] sm:rounded-[16px] border-[2px] border-primary bg-primary px-[28px] sm:px-[40px] py-[2px] sm:py-[10px] font-medium text-primary"
+        className="text-body mt-[14px] sm:mt-[20px] rounded-[10px] sm:rounded-md border-[2px] border-primary bg-primary px-[28px] sm:px-[40px] py-[2px] sm:py-[10px] font-medium text-primary"
       >
         Сбросить
       </Button>
