@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import LogoIcon from '@/shared/assets/icons/logo.svg?react'
 import { APP_ROUTES } from '@/shared/routes'
+import { Text } from './text/Text'
 
 type LogoWithFormProps = {
   children: ReactNode
@@ -20,12 +21,13 @@ export const LogoWithForm = ({ children }: LogoWithFormProps) => {
             aria-hidden="true"
           />
         </Link>
-        <p className="mt-[12px] mb-[12px] text-[28px] sm:mt-[10px] sm:mb-[17px] font-inter sm:text-[36px] text-primary">
+        <Text variant="h1" as="h1" className="mt-[12px] mb-[12px] sm:mt-[10px] sm:mb-[17px]">
           Т-Ивент
-        </p>
-        <p className="text-[14px] sm:text-[20px] text-muted">Совместное управление бюджетом</p>
+        </Text>
+        <Text as="p" variant="small" className="text-muted sm:text-h3-d">
+          Совместное управление бюджетом
+        </Text>
       </div>
-
       {children}
     </div>
   )
