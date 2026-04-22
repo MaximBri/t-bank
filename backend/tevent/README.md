@@ -56,6 +56,7 @@ docker-compose down -v
 
 ### Запуск приложения (миграции Liquibase применятся сами):
 ```bash
+export JWT_SECRET='test-jwt-secret-must-be-at-least-32-chars'
 ./mvnw spring-boot:run
 ```
 
