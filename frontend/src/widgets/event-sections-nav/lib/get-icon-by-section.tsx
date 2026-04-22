@@ -19,6 +19,6 @@ export const getIconBySection = (section: EventSection): ReactNode => {
         case EventSection.history:
             return <HistoryIcon className={iconClassName}/>
         default:
-            return <span></span>
+            return <></>
     }
 }

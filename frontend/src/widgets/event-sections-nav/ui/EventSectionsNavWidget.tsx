@@ -1,6 +1,7 @@
 import { EventSection } from '../model/types.ts'
 import { getIconBySection } from "@/widgets/event-sections-nav/lib/get-icon-by-section.tsx";
 import { tabs } from "@/widgets/event-sections-nav/model/contstants.ts";
+import { Text } from '@/shared/ui/text/Text.tsx'
 import clsx from "clsx";
 
 type EventSectionsNavWidgetProps = {
@@ -27,7 +28,7 @@ export const EventSectionsNavWidget = ({
               onClick={() => onSectionChange(tab.key)}
             >
               <span aria-hidden="true">{getIconBySection(tab.key)}</span>
-              <span>{tab.label}</span>
+              <Text variant="h2" as="h2" className="font-semibold">{tab.label}</Text>
             </button>
           </li>
         ))}

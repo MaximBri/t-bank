@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { APP_ROUTES } from '@/shared/routes'
 import { TextField } from '@/shared/ui/form-fields'
 
-import { getSignInFormFields } from '../lib/get-sign-in-form-fields.ts'
+import { getSignInFormFields } from '@/features/SignInForm'
 import { signInByCredentialsSchema } from '../model/schema.ts'
 import type { SignInByCredentialsFormValues, SignInByCredentialsSubmit } from '../model/types.ts'
 import { signInFormDefaultValues } from '@/features/SignInForm/ui/constants.ts'

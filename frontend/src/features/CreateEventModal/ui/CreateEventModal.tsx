@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { ExpenseCategoriesSection, useExpenseCategories } from '@/entities/expense'
+import {  useExpenseCategories } from '@/entities/expense'
 
 import CloseIcon from '@/shared/assets/icons/close.svg?react'
 import { Button } from '@/shared/ui/button/Button.tsx'
@@ -11,6 +11,7 @@ import { Modal } from '@/shared/ui/modal'
 import { getCreateEventFormFields } from '../lib/get-create-event-form-fields.tsx'
 import { createEventSchema } from '../model/schema.ts'
 import { createEventFormDefaultValues } from "../model/constants.ts";
+import { ExpenseCategoriesSection } from "./ExpenseCategoriesSection.tsx";
 
 import type { CreateEventFormValues } from '../model/types.ts'
 

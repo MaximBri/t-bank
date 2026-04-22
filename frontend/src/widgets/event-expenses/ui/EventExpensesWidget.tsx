@@ -6,6 +6,7 @@ import EditIcon from '@/shared/assets/icons/edit.svg?react'
 
 
 import {Button} from '@/shared/ui/button/Button'
+import { Text } from '@/shared/ui/text/Text'
 import {ExpenseListItem, ExpenseStatus} from "@/entities/expense/model/types.ts";
 import {
   actionButtonClassName,
@@ -17,6 +18,7 @@ import {
 
 import clsx from "clsx";
 import {formatPrice} from "@/shared/lib/number/format-price.ts";
+import {ButtonEnum} from "@/shared/ui/button/constants.ts";
 
 const expenses: ExpenseListItem[] = [
   {
@@ -63,15 +65,15 @@ export const EventExpensesWidget = () => {
     <section className="flex flex-col gap-[15px] sm:gap-[20px]">
       <div className="flex flex-col gap-[10px] sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-row items-center sm:justify-center gap-[10px]">
-          <p className="text-h1 font-medium text-primary sm:text-h1-d">Список расходов</p>
-          <span className="text-muted text-h3-d sm:text-h2-d">{expenses.length}</span>
+          <Text variant="h1" as="h1">Список расходов</Text>
+          <Text className="font-normal text-muted text-h3-d sm:text-h2-d">{expenses.length}</Text>
         </div>
         <Button
           type="button"
-          className="w-fit h-[30px] sm:h-[47px] py-[2px] gap-[10px] rounded-[10px] sm:rounded-[16px] bg-yellow px-[16px] sm:px-[30px] text-h2-d "
+          className="w-fit h-[30px] sm:h-[47px] py-[2px] gap-[10px] rounded-[10px] sm:rounded-[16px] bg-yellow px-[16px] sm:px-[30px]"
         >
           <AddIcon className="h-[24px] w-[24px]" />
-          <span>Добавить расход</span>
+          <Text variant="h2" className="font-normal">Добавить расход</Text>
         </Button>
       </div>
 
@@ -81,12 +83,12 @@ export const EventExpensesWidget = () => {
             <div className="flex gap-[10px] flex-col sm:flex-row items-start justify-between">
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-[10px] sm:gap-[20px]">
-                  <p className="text-h3-d sm:text-h2-d ">{expense.title}</p>
-                  <div className="flex gap-[10px] sm:gap-[20px] text-h3 sm:text-h3-d">
+                  <Text className="text-h3-d sm:text-h2-d ">{expense.title}</Text>
+                  <div className="flex gap-[10px] sm:gap-[20px]">
                       <div
-                        className="w-fit flex rounded-[48px] h-[30px] sm:h-[42px] px-[16px] sm:px-[30px] items-center justify-center text-primary bg-yellow"
+                        className="w-fit flex rounded-[48px] h-[30px] sm:h-[42px] px-[16px] sm:px-[30px] items-center justify-center bg-yellow"
                       >
-                        {expense.category}
+                        <Text variant="h3" className="font-normal">{expense.category}</Text>
                       </div>
                       <div
                         className={clsx(
@@ -94,15 +96,15 @@ export const EventExpensesWidget = () => {
                             statusClassMap[expense.approvalStatus]
                           )}
                       >
-                        {statusLabelMap[expense.approvalStatus]}
+                        <Text variant="h3" className="font-normal">{statusLabelMap[expense.approvalStatus]}</Text>
                       </div>
                   </div>
                 </div>
 
                 <div className="mt-[4px] flex flex-wrap gap-[2px] sm:gap-[40px] text-h3-d text-muted">
-                  <p>Оплатил: {expense.payerName}</p>
-                  <p>Разделено между: {expense.splitBetweenCount} чел.</p>
-                  <p>{expense.createdAt}</p>
+                  <Text variant="h3" className="font-normal">Оплатил: {expense.payerName}</Text>
+                  <Text variant="h3" className="font-normal">Разделено между: {expense.splitBetweenCount} чел.</Text>
+                  <Text variant="h3" className="font-normal">{expense.createdAt}</Text>
                 </div>
 
               </div>
@@ -110,45 +112,45 @@ export const EventExpensesWidget = () => {
               <div className="flex h-[90px] sm:h-auto flex-row gap-[24px] sm:items-center">
                 <div className="flex gap-[8px] mt-auto sm:mt-0">
                   <Button
-                      className={clsx(
-                          actionButtonClassName,
-                          'border-primary bg-input-primary'
-                      )
-                      }
-                  ><EditIcon className={actionButtonIconClassName} /></Button>
+                      variant={ButtonEnum.Secondary}
+                      className={actionButtonClassName}
+                  >
+                      <EditIcon className={actionButtonIconClassName} />
+                  </Button>
                   <Button
-                      className={clsx(
-                    actionButtonClassName,
-                          'border-primary bg-input-primary'
-                      )
-                  }
-                  ><TrashIcon className={actionButtonIconClassName} /></Button>
+                      variant={ButtonEnum.Secondary}
+                      className={actionButtonClassName}
+                  >
+                      <TrashIcon className={actionButtonIconClassName} />
+                  </Button>
                   <Button
-                      className={clsx(
-                          actionButtonClassName,
-                          'border-error bg-error-light',
-                      )
-                      }
-                  ><WarningIcon className={actionButtonIconClassName} /></Button>
+                      variant={ButtonEnum.Tertialy}
+                      className={actionButtonClassName}
+                  >
+                      <WarningIcon className={actionButtonIconClassName} />
+                  </Button>
                   <Button
+                      variant={ButtonEnum.Empty}
                       className={clsx(
                           actionButtonClassName,
                           'border-green bg-green-light',
                       )
                       }
-                  ><CheckIcon className={actionButtonIconClassName} /></Button>
+                  >
+                      <CheckIcon className={actionButtonIconClassName} />
+                  </Button>
                 </div>
                 <div className="flex flex-col gap-[3px]">
-                  <p className="text-right text-h3-d text-primary">{formatPrice(expense.amount)}</p>
-                  <p className="text-right text-h3-d text-muted">{formatPrice(expense.perPersonalAmount)} / чел</p>
+                  <Text className="text-right text-h3-d">{formatPrice(expense.amount)}</Text>
+                  <Text className="text-right text-h3-d text-muted">{formatPrice(expense.perPersonalAmount)} / чел</Text>
                 </div>
               </div>
             </div>
               <>
               {expense.disputeInfo ? (
-                  <div className="flex w-full max-w-[862px] flex-col sm:h-[95px] mt-[10px] rounded-[16px] border border-error bg-error-light p-[10px] sm:px-[25px] sm:py-[10px] text-h3 sm:text-h3-d text-error">
-                      <p className="font-semibold">Причина: {expense.disputeInfo.reason}</p>
-                      <p>Время: {expense.disputeInfo.timestamp}</p>
+                  <div className="flex w-full max-w-[862px] flex-col sm:h-[95px] mt-[10px] rounded-[16px] border border-error bg-error-light p-[10px] sm:px-[25px] sm:py-[10px] text-error">
+                      <Text variant="h3" className="font-semibold">Причина: {expense.disputeInfo.reason}</Text>
+                      <Text variant="h3" className="font-normal">Время: {expense.disputeInfo.timestamp}</Text>
                   </div>
               ) : null}
               </>

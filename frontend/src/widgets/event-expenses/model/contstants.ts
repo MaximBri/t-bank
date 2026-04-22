@@ -13,5 +13,5 @@ export const statusLabelMap: Record<ExpenseStatus, string> = {
 }
 
 
-export const actionButtonClassName = "h-[34px] w-[34px] border-[1.5px] sm:p-[9px] rounded-[9px] sm:h-[45px] sm:w-[45px]"
-export const actionButtonIconClassName = "h-[24px] w-[24px]"
+export const actionButtonClassName = "h-[34px] w-[34px] border-[2px] sm:p-[9px] rounded-[9px] sm:h-[45px] sm:w-[45px]"
+export const actionButtonIconClassName = "h-[16px] w-[16px] sm:h-[24px] sm:w-[24px] flex-shrink-0"
