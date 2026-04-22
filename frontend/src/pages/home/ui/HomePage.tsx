@@ -1,7 +1,9 @@
 import { useState } from 'react'
 
 import { EventStatus, type EventListItem } from '@/entities/event'
-import { CreateEventModal } from '@/features/create-event'
+
+import { CreateEventModal } from '@/features/CreateEventModal'
+
 import clsx from 'clsx'
 
 import AddEventIcon from '@/shared/assets/icons/add.svg?react'
@@ -10,6 +12,8 @@ import FilterIcon from '@/shared/assets/icons/filter.svg?react'
 import { Button } from '@/shared/ui/button/Button'
 import { EventFiltersWidget, MobileEventFiltersModal } from '@/widgets/event-filters'
 import { EventListWidget } from '@/widgets/event-list'
+import { Text } from '@/shared/ui/text/Text'
+import { ButtonEnum } from '@/shared/ui/button/constants'
 
 const mockEvents: EventListItem[] = [
   {
@@ -70,24 +74,24 @@ export const HomePage = () => {
 
   return (
     <>
-      <main className="px-[10px] py-[10px] sm:px-[30px] sm:py-[20px]">
+      <main>
         <section className="mx-auto flex w-full flex-col gap-[22px]">
           <div className="flex flex-col gap-[10px] sm:flex-row items-start sm:items-center sm:justify-between sm:gap-0">
-            <p className="text-h1 text-primary sm:text-h1-d">Мои события</p>
-            <div className="flex w-full sm:w-auto flex-row justify-between">
-              <Button
-                className="flex h-[30px] w-[200px] sm:h-[47px] sm:w-[216px] flex-row gap-[10px] rounded-[10px] sm:rounded-[16px] bg-yellow text-body text-primary"
-                onClick={() => setCreateEventModalOpen(true)}
-              >
-                <AddEventIcon width="24px" height="24px" />
-                <span>Создать событие</span>
+            <Text variant="h1" as="h1">
+              Мои события
+            </Text>
+            <div className="flex w-full sm:w-auto flex-row justify-between flex-wrap gap-[10px]">
+              <Button className="sm:max-h-[47px]" onClick={() => setCreateEventModalOpen(true)}>
+                <AddEventIcon width={24} height={24} />
+                Создать событие
               </Button>
               <Button
-                className="flex flex-row gap-[10px] justify-between text-center rounded-[10px] h-[30px] border border-primary px-[6px] sm:hidden"
+                className="sm:hidden"
                 onClick={() => setFiltersModalOpen(true)}
+                variant={ButtonEnum.Secondary}
               >
-                <FilterIcon width="16px" height="16px" />
-                <span>Фильтры</span>
+                <FilterIcon width={16} height={16} />
+                Фильтры
               </Button>
             </div>
           </div>

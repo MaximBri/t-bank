@@ -7,18 +7,10 @@ type MobileEventFiltersModalProps = {
   onClose: () => void
 }
 
-export const MobileEventFiltersModal = ({
-  isOpen,
-  onClose,
-}: MobileEventFiltersModalProps) => {
+export const MobileEventFiltersModal = ({ isOpen, onClose }: MobileEventFiltersModalProps) => {
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      className="relative rounded-[24px] sm:hidden"
-    >
-
-      <EventFiltersWidget onClose={onClose}/>
+    <Modal isOpen={isOpen} onClose={onClose} className="relative rounded-lg sm:hidden">
+      <EventFiltersWidget onClose={onClose} />
     </Modal>
   )
 }
