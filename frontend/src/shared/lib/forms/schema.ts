@@ -1,10 +1,13 @@
 import { z } from 'zod'
-import { parseNumberValue } from '@/shared/lib/number/parse-number.ts'
+import { parseNumberValue } from '@/shared/lib/number/parseNumber'
 
-export const requiredString = (message = 'Поле обязательно') =>z.string({
-    required_error: message,
-    invalid_type_error: message,
-}).min(1, message)
+export const requiredString = (message = 'Поле обязательно') =>
+  z
+    .string({
+      required_error: message,
+      invalid_type_error: message,
+    })
+    .min(1, message)
 
 export const emailSchema = (message = 'Введите корректный email') => requiredString().email(message)
 

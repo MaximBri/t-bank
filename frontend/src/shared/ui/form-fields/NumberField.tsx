@@ -1,7 +1,7 @@
 import type { FieldPath, FieldValues } from 'react-hook-form'
 
 import type { NumberFieldConfig } from '@/shared/lib/forms'
-import { parseNumberValue } from '@/shared/lib/number/parse-number.ts'
+import { parseNumberValue } from '@/shared/lib/number/parseNumber.ts'
 import { BaseField } from './BaseField.tsx'
 
 type NumberFieldProps<

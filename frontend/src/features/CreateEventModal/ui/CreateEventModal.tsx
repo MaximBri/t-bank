@@ -11,7 +11,9 @@ import { useExpenseCategories } from '../lib/use-expense-categories.ts'
 import { createEventSchema } from '../model/schema.ts'
 import type { CreateEventFormValues } from '../model/types.ts'
 import { ExpenseCategoriesSection } from './ExpenseCategoriesSection.tsx'
-import { createEventFormDefaultValues } from "../model/constants.ts";
+import { createEventFormDefaultValues } from '../model/constants.ts'
+import { Text } from '@/shared/ui/text/Text.tsx'
+import { ButtonEnum } from '@/shared/ui/button/constants.ts'
 
 type CreateEventModalProps = {
   isOpen: boolean
@@ -67,16 +69,23 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
   })
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} className="w-[320px] rounded-[24px] bg-secondary sm:w-[964px]">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      className="w-[320px] rounded-lg bg-secondary sm:w-[964px]"
+    >
       <div className="p-[15px] sm:px-[30px] sm:py-[24px]">
         <div className="mb-[10px] flex items-center justify-between gap-4">
-          <p className="text-h3-d font-medium text-primary sm:text-h2-d">Создание события</p>
+          <Text as="h2" variant="h2">
+            Создание события
+          </Text>
           <Button
             aria-label="close-create-event-modal"
-            className="leading-none text-primary transition-opacity hover:opacity-70"
+            className="transition-opacity hover:opacity-70"
             onClick={handleClose}
+            variant={ButtonEnum.Empty}
           >
-            <CloseIcon width="24px" height="24px" />
+            <CloseIcon width={20} height={20} />
           </Button>
         </div>
 
@@ -84,7 +93,9 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
           <form className="flex flex-col gap-[10px] sm:gap-[20px]" onSubmit={submitForm}>
             {renderFormField(titleField)}
 
-            <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[23px]">{dateFields.map(renderFormField)}</div>
+            <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[23px]">
+              {dateFields.map(renderFormField)}
+            </div>
 
             <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[20px]">
               {renderFormField(descriptionField)}
@@ -100,11 +111,8 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
               onRemoveCategory={removeCategory}
             />
 
-            <div className="sm:pt-[12px]">
-              <Button
-                type="submit"
-                className="rounded-[16px] border-[2px] border-yellow bg-yellow px-[45px] py-[8px] text-h3 font-medium text-primary"
-              >
+            <div className="sm:pt-[20px]">
+              <Button type="submit" className="font-medium w-[200px]">
                 Создать
               </Button>
             </div>

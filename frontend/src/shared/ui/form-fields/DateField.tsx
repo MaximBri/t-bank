@@ -41,6 +41,7 @@ export const DateField = <
       defaultValue={(defaultValue ?? '') as TFieldValues[TName]}
       rules={rules}
       isValuePresent={(value) => typeof value === 'string' && value.length > 0}
+      withoutClearButton
       renderInput={({ field, errorMessage, id, inputClassName }) => {
         const inputValue = typeof field.value === 'string' ? field.value : ''
 

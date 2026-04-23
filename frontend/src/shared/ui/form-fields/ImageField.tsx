@@ -3,13 +3,15 @@ import { useEffect, useId, useRef, useState, type ChangeEvent } from 'react'
 import {
   Controller,
   useFormContext,
+  useWatch,
   type FieldPath,
   type FieldValues,
 } from 'react-hook-form'
 import ImageFilledIcon from '@/shared/assets/icons/image-filled.svg?react'
 
 import type { ImageFieldConfig } from '@/shared/lib/forms'
-import {Button} from "@/shared/ui/button/Button.tsx";
+import { Button } from '../button/Button'
+import { ButtonEnum } from '../button/constants'
 
 type ImageFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -33,17 +35,45 @@ export const ImageField = <
 }: ImageFieldProps<TFieldValues, TName>) => {
   const generatedId = useId()
   const id = `field-${generatedId}`
-  const inputRef =  useRef<HTMLInputElement | null>(null)
-  const [ previewUrl, setPreviewUrl ] = useState<string | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const { control } = useFormContext<TFieldValues>()
+  const currentValue = useWatch({
+    control,
+    name,
+  }) as unknown
 
   useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl)
+    if (!(currentValue instanceof File)) {
+      setPreviewUrl((currentPreviewUrl) => {
+        if (currentPreviewUrl) {
+          URL.revokeObjectURL(currentPreviewUrl)
+        }
+
+        return null
+      })
+
+      if (inputRef.current) {
+        inputRef.current.value = ''
       }
+
+      return
     }
-  }, [previewUrl])
+
+    const nextPreviewUrl = URL.createObjectURL(currentValue)
+
+    setPreviewUrl((currentPreviewUrl) => {
+      if (currentPreviewUrl) {
+        URL.revokeObjectURL(currentPreviewUrl)
+      }
+
+      return nextPreviewUrl
+    })
+
+    return () => {
+      URL.revokeObjectURL(nextPreviewUrl)
+    }
+  }, [currentValue])
 
   return (
     <Controller
@@ -61,15 +91,10 @@ export const ImageField = <
           const nextFile = event.target.files?.[0]
 
           if (!nextFile) {
+            field.onChange(undefined)
             return
           }
 
-          if (previewUrl) {
-            URL.revokeObjectURL(previewUrl)
-            setPreviewUrl(null)
-          }
-
-          setPreviewUrl(URL.createObjectURL(nextFile))
           field.onChange(nextFile)
         }
 
@@ -80,7 +105,7 @@ export const ImageField = <
               {required ? <span className="text-error"> *</span> : ''}
             </label>
 
-            <div className="relative">
+            <div className="relative h-full">
               <input
                 ref={(element) => {
                   inputRef.current = element
@@ -98,13 +123,12 @@ export const ImageField = <
                 aria-describedby={ariaDescribedBy}
               />
 
-              <Button
+              <button
                 type="button"
                 disabled={disabled}
                 onClick={() => inputRef.current?.click()}
                 className={clsx(
-                  'flex h-[150px] w-full items-center justify-center overflow-hidden sm:w-[150px]',
-                  fieldClassName,
+                  'bg-input-primary border-secondary flex border-2 rounded-md h-[150px] w-full items-center justify-center overflow-hidden sm:w-[150px]',
                 )}
               >
                 {previewUrl ? (
@@ -113,9 +137,10 @@ export const ImageField = <
                     alt={currentFile?.name ?? 'Предпросмотр изображения'}
                     className={clsx('h-full w-full object-cover', previewClassName)}
                   />
-                ) : <ImageFilledIcon className="h-[55px] w-[55px]" />}
-              </Button>
-
+                ) : (
+                  <ImageFilledIcon className="h-[55px] w-[55px] text-placeholder" />
+                )}
+              </button>
             </div>
 
             {errorMessage ? (

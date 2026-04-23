@@ -1,4 +1,4 @@
-import { SignUpForm, type SignUpByCredentialsSubmit } from '@/features/sign-up-by-credentials'
+import { SignUpForm, type SignUpByCredentialsSubmit } from '@/features/SignUpForm'
 import { LogoWithForm } from '@/shared/ui/LogoWithForm.tsx'
 
 const submitSignUpForm: SignUpByCredentialsSubmit = async (payload) => {
