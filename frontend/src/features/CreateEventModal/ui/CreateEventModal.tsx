@@ -111,8 +111,8 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
               onRemoveCategory={removeCategory}
             />
 
-            <div className="sm:pt-[12px]">
-              <Button type="submit" className="font-medium">
+            <div className="sm:pt-[20px]">
+              <Button type="submit" className="font-medium w-[200px]">
                 Создать
               </Button>
             </div>
