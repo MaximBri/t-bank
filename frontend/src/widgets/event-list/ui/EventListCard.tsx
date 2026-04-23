@@ -17,7 +17,7 @@ export const EventListCard = ({ item }: EventListCardProps) => (
   <div
     className={clsx(
       'h-[143px] sm:h-[176px] flex flex-col rounded-md border-[2px] border-primary bg-secondary p-[10px] sm:p-[20px]',
-      'hover:border-yellow',
+      'hover:border-yellow transition-colors cursor-pointer ease-in-out',
     )}
   >
     <div className="flex items-start justify-between gap-[8px]">

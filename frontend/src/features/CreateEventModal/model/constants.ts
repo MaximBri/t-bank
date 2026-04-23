@@ -12,4 +12,4 @@ export const createEventFormDefaultValues: CreateEventFormValues = {
 
 export const createEventFieldLabelClassName = 'text-body sm:text-h3-d font-medium text-primary'
 export const createEventFieldInputClassName =
-  'border-secondary bg-input-primary px-[16px] py-[10px] text-body text-medium border-[2px] rounded-md'
+  'bg-input-primary px-[16px] py-[10px] text-body text-medium border-[2px] rounded-md'

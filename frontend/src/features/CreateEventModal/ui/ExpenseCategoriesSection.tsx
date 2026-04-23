@@ -65,7 +65,7 @@ export const ExpenseCategoriesSection = ({
           className="w-[125px] mt-[10px] justify-self-end gap-[10px] px-[15px] py-[4px] sm:mt-0 sm:w-auto sm:px-[30px] sm:py-[10px]"
           onClick={onAddCategory}
         >
-          <AddIcon className="h-[16px] w-[16px] text-h3" />
+          <AddIcon width={16} height={16} className='flex-shrink-0' />
           Добавить
         </Button>
         {errorMessage ? (
