@@ -102,7 +102,9 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
 
             <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[20px]">
               {renderFormField(descriptionField)}
-              {renderFormField(avatarField)}
+              <div className="sm:max-w-[150px]">
+                {renderFormField(avatarField)}
+              </div>
             </div>
 
             <ExpenseCategoriesSection

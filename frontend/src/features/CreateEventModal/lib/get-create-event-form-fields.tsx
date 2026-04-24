@@ -67,7 +67,7 @@ export const getCreateEventFormFields = (): CreateEventFormFields => {
     type: 'image',
     label: 'Аватарка',
     labelClassName: createEventFieldLabelClassName,
-    fieldClassName: `bg-secondary h-[155px] w-full px-[0px] py-[0px] sm:w-[150px]`,
+    fieldClassName: `bg-secondary h-[155px] w-full px-[0px] py-[0px] w-fit sm:w-[150px]`,
     accept: 'image/*',
     variant: FormFieldVariant.Outlined,
   })

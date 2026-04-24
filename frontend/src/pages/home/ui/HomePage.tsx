@@ -1,9 +1,6 @@
 import { useState } from 'react'
 
 import { EventStatus, type EventListItem } from '@/entities/event'
-
-import { CreateEventModal } from '@/features/CreateEventModal'
-
 import clsx from 'clsx'
 
 import AddEventIcon from '@/shared/assets/icons/add.svg?react'
@@ -14,6 +11,8 @@ import { EventFiltersWidget, MobileEventFiltersModal } from '@/widgets/event-fil
 import { EventListWidget } from '@/widgets/event-list'
 import { Text } from '@/shared/ui/text/Text'
 import { ButtonEnum } from '@/shared/ui/button/constants'
+import { CreateEventModal } from "@/features/CreateEventModal";
+
 
 const mockEvents: EventListItem[] = [
   {

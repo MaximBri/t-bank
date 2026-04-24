@@ -1,11 +1,14 @@
 import { z } from 'zod'
 
-import { expenseCategoriesSchema } from '@/entities/expense'
+import { expenseCategoriesAddSchema } from '@/entities/expense'
 import { createFormSchema, requiredString } from '@/shared/lib/forms'
 
 export const createEventSchema = createFormSchema({
-  avatar: z.instanceof(File).optional(),
-  categories: expenseCategoriesSchema,
+  avatar: z
+    .instanceof(File)
+    .refine((file) => file.type.startsWith('image/'), 'Допустимы только изображения')
+    .optional(),
+  categories: expenseCategoriesAddSchema,
   description: z.string().optional(),
   startDate: requiredString(),
   endDate: z.string().optional(),

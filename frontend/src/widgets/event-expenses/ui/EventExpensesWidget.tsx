@@ -19,6 +19,8 @@ import {
 import clsx from "clsx";
 import {formatPrice} from "@/shared/lib/number/format-price.ts";
 import {ButtonEnum} from "@/shared/ui/button/constants.ts";
+import {CreateExpenseModal} from "@/features/CreateExpenseModal";
+import {useState} from "react";
 
 const expenses: ExpenseListItem[] = [
   {
@@ -61,6 +63,8 @@ const expenses: ExpenseListItem[] = [
 ]
 
 export const EventExpensesWidget = () => {
+  const [isOpen, setCreateExpenseModalOpen] = useState<boolean>(false)
+
   return (
     <section className="flex flex-col gap-[15px] sm:gap-[20px]">
       <div className="flex flex-col gap-[10px] sm:flex-row sm:items-center sm:justify-between">
@@ -71,6 +75,7 @@ export const EventExpensesWidget = () => {
         <Button
           type="button"
           className="w-fit h-[30px] sm:h-[47px] py-[2px] gap-[10px] rounded-[10px] sm:rounded-[16px] bg-yellow px-[16px] sm:px-[30px]"
+          onClick={() => setCreateExpenseModalOpen(true)}
         >
           <AddIcon className="h-[24px] w-[24px]" />
           <Text variant="h2" className="font-normal">Добавить расход</Text>
@@ -157,6 +162,11 @@ export const EventExpensesWidget = () => {
           </div>
         ))}
       </div>
+
+      <CreateExpenseModal
+          isOpen={isOpen}
+          onClose={() => setCreateExpenseModalOpen(false)}
+      />
     </section>
   )
 }

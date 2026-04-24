@@ -5,6 +5,7 @@ import { ImageField } from '@/shared/ui/form-fields'
 import { NumberField } from '@/shared/ui/form-fields'
 import { TextAreaField } from '@/shared/ui/form-fields'
 import { TextField } from '@/shared/ui/form-fields'
+import {SelectField} from "@/shared/ui/form-fields/SelectField.tsx";
 
 export const renderFormField = <TFieldValues extends Record<string, unknown>>(
   field: FormFieldConfig<TFieldValues>,
@@ -22,6 +23,8 @@ export const renderFormField = <TFieldValues extends Record<string, unknown>>(
       return <DateField key={field.name} {...field} />
     case 'image':
       return <ImageField key={field.name} {...field} />
+    case 'select':
+      return <SelectField key={field.name} {...field} />
     default:
       return null
   }

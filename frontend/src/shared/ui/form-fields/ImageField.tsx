@@ -10,8 +10,6 @@ import {
 import ImageFilledIcon from '@/shared/assets/icons/image-filled.svg?react'
 
 import type { ImageFieldConfig } from '@/shared/lib/forms'
-import { Button } from '../button/Button'
-import { ButtonEnum } from '../button/constants'
 
 type ImageFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -91,7 +89,6 @@ export const ImageField = <
           const nextFile = event.target.files?.[0]
 
           if (!nextFile) {
-            field.onChange(undefined)
             return
           }
 
@@ -99,7 +96,7 @@ export const ImageField = <
         }
 
         return (
-          <div className="flex w-full flex-col gap-1.5 sm:w-auto">
+          <div className="relative flex w-full flex-col gap-1.5">
             <label className={clsx('font-inter font-medium', labelClassName)} htmlFor={id}>
               {label}
               {required ? <span className="text-error"> *</span> : ''}
@@ -128,7 +125,9 @@ export const ImageField = <
                 disabled={disabled}
                 onClick={() => inputRef.current?.click()}
                 className={clsx(
-                  'bg-input-primary border-secondary flex border-2 rounded-md h-[150px] w-full items-center justify-center overflow-hidden sm:w-[150px]',
+                  fieldClassName,
+                  'bg-input-primary flex border-2 rounded-md w-full items-center justify-center overflow-hidden',
+                  errorMessage ? 'border-error' : 'border-secondary',
                 )}
               >
                 {previewUrl ? (

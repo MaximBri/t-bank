@@ -73,5 +73,6 @@ export const EventHeaderWidget = () => {
       </div>
 
     </section>
+
   )
 }

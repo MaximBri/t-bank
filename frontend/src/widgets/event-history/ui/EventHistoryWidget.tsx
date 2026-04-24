@@ -90,6 +90,7 @@ export const EventHistoryWidget = () => {
                         <div className="flex flex-wrap gap-[10px] sm:gap-[14px]">
                             {buttons.map((button, index) => (
                                 <button
+                                    key={index}
                                     onClick={() => setActiveIndex(index)}
                                     className={clsx(
                                         "border border-primary rounded-[10px] sm:rounded-md px-[10px] sm:px-[16px]",
