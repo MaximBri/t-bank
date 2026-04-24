@@ -13,9 +13,12 @@ export const createEventSchema = createFormSchema({
   startDate: requiredString(),
   endDate: z.string().optional(),
   title: requiredString(),
-}).refine((values) => {
-  return !values.endDate || values.endDate >= values.startDate
-}, {
-  message: 'Дата окончания не может быть раньше даты начала',
-  path: ['endDate'],
-})
+}).refine(
+  (values) => {
+    return !values.endDate || values.endDate >= values.startDate
+  },
+  {
+    message: 'Дата окончания не может быть раньше даты начала',
+    path: ['endDate'],
+  },
+)

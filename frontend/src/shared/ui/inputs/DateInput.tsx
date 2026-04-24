@@ -6,21 +6,13 @@ type DateInputProps = Omit<BaseInputProps, 'type'> & {
   calendarIconSize?: number | string
 }
 
-export const DateInput = ({
-  className,
-  calendarIconSize = 18,
-  ...props
-}: DateInputProps) => {
+export const DateInput = ({ className, calendarIconSize = 18, ...props }: DateInputProps) => {
   return (
     <BaseInput
       {...props}
       type="date"
       icon={
-        <CalendarIcon
-          width={calendarIconSize}
-          height={calendarIconSize}
-          className="text-primary"
-        />
+        <CalendarIcon width={calendarIconSize} height={calendarIconSize} className="text-primary" />
       }
       className={clsx(
         '[&::-webkit-calendar-picker-indicator]:cursor-pointer',

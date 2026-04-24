@@ -4,7 +4,7 @@ import ImageIcon from '@/shared/assets/icons/image-filled.svg?react'
 import EditIcon from '@/shared/assets/icons/edit.svg?react'
 import { Button } from '@/shared/ui/button/Button'
 import { Text } from '@/shared/ui/text/Text'
-import clsx from "clsx";
+import clsx from 'clsx'
 
 const participants = ['Г.М.', 'М.С.', 'М.В.', 'М.В.', 'Л.И.']
 
@@ -25,30 +25,34 @@ export const EventHeaderWidget = () => {
           </div>
 
           <div className="flex flex-1 flex-col gap-[10px]">
-            <Text variant="h2" as="h2" className="truncate font-medium text-primary">{eventData.title}</Text>
+            <Text variant="h2" as="h2" className="truncate font-medium text-primary">
+              {eventData.title}
+            </Text>
             <div className="flex items-center gap-[8px] text-primary">
               <CalendarIcon width={32} height={32} />
-              <Text variant="h2" className="font-normal">{formatDateRange(eventData.startDate, eventData.endDate)}</Text>
+              <Text variant="h2" className="font-normal">
+                {formatDateRange(eventData.startDate, eventData.endDate)}
+              </Text>
             </div>
             <Text
               className={clsx(
-                  eventStatusMap[eventData.status].background,
-                  'w-fit font-normal text-h3-d sm:text-h2-d rounded-[48px] px-[10px] sm:px-[28px] py-[5px]'
+                eventStatusMap[eventData.status].background,
+                'w-fit font-normal text-h3-d sm:text-h2-d rounded-[48px] px-[10px] sm:px-[28px] py-[5px]',
               )}
             >
               {eventStatusMap[eventData.status].label}
             </Text>
             <div className="flex w-fit flex-col self-end sm:flex-row mt-auto gap-[10px]">
               <Button
-                  type="button"
-                  className="flex gap-[10px] h-[30px] sm:h-[40px] rounded-[10px] sm:rounded-[16px] bg-yellow px-[12px] sm:px-[30px]"
+                type="button"
+                className="flex gap-[10px] h-[30px] sm:h-[40px] rounded-[10px] sm:rounded-[16px] bg-yellow px-[12px] sm:px-[30px]"
               >
-                <EditIcon className="h-[21px] w-[21px] sm:h-[28px] sm:w-[28px]"/>
+                <EditIcon className="h-[21px] w-[21px] sm:h-[28px] sm:w-[28px]" />
                 <Text className="font-normal text-body sm:text-h2-d">Редактировать</Text>
               </Button>
               <Button
-                  type="button"
-                  className="h-[30px] sm:h-[40px] rounded-[10px] sm:rounded-[16px] bg-yellow px-[12px] sm:px-[30px]"
+                type="button"
+                className="h-[30px] sm:h-[40px] rounded-[10px] sm:rounded-[16px] bg-yellow px-[12px] sm:px-[30px]"
               >
                 <Text className="font-normal text-body sm:text-h2-d">Завершить событие</Text>
               </Button>
@@ -62,8 +66,10 @@ export const EventHeaderWidget = () => {
             {participants.map((name, index) => (
               <div
                 key={`${name}-${index}`}
-                className={"relative flex h-[40px] w-[40px] sm:h-[60px] sm:w-[60px] items-center justify-center rounded-full border-[2px] border-secondary bg-yellow text-small sm:text-h3-d font-medium text-primary"}
-                style={{zIndex: 5 - index}}
+                className={
+                  'relative flex h-[40px] w-[40px] sm:h-[60px] sm:w-[60px] items-center justify-center rounded-full border-[2px] border-secondary bg-yellow text-small sm:text-h3-d font-medium text-primary'
+                }
+                style={{ zIndex: 5 - index }}
               >
                 <Text className="font-normal text-small sm:text-h3-d">{name}</Text>
               </div>
@@ -71,8 +77,6 @@ export const EventHeaderWidget = () => {
           </div>
         </div>
       </div>
-
     </section>
-
   )
 }

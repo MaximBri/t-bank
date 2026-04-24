@@ -1,1 +1,1 @@
-export { CreateExpenseModal } from "./ui/CreateExpenseModal.tsx"
+export { CreateExpenseModal } from './ui/CreateExpenseModal.tsx'

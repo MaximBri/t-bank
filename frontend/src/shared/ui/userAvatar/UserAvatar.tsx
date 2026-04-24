@@ -22,7 +22,7 @@ export const UserAvatar: FC<UserAvatarProps> = ({
   return (
     <div
       className={clsx(
-        "flex items-center justify-center rounded-full bg-yellow border border-secondary",
+        'flex items-center justify-center rounded-full bg-yellow border border-secondary',
         avatarSizeClasses[variant],
       )}
       aria-label="Профиль пользователя"

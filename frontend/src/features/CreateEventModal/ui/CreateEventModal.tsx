@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import {  useExpenseCategories } from '@/entities/expense'
+import { useExpenseCategories } from '@/entities/expense'
 
 import CloseIcon from '@/shared/assets/icons/close.svg?react'
 import { Button } from '@/shared/ui/button/Button.tsx'
@@ -10,8 +10,8 @@ import { Modal } from '@/shared/ui/modal'
 
 import { getCreateEventFormFields } from '../lib/get-create-event-form-fields.tsx'
 import { createEventSchema } from '../model/schema.ts'
-import { createEventFormDefaultValues } from "../model/constants.ts";
-import { ExpenseCategoriesSection } from "./ExpenseCategoriesSection.tsx";
+import { createEventFormDefaultValues } from '../model/constants.ts'
+import { ExpenseCategoriesSection } from './ExpenseCategoriesSection.tsx'
 
 import type { CreateEventFormValues } from '../model/types.ts'
 
@@ -102,9 +102,7 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
 
             <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[20px]">
               {renderFormField(descriptionField)}
-              <div className="sm:max-w-[150px]">
-                {renderFormField(avatarField)}
-              </div>
+              <div className="sm:max-w-[150px]">{renderFormField(avatarField)}</div>
             </div>
 
             <ExpenseCategoriesSection

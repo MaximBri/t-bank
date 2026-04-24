@@ -9,9 +9,9 @@ import type { CreateEventFormValues } from '../model/types.ts'
 
 import {
   createEventFieldInputClassName,
-  createEventFieldLabelClassName
-} from "../model/constants.ts";
-import { FormFieldVariant } from '@/shared/lib/forms/types.ts';
+  createEventFieldLabelClassName,
+} from '../model/constants.ts'
+import { FormFieldVariant } from '@/shared/lib/forms/types.ts'
 
 type CreateEventFormFields = {
   titleField: FormFieldConfig<CreateEventFormValues>

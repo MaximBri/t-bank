@@ -11,8 +11,7 @@ import { EventFiltersWidget, MobileEventFiltersModal } from '@/widgets/event-fil
 import { EventListWidget } from '@/widgets/event-list'
 import { Text } from '@/shared/ui/text/Text'
 import { ButtonEnum } from '@/shared/ui/button/constants'
-import { CreateEventModal } from "@/features/CreateEventModal";
-
+import { CreateEventModal } from '@/features/CreateEventModal'
 
 const mockEvents: EventListItem[] = [
   {

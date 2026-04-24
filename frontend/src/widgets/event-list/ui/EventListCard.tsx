@@ -21,13 +21,12 @@ export const EventListCard = ({ item }: EventListCardProps) => (
     )}
   >
     <div className="flex items-start justify-between gap-[8px]">
-      <Text as="h2" className="truncate text-h3-d sm:text-h2-d">{item.title}</Text>
+      <Text as="h2" className="truncate text-h3-d sm:text-h2-d">
+        {item.title}
+      </Text>
 
       <Text
-        className={clsx(
-          'rounded-lg px-[13px] text-body',
-          eventStatusMap[item.status].background,
-        )}
+        className={clsx('rounded-lg px-[13px] text-body', eventStatusMap[item.status].background)}
       >
         {eventStatusMap[item.status].label}
       </Text>

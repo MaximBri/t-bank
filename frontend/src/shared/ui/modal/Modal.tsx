@@ -46,14 +46,7 @@ export const Modal = ({ children, className, isOpen, onClose }: ModalProps) => {
         }
       }}
     >
-      <div
-        className={clsx(
-          'my-auto',
-          className,
-        )}
-      >
-        {children}
-      </div>
+      <div className={clsx('my-auto', className)}>{children}</div>
     </div>,
     document.body,
   )

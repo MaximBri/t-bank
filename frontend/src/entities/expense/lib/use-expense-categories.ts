@@ -36,7 +36,7 @@ export const useExpenseCategories = <TFormValues extends ExpenseCategoriesFormVa
     const currentCategories = getValues(categoriesFieldName) as ExpenseCategoryList
 
     if (trimmedValue === undefined || trimmedValue === '') {
-      return;
+      return
     }
 
     if (currentCategories.includes(trimmedValue)) {
@@ -46,11 +46,15 @@ export const useExpenseCategories = <TFormValues extends ExpenseCategoriesFormVa
       return
     }
 
-    setValue(categoriesFieldName, [...currentCategories, trimmedValue] as TFormValues[Path<TFormValues>], {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: true,
-    })
+    setValue(
+      categoriesFieldName,
+      [...currentCategories, trimmedValue] as TFormValues[Path<TFormValues>],
+      {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      },
+    )
     setCategoryInput('')
   }
 
@@ -59,7 +63,9 @@ export const useExpenseCategories = <TFormValues extends ExpenseCategoriesFormVa
 
     setValue(
       categoriesFieldName,
-      currentCategories.filter((category) => category !== categoryToRemove) as TFormValues[Path<TFormValues>],
+      currentCategories.filter(
+        (category) => category !== categoryToRemove,
+      ) as TFormValues[Path<TFormValues>],
       {
         shouldDirty: true,
         shouldTouch: true,
