@@ -3,6 +3,7 @@ import { EventExpensesWidget } from '@/widgets/event-expenses'
 import { EventSectionPlaceholderWidget } from '@/widgets/event-section-placeholder'
 import { EventSettlementsWidget } from '@/widgets/event-settlements/ui/EventSettlementsWidget.tsx'
 import { EventHistoryWidget } from '@/widgets/event-history'
+import { EventParticipantsWidget } from '@/widgets/event-participants/ui/EventParticipantsWidget.tsx'
 
 export const renderActiveWidget = (activeSection: EventSection = EventSection.expenses) => {
   switch (activeSection) {
@@ -12,6 +13,8 @@ export const renderActiveWidget = (activeSection: EventSection = EventSection.ex
       return <EventSettlementsWidget />
     case EventSection.history:
       return <EventHistoryWidget />
+    case EventSection.participants:
+      return <EventParticipantsWidget />
     default:
       return <EventSectionPlaceholderWidget section={activeSection}></EventSectionPlaceholderWidget>
   }
