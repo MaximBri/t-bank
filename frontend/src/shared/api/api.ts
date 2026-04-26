@@ -24,8 +24,8 @@ api.interceptors.response.use(
     originalRequest._retry = true
 
     try {
-      refreshRequest ??= api
-        .post('/auth/refresh', undefined, { _skipAuthRefresh: true })
+      refreshRequest ??= axios
+        .post('/auth/refresh', undefined, { withCredentials: true })
         .then(() => undefined)
         .finally(() => {
           refreshRequest = null
