@@ -34,4 +34,4 @@ export {
   createTextAreaField,
   createTextField,
   withRequired,
-} from './create-field-config'
+} from './createFieldConfig'

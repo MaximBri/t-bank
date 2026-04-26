@@ -37,7 +37,8 @@ export default {
         green: '#34ff97',
         skeleton: '#e6e6e6',
         'input-primary': '#f5f5f5',
-        modal: '#d9d9d9'
+        modal: '#d9d9d9',
+
       },
       textColor: {
         primary: '#000000',
@@ -50,10 +51,17 @@ export default {
       borderColor: {
         yellow: '#ffe566',
         primary: '#c1c1c1',
-        secondary: '#e6e6e6'
+        secondary: '#e6e6e6',
+        error: '#ff0000',
       },
       spacing: {
         medium: '30px',
+        input: '14px 16px',
+      },
+      borderRadius: {
+        smd: '12px',
+        md: '16px',
+        lg: '24px',
       },
     },
   },

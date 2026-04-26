@@ -22,18 +22,22 @@ export const BaseInput = ({
         {...props}
         type={type}
         className={clsx(
-          'w-full rounded-[16px] border text-primary placeholder:text-placeholder',
+          'w-full rounded-md border text-primary placeholder:text-placeholder',
           className,
         )}
       />
 
-      {icon ? (<span className={
-          clsx(
-              'pointer-events-none absolute top-1/2 flex -translate-y-1/2 items-center',
-              iconPosition === 'left' ? 'left-4' : 'right-4',
-              iconClassName,
-          )
-      }>{icon}</span>) : null}
+      {icon ? (
+        <span
+          className={clsx(
+            'pointer-events-none absolute top-1/2 flex -translate-y-1/2 items-center',
+            iconPosition === 'left' ? 'left-4' : 'right-4',
+            iconClassName,
+          )}
+        >
+          {icon}
+        </span>
+      ) : null}
     </span>
   )
 }
