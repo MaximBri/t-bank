@@ -18,6 +18,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST:-redis}
       SPRING_DATA_REDIS_PORT: ${SPRING_DATA_REDIS_PORT:-6379}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_COOKIE_SECURE: ${JWT_COOKIE_SECURE:-true}
     depends_on:
       postgres:
         condition: service_started
