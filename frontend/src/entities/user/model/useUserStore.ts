@@ -68,7 +68,10 @@ export const useUserStore = create<UserStore>()((set) => ({
       })
     } catch (error) {
       set({ isLoading: false })
-      throw new Error(userApi.getErrorMessage(error))
+      const info = userApi.getErrorInfo(error)
+      const wrapped = new Error(info.message) as Error & { status?: number }
+      wrapped.status = info.status
+      throw wrapped
     }
   },
   register: async (payload) => {
@@ -87,7 +90,10 @@ export const useUserStore = create<UserStore>()((set) => ({
       })
     } catch (error) {
       set({ isLoading: false })
-      throw new Error(userApi.getErrorMessage(error))
+      const info = userApi.getErrorInfo(error)
+      const wrapped = new Error(info.message) as Error & { status?: number }
+      wrapped.status = info.status
+      throw wrapped
     }
   },
   logout: async () => {

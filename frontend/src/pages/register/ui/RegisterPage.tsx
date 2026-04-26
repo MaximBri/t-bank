@@ -16,7 +16,7 @@ export const RegisterPage = () => {
       toast.success('Аккаунт создан')
       navigate(APP_ROUTES.HOME)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось зарегистрироваться')
+      toast.error('Не удалось зарегистрироваться')
       throw error
     }
   }

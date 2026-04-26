@@ -20,12 +20,16 @@ export const Button = ({
   variant = ButtonEnum.Primary,
   ...props
 }: ButtonProps) => {
+  const isDisabled = disabled || isLoading
+  const isPrimary = variant === ButtonEnum.Primary
+
   return (
     <button
-      disabled={disabled || isLoading}
+      disabled={isDisabled}
       className={clsx(
         'items-center justify-center disabled:cursor-not-allowed rounded-[10px] sm:rounded-md px-3 py-[6px] sm:px-[22px] sm:py-[14px] text-body flex flex-row gap-[10px] max-h-[30px] sm:max-h-[47px]',
-        variant === ButtonEnum.Primary && 'border-[2px] border-yellow bg-yellow text-primary',
+        isPrimary && 'border-[2px] border-yellow bg-yellow text-primary',
+        isDisabled && isPrimary && 'bg-yellow-disabled',
         variant === ButtonEnum.Secondary && 'border-[2px] border-primary bg-primary text-primary',
         variant === ButtonEnum.Tertialy && 'border-[2px] border-error bg-error text-secondary',
         variant === ButtonEnum.Empty && '',

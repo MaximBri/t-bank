@@ -16,7 +16,8 @@ export const LoginPage = () => {
       toast.success('Вход выполнен')
       navigate(APP_ROUTES.HOME)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось войти')
+      const status = (error as { status?: number })?.status
+      toast.error(status === 401 ? 'Неверные логин или пароль' : 'Не удалось войти')
       throw error
     }
   }

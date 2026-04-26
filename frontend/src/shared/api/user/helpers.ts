@@ -1,10 +1,15 @@
 import { isAxiosError } from "axios"
 import { ApiErrorDto } from "./types"
 
-export const getErrorMessage = (error: unknown) => {
+export const getErrorInfo = (error: unknown): { message: string; status?: number } => {
   if (isAxiosError<ApiErrorDto>(error)) {
-    return error.response?.data?.message ?? error.message
+    return {
+      message: error.response?.data?.message ?? error.message,
+      status: error.response?.status,
+    }
   }
 
-  return error instanceof Error ? error.message : 'Не удалось выполнить запрос'
+  return {
+    message: error instanceof Error ? error.message : 'Не удалось выполнить запрос',
+  }
 }

@@ -1,6 +1,6 @@
 import { api } from '@/shared/api/api'
 import type { AuthCredentials, CurrentUserDto, RegisterResponseDto } from './types'
-import { getErrorMessage } from './helpers'
+import { getErrorInfo } from './helpers'
 
 export const userApi = {
   async login(payload: AuthCredentials) {
@@ -27,5 +27,5 @@ export const userApi = {
       _skipAuthRefresh: true,
     })
   },
-  getErrorMessage,
+  getErrorInfo,
 }

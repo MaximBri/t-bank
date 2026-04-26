@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { APP_ROUTES } from '@/shared/routes'
@@ -27,8 +26,6 @@ export const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
     defaultValues: signUpFormDefaultValues,
   })
 
-  const [submitError, setSubmitError] = useState<string | null>(null)
-
   const {
     formState: { isSubmitting },
     handleSubmit,
@@ -36,14 +33,8 @@ export const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
   } = methods
 
   const submitForm = handleSubmit(async ({ login, password }) => {
-    setSubmitError(null)
-
-    try {
-      await onSubmit({ login, password })
-      reset({ ...signUpFormDefaultValues })
-    } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'Не удалось отправить форму')
-    }
+    await onSubmit({ login, password })
+    reset({ ...signUpFormDefaultValues })
   })
 
   return (
@@ -65,18 +56,16 @@ export const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
           {signUpFields.map((field) => (
             <TextField key={field.name} {...field} />
           ))}
-          {submitError ? <p className="text-sm text-error">{submitError}</p> : null}
-
           <div className="flex flex-col items-center justify-center gap-[14px] sm:gap-[21px]">
             <Button
               type="submit"
               disabled={isSubmitting}
               isLoading={isSubmitting}
-              className="w-full h-[47px] rounded-md font-medium"
+              className="w-full min-h-[47px] rounded-md font-medium"
             >
               Зарегистрироваться
             </Button>
-            <Text>
+            <Text className="text-small sm:text-body text-center">
               Есть аккаунт?{' '}
               <Link to={APP_ROUTES.LOGIN} replace className="font-semibold underline">
                 Войти
