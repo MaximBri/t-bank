@@ -47,6 +47,15 @@ docker-compose down -v
 
 ## 4. Команды сборки и запуска (Maven)
 
+### JWT_SECRET (обязателен для запуска приложения)
+
+Перед запуском приложения необходимо задать переменную окружения `JWT_SECRET` (минимум 32 символа).
+
+Пример:
+```bash
+export JWT_SECRET='<jwt-secret-need-minimum-32-chars>'
+```
+
 Используйте `./mvnw` (Linux/macOS) или `mvnw.cmd` (Windows):
 
 ### Полная очистка и сборка (создание JAR):
@@ -56,7 +65,6 @@ docker-compose down -v
 
 ### Запуск приложения (миграции Liquibase применятся сами):
 ```bash
-export JWT_SECRET='test-jwt-secret-must-be-at-least-32-chars'
 ./mvnw spring-boot:run
 ```
 

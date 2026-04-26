@@ -1,10 +1,4 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:tevent;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
