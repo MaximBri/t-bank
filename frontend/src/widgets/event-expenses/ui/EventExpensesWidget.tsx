@@ -18,6 +18,7 @@ import clsx from 'clsx'
 import { formatPrice } from '@/shared/lib/number/format-price.ts'
 import { ButtonEnum } from '@/shared/ui/button/constants.ts'
 import { CreateExpenseModal } from '@/features/CreateExpenseModal'
+import { DisputeExpenseModal } from '@/features/DisputeExpenseModal'
 import { useState } from 'react'
 
 const expenses: ExpenseListItem[] = [
@@ -61,7 +62,8 @@ const expenses: ExpenseListItem[] = [
 ]
 
 export const EventExpensesWidget = () => {
-  const [isOpen, setCreateExpenseModalOpen] = useState<boolean>(false)
+  const [isCreateExpenseModalOpen, setCreateExpenseModalOpen] = useState<boolean>(false)
+  const [selectedExpenseId, setSelectedExpenseId] = useState<number | null>(null)
 
   return (
     <section className="flex flex-col gap-[15px] sm:gap-[20px]">
@@ -134,7 +136,11 @@ export const EventExpensesWidget = () => {
                   <Button variant={ButtonEnum.Secondary} className={actionButtonClassName}>
                     <TrashIcon className={actionButtonIconClassName} />
                   </Button>
-                  <Button variant={ButtonEnum.Tertialy} className={actionButtonClassName}>
+                  <Button
+                    variant={ButtonEnum.Tertialy}
+                    className={actionButtonClassName}
+                    onClick={() => setSelectedExpenseId(expense.id)}
+                  >
                     <WarningIcon className={actionButtonIconClassName} />
                   </Button>
                   <Button
@@ -168,7 +174,15 @@ export const EventExpensesWidget = () => {
         ))}
       </div>
 
-      <CreateExpenseModal isOpen={isOpen} onClose={() => setCreateExpenseModalOpen(false)} />
+      <CreateExpenseModal
+        isOpen={isCreateExpenseModalOpen}
+        onClose={() => setCreateExpenseModalOpen(false)}
+      />
+      <DisputeExpenseModal
+        expenseId={selectedExpenseId ?? undefined}
+        isOpen={selectedExpenseId !== null}
+        onClose={() => setSelectedExpenseId(null)}
+      />
     </section>
   )
 }

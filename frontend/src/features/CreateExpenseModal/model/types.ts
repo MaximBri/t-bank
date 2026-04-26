@@ -11,11 +11,11 @@ export type ExpenseCandidate = {
 
 export type CreateExpenseFormValues = {
   title: string
-  amount?: number | undefined
+  amount?: number
   category: ExpenseCategory
   participants: number[]
   comment?: string
-  checkImage?: File | undefined
+  checkImage?: File
 }
 
 export type createExpenseFormInput = z.input<typeof createExpenseSchema>

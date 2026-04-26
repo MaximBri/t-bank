@@ -14,7 +14,6 @@ import { createExpenseFormDefaultValues } from '@/features/CreateExpenseModal/mo
 import { Modal } from '@/shared/ui/modal'
 import { Text } from '@/shared/ui/text/Text.tsx'
 import { Button } from '@/shared/ui/button/Button.tsx'
-import { ButtonEnum } from '@/shared/ui/button/constants.ts'
 import { renderFormField } from '@/shared/ui/form'
 import { getCreateExpenseFormFields } from '@/features/CreateExpenseModal/lib/get-create-expense-form-fields.ts'
 import { ExpenseCategory } from '@/entities/expense'
@@ -108,14 +107,13 @@ export const CreateExpenseModal = ({ isOpen, onClose }: CreateExpenseModalProps)
           <Text as="h2" variant="h2">
             Добавление расхода
           </Text>
-          <Button
+          <button
             aria-label="close-create-expense-modal"
             className="transition-opacity hover:opacity-70"
             onClick={handleClose}
-            variant={ButtonEnum.Empty}
           >
             <CloseIcon width={20} height={20} />
-          </Button>
+          </button>
         </div>
 
         <FormProvider {...methods}>

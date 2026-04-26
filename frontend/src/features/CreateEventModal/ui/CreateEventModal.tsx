@@ -16,7 +16,6 @@ import { ExpenseCategoriesSection } from './ExpenseCategoriesSection.tsx'
 import type { CreateEventFormValues } from '../model/types.ts'
 
 import { Text } from '@/shared/ui/text/Text.tsx'
-import { ButtonEnum } from '@/shared/ui/button/constants.ts'
 
 type CreateEventModalProps = {
   isOpen: boolean
@@ -82,14 +81,13 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
           <Text as="h2" variant="h2">
             Создание события
           </Text>
-          <Button
+          <button
             aria-label="close-create-event-modal"
             className="transition-opacity hover:opacity-70"
             onClick={handleClose}
-            variant={ButtonEnum.Empty}
           >
             <CloseIcon width={20} height={20} />
-          </Button>
+          </button>
         </div>
 
         <FormProvider {...methods}>

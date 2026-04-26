@@ -24,6 +24,7 @@ export const TextAreaField = <
   required,
   defaultValue,
   rules,
+  withoutClearButton,
   rows = 4,
   variant = FormFieldVariant.Filled,
 }: TextAreaFieldProps<TFieldValues, TName>) => {
@@ -36,6 +37,7 @@ export const TextAreaField = <
       fieldClassName={fieldClassName}
       placeholder={placeholder}
       disabled={disabled}
+      withoutClearButton={withoutClearButton}
       required={required}
       defaultValue={(defaultValue ?? '') as TFieldValues[TName]}
       rules={rules}
