@@ -4,7 +4,7 @@ import { createFormSchema, type InferFormValues, requiredString } from '@/shared
 
 export const signUpByCredentialsSchema = createFormSchema({
   login: requiredString('Введите логин').min(3, 'Логин должен содержать минимум 3 символа'),
-  password: requiredString('Введите пароль').min(6, 'Пароль должен содержать минимум 6 символов'),
+  password: requiredString('Введите пароль').min(8, 'Пароль должен содержать минимум 8 символов'),
   passwordRepeat: requiredString('Пароли не совпадают'),
 }).superRefine(({ password, passwordRepeat }, context) => {
   if (password !== passwordRepeat) {

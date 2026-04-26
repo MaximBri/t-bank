@@ -6,9 +6,11 @@ import { Text } from '../text/Text'
 import { UserAvatar } from '../userAvatar/UserAvatar'
 import { useMediaQuery } from 'react-responsive'
 import { UserAvatarSizes } from '../userAvatar/constants'
+import { useUserStore } from '@/entities/user'
 
 export const AppLayout = () => {
   const isMobile = useMediaQuery({ maxWidth: 767 })
+  const user = useUserStore((state) => state.user)
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -29,7 +31,10 @@ export const AppLayout = () => {
             <Text className="hidden m-0 mt-[2px] md:inline leading-[1.2]">Управление бюджетом</Text>
           </div>
         </div>
-        <UserAvatar variant={isMobile ? UserAvatarSizes.Xs : UserAvatarSizes.S} email={'M.'} />
+        <UserAvatar
+          variant={isMobile ? UserAvatarSizes.Xs : UserAvatarSizes.S}
+          email={user?.username}
+        />
       </header>
       <Outlet />
     </div>

@@ -10,8 +10,6 @@ import {
 import ImageFilledIcon from '@/shared/assets/icons/image-filled.svg?react'
 
 import type { ImageFieldConfig } from '@/shared/lib/forms'
-import { Button } from '../button/Button'
-import { ButtonEnum } from '../button/constants'
 
 type ImageFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -25,7 +23,6 @@ export const ImageField = <
   name,
   label,
   labelClassName,
-  fieldClassName,
   disabled,
   required,
   defaultValue,
