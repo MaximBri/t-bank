@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Проверяем что это access токен, а не refresh
+        
         if (!jwtService.isAccessToken(token)) {
             log.debug("JWT authentication skipped: invalid access token");
             filterChain.doFilter(request, response);

@@ -111,7 +111,7 @@ public class EventService {
         resp.setEndDate(event.getEndDate());
         resp.setCategory(event.getCategory());
         resp.setStatus(EventStatusCalculator.calculate(event.getStartDate(), event.getEndDate()));
-        resp.setImageUrl(null); // без MinIO
+        resp.setImageUrl(null);
         resp.setOwnerId(event.getOwnerId());
         return resp;
     }
@@ -124,7 +124,7 @@ public class EventService {
         dto.setEndDate(event.getEndDate().toLocalDate());
         dto.setParticipantsCount(participantsCount);
         dto.setStatus(EventStatusCalculator.calculate(event.getStartDate(), event.getEndDate()));
-        dto.setImageUrl(null); // без MinIO
+        dto.setImageUrl(null);
         return dto;
     }
 

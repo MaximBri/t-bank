@@ -5,6 +5,7 @@ import com.tbank.tevent.auth.dto.LoginRequest;
 import com.tbank.tevent.auth.dto.RegisterResponse;
 import com.tbank.tevent.auth.dto.RegisterRequest;
 import com.tbank.tevent.auth.exception.MissingRefreshTokenException;
+
 import com.tbank.tevent.repo.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
