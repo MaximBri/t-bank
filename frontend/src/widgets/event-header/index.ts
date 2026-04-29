@@ -1,1 +1,1 @@
-export { EventHeaderWidget } from './ui/EventHeaderWidget'
+export { EventHeaderWidget } from './ui/EventHeaderWidget.tsx'

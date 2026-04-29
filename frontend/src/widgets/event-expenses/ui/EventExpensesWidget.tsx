@@ -152,7 +152,7 @@ export const EventExpensesWidget = () => {
                     <TrashIcon className={actionButtonIconClassName} />
                   </Button>
                   <Button
-                    variant={ButtonEnum.Tertialy}
+                    variant={ButtonEnum.TertiaryLight}
                     className={actionButtonClassName}
                     onClick={() => setSelectedExpenseId(expense.id)}
                   >
@@ -199,7 +199,7 @@ export const EventExpensesWidget = () => {
         onClose={() => setSelectedExpenseId(null)}
       />
       <ReviseExpenseModal
-        expense={selectedDisputedExpense}
+        expense={selectedDisputedExpense!}
         isOpen={selectedDisputedExpense !== null}
         onClose={() => setSelectedDisputedExpense(null)}
       ></ReviseExpenseModal>
