@@ -30,7 +30,6 @@ export const ParticipantsField = <
 }: ParticipantsFieldProps<TFieldValues, TName>) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
-
   return (
     <BaseField
       name={name}

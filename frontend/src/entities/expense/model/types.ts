@@ -15,6 +15,7 @@ export type Expense = {
   participants: number[]
   title: string
   payerName: string
+  checkKey: string
 }
 
 type Dispute = {

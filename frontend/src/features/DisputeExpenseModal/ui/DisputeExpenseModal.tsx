@@ -50,12 +50,12 @@ export const DisputeExpenseModal = ({ expenseId, isOpen, onClose }: DisputeExpen
     <Modal
       isOpen={isOpen}
       onClose={handleModalClose}
-      className="w-[640px] p-[40px] rounded-[24px] bg-secondary border-primary"
+      className="w-[640px] p-[15px] sm:p-[40px] rounded-[24px] bg-secondary border-primary"
     >
       <div className="">
         <div className="mb-[8px] flex flex-col gap-[10px]">
           <div className="flex items-center justify-between">
-            <Text as="h2" variant="h2">
+            <Text as="h2" className="text-h3-d sm:text-h2-d">
               Оспаривание расхода
             </Text>
 
@@ -83,7 +83,7 @@ export const DisputeExpenseModal = ({ expenseId, isOpen, onClose }: DisputeExpen
               </span>
             </div>
 
-            <div className="mt-[18px] h-[40px] flex items-center gap-[10px]">
+            <div className="sm:mt-[18px] h-[40px] flex items-center gap-[10px]">
               <Button type="submit" variant={ButtonEnum.Primary} className="h-[40px] text-body">
                 Оспорить
               </Button>

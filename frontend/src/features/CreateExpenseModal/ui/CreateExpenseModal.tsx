@@ -18,6 +18,7 @@ import { renderFormField } from '@/shared/ui/form'
 import { getCreateExpenseFormFields } from '@/features/CreateExpenseModal/lib/get-create-expense-form-fields.ts'
 import { ExpenseCategory } from '@/entities/expense'
 import { ParticipantsField } from '@/features/CreateExpenseModal/ui/ParticipantsField.tsx'
+import { formatParticipantsCount } from '@/shared/lib/formatParticipantsCount.ts'
 
 const participants: ExpenseCandidate[] = [
   {
@@ -80,7 +81,10 @@ export const CreateExpenseModal = ({ isOpen, onClose }: CreateExpenseModalProps)
     categories,
   })
 
-  const { handleSubmit, reset } = methods
+  const { handleSubmit, reset, watch } = methods
+
+  const selectedParticipants = watch('participants') || []
+  const amount = watch('amount') || 0
 
   const resetModalState = () => {
     reset(createExpenseFormDefaultValues)
@@ -96,6 +100,9 @@ export const CreateExpenseModal = ({ isOpen, onClose }: CreateExpenseModalProps)
     handleClose()
   })
 
+  const perPerson =
+    selectedParticipants.length > 0 ? Math.floor(amount / selectedParticipants.length) : 0
+
   return (
     <Modal
       isOpen={isOpen}
@@ -104,7 +111,7 @@ export const CreateExpenseModal = ({ isOpen, onClose }: CreateExpenseModalProps)
     >
       <div className="p-[15px] sm:px-[30px] sm:py-[24px]">
         <div className="mb-[10px] flex items-center justify-between gap-4">
-          <Text as="h2" variant="h2">
+          <Text as="h2" className="text-h3-d sm:text-h2-d">
             Добавление расхода
           </Text>
           <button
@@ -119,21 +126,30 @@ export const CreateExpenseModal = ({ isOpen, onClose }: CreateExpenseModalProps)
         <FormProvider {...methods}>
           <form className="flex flex-col gap-[10px] sm:gap-[20px]" onSubmit={submitForm}>
             {renderFormField(titleField)}
-            <div className="flex gap-[23px]">
+            <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[23px]">
               {renderFormField(amountField)}
               {renderFormField(categoryField)}
             </div>
 
-            <div className="flex gap-[23px]">
+            <div className="mb-[5px] flex flex-col sm:flex-row sm:gap-[23px]">
               {renderFormField(commentField)}
               {renderFormField(checkImageField)}
             </div>
 
-            <ParticipantsField key={participantsField.name} {...participantsField} />
-
-            <div className="sm:pt-[12px]">
+            <div className="flex flex-col gap-[15px]">
+              <ParticipantsField key={participantsField.name} {...participantsField} />
+              {selectedParticipants.length > 0 && amount > 0 ? (
+                <Text className="font-medium text-[14px] sm:text-body">
+                  По {perPerson.toLocaleString()} ₽ на человека (
+                  {formatParticipantsCount(selectedParticipants.length)})
+                </Text>
+              ) : (
+                <span></span>
+              )}
+            </div>
+            <div>
               <Button type="submit" className="font-medium">
-                Создать
+                Добавить
               </Button>
             </div>
           </form>

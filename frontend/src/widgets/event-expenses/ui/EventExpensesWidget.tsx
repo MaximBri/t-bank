@@ -20,6 +20,7 @@ import { ButtonEnum } from '@/shared/ui/button/constants.ts'
 import { CreateExpenseModal } from '@/features/CreateExpenseModal'
 import { DisputeExpenseModal } from '@/features/DisputeExpenseModal'
 import { useState } from 'react'
+import { ReviseExpenseModal } from '@/features/ReviseExpenseModal'
 
 const expenses: ExpenseListItem[] = [
   {
@@ -32,6 +33,7 @@ const expenses: ExpenseListItem[] = [
     createdAt: '15.06.2026 14:33',
     amount: 45000,
     perPersonalAmount: 9000,
+    checkKey: 'key1',
   },
   {
     id: 2,
@@ -43,6 +45,7 @@ const expenses: ExpenseListItem[] = [
     createdAt: '15.06.2026 14:33',
     amount: 45000,
     perPersonalAmount: 9000,
+    checkKey: 'key2',
   },
   {
     id: 3,
@@ -58,12 +61,16 @@ const expenses: ExpenseListItem[] = [
       reason: 'Сумма указана неверно, не совпадает с чеком.',
       timestamp: '15.06.2026 14:33',
     },
+    checkKey: 'key3',
   },
 ]
 
 export const EventExpensesWidget = () => {
   const [isCreateExpenseModalOpen, setCreateExpenseModalOpen] = useState<boolean>(false)
   const [selectedExpenseId, setSelectedExpenseId] = useState<number | null>(null)
+  const [selectedDisputedExpense, setSelectedDisputedExpense] = useState<ExpenseListItem | null>(
+    null,
+  )
 
   return (
     <section className="flex flex-col gap-[15px] sm:gap-[20px]">
@@ -130,7 +137,15 @@ export const EventExpensesWidget = () => {
 
               <div className="flex h-[90px] sm:h-auto flex-row gap-[24px] sm:items-center">
                 <div className="flex gap-[8px] mt-auto sm:mt-0">
-                  <Button variant={ButtonEnum.Secondary} className={actionButtonClassName}>
+                  <Button
+                    variant={ButtonEnum.Secondary}
+                    className={actionButtonClassName}
+                    onClick={() => {
+                      if (expense.disputeInfo) {
+                        setSelectedDisputedExpense(expense)
+                      }
+                    }}
+                  >
                     <EditIcon className={actionButtonIconClassName} />
                   </Button>
                   <Button variant={ButtonEnum.Secondary} className={actionButtonClassName}>
@@ -183,6 +198,11 @@ export const EventExpensesWidget = () => {
         isOpen={selectedExpenseId !== null}
         onClose={() => setSelectedExpenseId(null)}
       />
+      <ReviseExpenseModal
+        expense={selectedDisputedExpense}
+        isOpen={selectedDisputedExpense !== null}
+        onClose={() => setSelectedDisputedExpense(null)}
+      ></ReviseExpenseModal>
     </section>
   )
 }

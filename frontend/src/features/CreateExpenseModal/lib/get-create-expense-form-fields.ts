@@ -49,7 +49,7 @@ export const getCreateExpenseFormFields = ({
     fieldClassName: createExpenseFieldInputClassName,
     type: 'text',
     label: 'Заголовок',
-    placeholder: 'Придумайте название для расхода',
+    placeholder: 'Придумайте название расхода',
     required: true,
   })
 
@@ -89,7 +89,7 @@ export const getCreateExpenseFormFields = ({
     name: 'checkImage',
     type: 'image',
     labelClassName: createExpenseFieldLabelClassName,
-    fieldClassName: 'h-[150px] bg-secondary rounded-md border-dashed border-[2px]',
+    fieldClassName: 'sm:h-[150px] bg-secondary rounded-md border-dashed border-[2px]',
     label: 'Чек или подтверждающий документ',
     accept: 'image/*,.pdf,application/pdf',
     required: true,
