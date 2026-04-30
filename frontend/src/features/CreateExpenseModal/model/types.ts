@@ -1,8 +1,8 @@
-import { ExpenseCategory } from '@/entities/expense'
-import { z } from 'zod'
-import { createExpenseSchema } from '@/features/CreateExpenseModal/model/schema.ts'
-import { BaseFieldConfig } from '@/shared/lib/forms'
-import type { FieldPath, FieldValues } from 'react-hook-form'
+import {ExpenseCategory} from '@/entities/expense'
+import {z} from 'zod'
+import {createExpenseSchema} from '@/features/CreateExpenseModal/model/schema.ts'
+import {BaseFieldConfig, FormFieldConfig} from '@/shared/lib/forms'
+import type {FieldPath, FieldValues} from 'react-hook-form'
 
 export type ExpenseCandidate = {
   id: number
@@ -26,4 +26,12 @@ export type ParticipantsFieldConfig<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = BaseFieldConfig<TFieldValues, TName> & {
   participants: ExpenseCandidate[]
+}
+export type CreateExpenseFormFields = {
+  titleField: FormFieldConfig<CreateExpenseFormValues>
+  amountField: FormFieldConfig<CreateExpenseFormValues>
+  categoryField: FormFieldConfig<CreateExpenseFormValues>
+  commentField: FormFieldConfig<CreateExpenseFormValues>
+  checkImageField: FormFieldConfig<CreateExpenseFormValues>
+  participantsField: ParticipantsFieldConfig<CreateExpenseFormValues>
 }

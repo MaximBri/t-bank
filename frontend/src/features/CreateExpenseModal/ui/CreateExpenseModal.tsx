@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { createExpenseSchema } from '@/features/CreateExpenseModal/model/schema.ts'
 import {
+  CreateExpenseFormFields,
   createExpenseFormOutput,
   ExpenseCandidate,
 } from '@/features/CreateExpenseModal/model/types.ts'
@@ -76,7 +77,7 @@ export const CreateExpenseModal = ({ isOpen, onClose }: CreateExpenseModalProps)
     checkImageField,
     participantsField,
     amountField,
-  } = getCreateExpenseFormFields({
+  }: CreateExpenseFormFields = getCreateExpenseFormFields({
     participants,
     categories,
   })

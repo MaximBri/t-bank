@@ -1,15 +1,11 @@
-import { createTextAreaField, type FormFieldConfig } from '@/shared/lib/forms'
+import {createTextAreaField} from '@/shared/lib/forms'
 
-import type { DisputeExpenseFormValues } from '../model/types.ts'
+import type {DisputeExpenseFormFields, DisputeExpenseFormValues} from '../model/types.ts'
 import {
   disputeExpenseFieldInputClassName,
   disputeExpenseFieldLabelClassName,
   disputeExpenseReasonMaxLength,
 } from '../model/constants.ts'
-
-type DisputeExpenseFormFields = {
-  reasonField: FormFieldConfig<DisputeExpenseFormValues>
-}
 
 export const getDisputeExpenseFormFields = (): DisputeExpenseFormFields => {
   const reasonField = createTextAreaField<DisputeExpenseFormValues>({

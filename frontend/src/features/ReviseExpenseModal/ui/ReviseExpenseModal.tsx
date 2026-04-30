@@ -17,6 +17,29 @@ type ReviseExpenseModalProps = {
 export const ReviseExpenseModal = ({ expense, onClose, isOpen }: ReviseExpenseModalProps) => {
   const [checkImage, setCheckImage] = useState<File | undefined>()
 
+  const loadDefaultValues = async (getIsCancelled: () => boolean) => {
+    try {
+      const checkImage = await fetchCheckImage(expense.checkKey)
+
+      if (getIsCancelled()) {
+        return
+      }
+
+      if (!checkImage) {
+        setCheckImage(undefined)
+        return
+      }
+
+      if (!getIsCancelled()) {
+        setCheckImage(checkImage)
+      }
+    } catch (error) {
+      if (!getIsCancelled()) {
+        setCheckImage(undefined)
+      }
+    }
+  }
+
   useEffect(() => {
     if (!isOpen) {
       setCheckImage(undefined)
@@ -25,34 +48,12 @@ export const ReviseExpenseModal = ({ expense, onClose, isOpen }: ReviseExpenseMo
 
     let isCancelled = false
 
-    const loadDefaultValues = async () => {
-      try {
-        const checkImage = await fetchCheckImage(expense.checkKey)
-
-        if (!checkImage) {
-          if (!isCancelled) {
-            setCheckImage(undefined)
-          }
-          return
-        }
-
-        if (!isCancelled) {
-          setCheckImage(checkImage)
-        }
-      } catch (error) {
-        console.error('Failed to prepare revise expense form', error)
-        if (!isCancelled) {
-          setCheckImage(undefined)
-        }
-      }
-    }
-
-    void loadDefaultValues()
+    void loadDefaultValues(() => isCancelled)
 
     return () => {
       isCancelled = true
     }
-  }, [expense, isOpen])
+  }, [isOpen, expense])
 
   return (
     <Modal

@@ -14,7 +14,7 @@ import {
   disputeExpenseReasonMaxLength,
 } from '../model/constants.ts'
 import { disputeExpenseSchema } from '../model/schema.ts'
-import type { DisputeExpenseFormValues } from '../model/types.ts'
+import {DisputeExpenseFormFields, DisputeExpenseFormValues} from '../model/types.ts'
 
 type DisputeExpenseModalProps = {
   expenseId?: number
@@ -29,7 +29,7 @@ export const DisputeExpenseModal = ({ expenseId, isOpen, onClose }: DisputeExpen
     defaultValues: disputeExpenseFormDefaultValues,
   })
 
-  const { reasonField } = getDisputeExpenseFormFields()
+  const { reasonField }: DisputeExpenseFormFields = getDisputeExpenseFormFields()
   const { handleSubmit, reset, watch } = methods
   const reasonValue = watch('reason') ?? ''
 

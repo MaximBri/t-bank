@@ -1,8 +1,8 @@
-import { ExpenseCategory } from '@/entities/expense'
-import { reviseExpenseSchema } from '@/features/ReviseExpenseModal/model/schema.ts'
-import { z } from 'zod'
-import type { FieldPath, FieldValues } from 'react-hook-form'
-import { BaseFieldConfig } from '@/shared/lib/forms'
+import {ExpenseCategory} from '@/entities/expense'
+import {reviseExpenseSchema} from '@/features/ReviseExpenseModal/model/schema.ts'
+import {z} from 'zod'
+import type {FieldPath, FieldValues} from 'react-hook-form'
+import {BaseFieldConfig, FormFieldConfig} from '@/shared/lib/forms'
 
 export type ReviseExpenseFormValues = {
   amount?: number
@@ -19,4 +19,11 @@ export type ReviseFieldConfig<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = BaseFieldConfig<TFieldValues, TName> & {
   accept: string
+}
+
+export type ReviseExpenseFormFields = {
+    amountField: FormFieldConfig<ReviseExpenseFormValues>
+    categoryField: FormFieldConfig<ReviseExpenseFormValues>
+    commentField: FormFieldConfig<ReviseExpenseFormValues>
+    checkField: ReviseFieldConfig<ReviseExpenseFormValues>
 }

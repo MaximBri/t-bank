@@ -4,30 +4,21 @@ import {
   createSelectField,
   createTextAreaField,
   createTextField,
-  FormFieldConfig,
   FormOption,
 } from '@/shared/lib/forms'
 import {
+  CreateExpenseFormFields,
   CreateExpenseFormValues,
   ExpenseCandidate,
   ParticipantsFieldConfig,
 } from '../model/types.ts'
-import { ExpenseCategory } from '@/entities/expense'
+import {ExpenseCategory} from '@/entities/expense'
 import {
   createExpenseFieldInputClassName,
   createExpenseFieldLabelClassName,
 } from '@/features/CreateExpenseModal/model/constants.ts'
 
-type CreateExpenseFormFields = {
-  titleField: FormFieldConfig<CreateExpenseFormValues>
-  amountField: FormFieldConfig<CreateExpenseFormValues>
-  categoryField: FormFieldConfig<CreateExpenseFormValues>
-  commentField: FormFieldConfig<CreateExpenseFormValues>
-  checkImageField: FormFieldConfig<CreateExpenseFormValues>
-  participantsField: ParticipantsFieldConfig<CreateExpenseFormValues>
-}
-
-type formProps = {
+type createExpenseFormProps = {
   categories: ExpenseCategory[]
   participants: ExpenseCandidate[]
 }
@@ -35,7 +26,7 @@ type formProps = {
 export const getCreateExpenseFormFields = ({
   categories,
   participants,
-}: formProps): CreateExpenseFormFields => {
+}: createExpenseFormProps): CreateExpenseFormFields => {
   const categoriesOptions: FormOption[] = categories.map(
     (category): FormOption => ({
       value: category,

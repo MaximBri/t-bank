@@ -1,33 +1,21 @@
-import {
-  createNumberField,
-  createSelectField,
-  createTextAreaField,
-  FormFieldConfig,
-  FormOption,
-} from '@/shared/lib/forms'
+import {createNumberField, createSelectField, createTextAreaField, FormOption,} from '@/shared/lib/forms'
 
-import { ExpenseCategory } from '@/entities/expense'
+import {ExpenseCategory} from '@/entities/expense'
 import {
   reviseExpenseFieldInputClassName,
   reviseExpenseFieldLabelClassName,
 } from '@/features/ReviseExpenseModal/model/constants.ts'
 import {
+  ReviseExpenseFormFields,
   ReviseExpenseFormValues,
   ReviseFieldConfig,
 } from '@/features/ReviseExpenseModal/model/types.ts'
 
-type CreateExpenseFormFields = {
-  amountField: FormFieldConfig<ReviseExpenseFormValues>
-  categoryField: FormFieldConfig<ReviseExpenseFormValues>
-  commentField: FormFieldConfig<ReviseExpenseFormValues>
-  checkField: ReviseFieldConfig<ReviseExpenseFormValues>
-}
-
-type formProps = {
+type ReviseExpenseFormProps = {
   categories: ExpenseCategory[]
 }
 
-export const getReviseExpenseFormFields = ({ categories }: formProps): CreateExpenseFormFields => {
+export const getReviseExpenseFormFields = ({ categories }: ReviseExpenseFormProps): ReviseExpenseFormFields => {
   const categoriesOptions: FormOption[] = categories.map(
     (category): FormOption => ({
       value: category,

@@ -51,12 +51,11 @@ export const LeaveEventModal = ({
           <CloseIcon width={20} height={20} />
         </button>
         <div className="mb-[16px]">
-        {hasSettlements ? (
-            <BlockIcon className="h-[55px] w-[55px] sm:h-[70px] sm:w-[70px]"/>
-        ) : (
-            <WarningIcon className="h-[50px] w-[50px] sm:h-[64px] sm:w-[64px] "/>
-
-        )}
+          {hasSettlements ? (
+            <BlockIcon className="h-[55px] w-[55px] sm:h-[70px] sm:w-[70px]" />
+          ) : (
+            <WarningIcon className="h-[50px] w-[50px] sm:h-[64px] sm:w-[64px] " />
+          )}
         </div>
 
         <Text as="h1" variant="h1">
