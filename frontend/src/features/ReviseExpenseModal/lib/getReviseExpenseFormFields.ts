@@ -1,6 +1,11 @@
-import {createNumberField, createSelectField, createTextAreaField, FormOption,} from '@/shared/lib/forms'
+import {
+  createNumberField,
+  createSelectField,
+  createTextAreaField,
+  FormOption,
+} from '@/shared/lib/forms'
 
-import {ExpenseCategory} from '@/entities/expense'
+import { ExpenseCategory } from '@/entities/expense'
 import {
   reviseExpenseFieldInputClassName,
   reviseExpenseFieldLabelClassName,
@@ -15,7 +20,9 @@ type ReviseExpenseFormProps = {
   categories: ExpenseCategory[]
 }
 
-export const getReviseExpenseFormFields = ({ categories }: ReviseExpenseFormProps): ReviseExpenseFormFields => {
+export const getReviseExpenseFormFields = ({
+  categories,
+}: ReviseExpenseFormProps): ReviseExpenseFormFields => {
   const categoriesOptions: FormOption[] = categories.map(
     (category): FormOption => ({
       value: category,

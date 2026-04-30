@@ -12,7 +12,7 @@ import {
   ExpenseCandidate,
   ParticipantsFieldConfig,
 } from '../model/types.ts'
-import {ExpenseCategory} from '@/entities/expense'
+import { ExpenseCategory } from '@/entities/expense'
 import {
   createExpenseFieldInputClassName,
   createExpenseFieldLabelClassName,

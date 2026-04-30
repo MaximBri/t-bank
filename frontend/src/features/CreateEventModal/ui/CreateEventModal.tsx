@@ -13,7 +13,7 @@ import { createEventSchema } from '../model/schema.ts'
 import { createEventFormDefaultValues } from '../model/constants.ts'
 import { ExpenseCategoriesSection } from './ExpenseCategoriesSection.tsx'
 
-import type {CreateEventFormFields, CreateEventFormValues} from '../model/types.ts'
+import type { CreateEventFormFields, CreateEventFormValues } from '../model/types.ts'
 
 import { Text } from '@/shared/ui/text/Text.tsx'
 
@@ -37,7 +37,8 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
     setCategoryInput,
   } = useExpenseCategories(methods)
 
-  const { titleField, dateFields, descriptionField, avatarField }: CreateEventFormFields = getCreateEventFormFields()
+  const { titleField, dateFields, descriptionField, avatarField }: CreateEventFormFields =
+    getCreateEventFormFields()
 
   const {
     formState: { errors },

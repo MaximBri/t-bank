@@ -1,5 +1,8 @@
 import { FormProvider, useForm } from 'react-hook-form'
-import {ReviseExpenseFormFields, reviseExpenseFormOutput} from '@/features/ReviseExpenseModal/model/types.ts'
+import {
+  ReviseExpenseFormFields,
+  reviseExpenseFormOutput,
+} from '@/features/ReviseExpenseModal/model/types.ts'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { reviseExpenseSchema } from '@/features/ReviseExpenseModal/model/schema.ts'
 import { getReviseExpenseFormFields } from '@/features/ReviseExpenseModal/lib/getReviseExpenseFormFields.ts'
@@ -27,9 +30,10 @@ export const ReviseExpenseForm = ({ defaultValues, onClose }: ReviseExpenseFormP
 
   const { handleSubmit, reset, watch } = methods
 
-  const { categoryField, commentField, amountField, checkField }: ReviseExpenseFormFields = getReviseExpenseFormFields({
-    categories,
-  })
+  const { categoryField, commentField, amountField, checkField }: ReviseExpenseFormFields =
+    getReviseExpenseFormFields({
+      categories,
+    })
 
   const commentValue = watch('comment')
 

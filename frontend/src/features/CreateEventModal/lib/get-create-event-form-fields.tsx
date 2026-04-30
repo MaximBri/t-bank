@@ -1,8 +1,16 @@
-import {createDateField, createImageField, createTextAreaField, createTextField,} from '@/shared/lib/forms'
-import type {CreateEventFormFields, CreateEventFormValues} from '../model/types.ts'
+import {
+  createDateField,
+  createImageField,
+  createTextAreaField,
+  createTextField,
+} from '@/shared/lib/forms'
+import type { CreateEventFormFields, CreateEventFormValues } from '../model/types.ts'
 
-import {createEventFieldInputClassName, createEventFieldLabelClassName,} from '../model/constants.ts'
-import {FormFieldVariant} from '@/shared/lib/forms/types.ts'
+import {
+  createEventFieldInputClassName,
+  createEventFieldLabelClassName,
+} from '../model/constants.ts'
+import { FormFieldVariant } from '@/shared/lib/forms/types.ts'
 
 export const getCreateEventFormFields = (): CreateEventFormFields => {
   const titleField = createTextField<CreateEventFormValues>({

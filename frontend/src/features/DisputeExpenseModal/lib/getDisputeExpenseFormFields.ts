@@ -1,6 +1,6 @@
-import {createTextAreaField} from '@/shared/lib/forms'
+import { createTextAreaField } from '@/shared/lib/forms'
 
-import type {DisputeExpenseFormFields, DisputeExpenseFormValues} from '../model/types.ts'
+import type { DisputeExpenseFormFields, DisputeExpenseFormValues } from '../model/types.ts'
 import {
   disputeExpenseFieldInputClassName,
   disputeExpenseFieldLabelClassName,

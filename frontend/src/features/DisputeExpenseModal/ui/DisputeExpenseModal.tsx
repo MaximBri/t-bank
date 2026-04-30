@@ -14,7 +14,7 @@ import {
   disputeExpenseReasonMaxLength,
 } from '../model/constants.ts'
 import { disputeExpenseSchema } from '../model/schema.ts'
-import {DisputeExpenseFormFields, DisputeExpenseFormValues} from '../model/types.ts'
+import { DisputeExpenseFormFields, DisputeExpenseFormValues } from '../model/types.ts'
 
 type DisputeExpenseModalProps = {
   expenseId?: number

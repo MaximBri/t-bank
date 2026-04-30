@@ -1,5 +1,5 @@
-import type {ExpenseCategoryList} from '@/entities/expense'
-import type {FormFieldConfig} from "@/shared/lib/forms";
+import type { ExpenseCategoryList } from '@/entities/expense'
+import type { FormFieldConfig } from '@/shared/lib/forms'
 
 export type CreateEventFormValues = {
   avatar?: File
@@ -10,8 +10,8 @@ export type CreateEventFormValues = {
   title: string
 }
 export type CreateEventFormFields = {
-    titleField: FormFieldConfig<CreateEventFormValues>
-    dateFields: [FormFieldConfig<CreateEventFormValues>, FormFieldConfig<CreateEventFormValues>]
-    descriptionField: FormFieldConfig<CreateEventFormValues>
-    avatarField: FormFieldConfig<CreateEventFormValues>
+  titleField: FormFieldConfig<CreateEventFormValues>
+  dateFields: [FormFieldConfig<CreateEventFormValues>, FormFieldConfig<CreateEventFormValues>]
+  descriptionField: FormFieldConfig<CreateEventFormValues>
+  avatarField: FormFieldConfig<CreateEventFormValues>
 }
