@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { CreateEventModal } from '@/features/CreateEventModal'
+import { EventStatus, type EventListItem } from '@/entities/event'
 import clsx from 'clsx'
 
 import AddEventIcon from '@/shared/assets/icons/add.svg?react'
@@ -8,9 +8,10 @@ import FilterIcon from '@/shared/assets/icons/filter.svg?react'
 
 import { Button } from '@/shared/ui/button/Button'
 import { EventFiltersWidget, MobileEventFiltersModal } from '@/widgets/event-filters'
-import { EventListWidget, type EventListItem } from '@/widgets/event-list'
+import { EventListWidget } from '@/widgets/event-list'
 import { Text } from '@/shared/ui/text/Text'
 import { ButtonEnum } from '@/shared/ui/button/constants'
+import { CreateEventModal } from '@/features/CreateEventModal'
 
 const mockEvents: EventListItem[] = [
   {
@@ -19,7 +20,7 @@ const mockEvents: EventListItem[] = [
     startDate: '2026-04-06',
     endDate: '2026-04-20',
     participantsCount: 5,
-    status: 'active',
+    status: EventStatus.Active,
     imageUrl: '/logo.svg',
   },
   {
@@ -28,7 +29,7 @@ const mockEvents: EventListItem[] = [
     startDate: '2026-04-06',
     endDate: '2026-04-20',
     participantsCount: 5,
-    status: 'active',
+    status: EventStatus.Active,
   },
   {
     id: 'restaurant-planned-1',
@@ -36,7 +37,7 @@ const mockEvents: EventListItem[] = [
     startDate: '2026-05-15',
     endDate: '2026-06-20',
     participantsCount: 5,
-    status: 'planned',
+    status: EventStatus.Planned,
   },
   {
     id: 'long-planned',
@@ -44,7 +45,7 @@ const mockEvents: EventListItem[] = [
     startDate: '2026-05-15',
     endDate: '2026-06-20',
     participantsCount: 1,
-    status: 'planned',
+    status: EventStatus.Planned,
   },
   {
     id: 'sochi-completed',
@@ -52,14 +53,14 @@ const mockEvents: EventListItem[] = [
     startDate: '2026-04-06',
     endDate: '2026-04-20',
     participantsCount: 5,
-    status: 'completed',
+    status: EventStatus.Completed,
   },
   {
     id: 'restaurant-planned-2',
     title: 'Сходка в ресторане',
     startDate: '2026-05-15',
     participantsCount: 5,
-    status: 'planned',
+    status: EventStatus.Planned,
   },
 ]
 

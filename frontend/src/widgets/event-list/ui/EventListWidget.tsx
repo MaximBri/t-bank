@@ -1,6 +1,6 @@
+import type { EventListItem } from '@/entities/event'
 import { Button } from '@/shared/ui/button/Button.tsx'
 import { skeletonItems } from '@/widgets/event-list/model/constants.ts'
-import type { EventListItem } from '@/widgets/event-list/model/types.ts'
 
 import { EventCardSkeleton } from './EventCardSkeleton.tsx'
 import { EventListCard } from './EventListCard.tsx'

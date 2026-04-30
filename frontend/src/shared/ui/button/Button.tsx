@@ -27,14 +27,14 @@ export const Button = ({
     <button
       disabled={isDisabled}
       className={clsx(
-        'items-center justify-center disabled:cursor-not-allowed rounded-[10px] sm:rounded-md px-3 py-[6px] sm:px-[22px] sm:py-[14px] text-body flex flex-row gap-[10px] max-h-[30px] sm:max-h-[47px]',
-        isPrimary && 'border-[2px] border-yellow bg-yellow text-primary',
-        isDisabled && isPrimary && 'bg-yellow-disabled',
-        variant === ButtonEnum.Secondary && 'border-[2px] border-primary bg-primary text-primary',
-        variant === ButtonEnum.Tertialy && 'border-[2px] border-error bg-error text-secondary',
-        variant === ButtonEnum.Empty && '',
+        isPrimary && 'items-center justify-center disabled:cursor-not-allowed rounded-[10px] sm:rounded-md border-[2px] px-3 py-[6px] sm:px-[22px] sm:py-[14px] text-body flex flex-row gap-[10px] max-h-[30px] sm:max-h-[47px]',
+        variant === ButtonEnum.Primary && 'border-yellow bg-yellow text-primary',
+        variant === ButtonEnum.Secondary && 'border-primary bg-primary text-primary',
+        variant === ButtonEnum.TertiaryLight && 'border-error bg-error-light text-error',
+        variant === ButtonEnum.Tertiary && 'border-error bg-error text-secondary',
+        variant === ButtonEnum.Empty && 'border-transparent',
         !withoutAnimation && 'transition-all duration-200 ease-out [@media(hover:hover)]:hover:scale-[1.02]',
-        className,
+         className,
       )}
       {...props}
     >

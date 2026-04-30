@@ -84,6 +84,7 @@ export const BaseField = <
             ? 'border-error focus:border-error'
             : 'border-secondary focus:border-secondary',
         )
+
         const handleClear = () => {
           setValue(name, undefined as TFieldValues[TName], {
             shouldDirty: true,

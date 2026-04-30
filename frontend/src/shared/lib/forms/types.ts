@@ -20,6 +20,7 @@ export type BaseFieldType =
   | 'select'
   | 'date'
   | 'image'
+  | 'multiselect'
 
 export enum FormFieldVariant {
   Filled = 'filled',
