@@ -23,6 +23,7 @@ export const ImageField = <
   name,
   label,
   labelClassName,
+  fieldClassName,
   disabled,
   required,
   defaultValue,

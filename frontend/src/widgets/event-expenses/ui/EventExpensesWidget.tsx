@@ -158,12 +158,11 @@ export const EventExpensesWidget = () => {
                   >
                     <WarningIcon className={actionButtonIconClassName} />
                   </Button>
-                  <Button
-                    variant={ButtonEnum.Empty}
-                    className={clsx(actionButtonClassName, 'border-green bg-green-light')}
+                  <button
+                    className={clsx(actionButtonClassName, 'max-h-[30px] sm:max-h-none flex justify-center items-center border-green bg-green-light ')}
                   >
                     <CheckIcon className={actionButtonIconClassName} />
-                  </Button>
+                  </button>
                 </div>
                 <div className="flex flex-col gap-[3px]">
                   <Text className="text-right text-h3-d">{formatPrice(expense.amount)}</Text>
