@@ -31,10 +31,12 @@ export const AppLayout = () => {
             <Text className="hidden m-0 mt-[2px] md:inline leading-[1.2]">Управление бюджетом</Text>
           </div>
         </div>
-        <UserAvatar
-          variant={isMobile ? UserAvatarSizes.Xs : UserAvatarSizes.S}
-          email={user?.username}
-        />
+        <Link to={APP_ROUTES.PROFILE} aria-label="Перейти в профиль">
+          <UserAvatar
+            variant={isMobile ? UserAvatarSizes.Xs : UserAvatarSizes.S}
+            email={user?.username}
+          />
+        </Link>
       </header>
       <Outlet />
     </div>

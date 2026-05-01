@@ -3,5 +3,6 @@ export const APP_ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   EVENT: '/events/:eventId',
+  PROFILE: '/profile',
   NOT_FOUND: '*',
 }

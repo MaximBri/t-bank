@@ -7,7 +7,7 @@ export enum UserAvatarSizes {
 }
 
 export const avatarSizeClasses: Record<UserAvatarSizes, string> = {
-  [UserAvatarSizes.Xl]: 'w-[150px] h-[150px] text-10',
+  [UserAvatarSizes.Xl]: 'w-[150px] h-[150px] text-[40px]',
   [UserAvatarSizes.L]: 'w-[80px] h-[80px] text-h2-d',
   [UserAvatarSizes.M]: 'w-[75px] h-[75px] text-h2-d',
   [UserAvatarSizes.S]: 'w-[60px] h-[60px] text-[20px]',
