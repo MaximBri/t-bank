@@ -20,8 +20,10 @@ public class User {
     private String login;
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
-    @Column(name = "full_name")
-    private String fullName;
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "second_name")
+    private String secondName;
     @Column(name = "avatar_url", unique = true, length = 500)
     private String avatarUrl;
     @CreationTimestamp
