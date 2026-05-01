@@ -2,12 +2,12 @@ import clsx from 'clsx'
 
 import CalendarIcon from '@/shared/assets/icons/calendar.svg?react'
 import UsersIcon from '@/shared/assets/icons/users.svg?react'
-import { formatDateRange } from '@/widgets/event-list/lib/format-date-range.ts'
 import { formatParticipantsCount } from '@/shared/lib/formatParticipantsCount.ts'
-import { eventStatusMap } from '@/widgets/event-list/model/constants.ts'
-import type { EventListItem } from '@/widgets/event-list/model/types.ts'
 
 import { EventPreview } from './EventPreview.tsx'
+import { EventListItem } from '../model/types.ts'
+import { eventStatusMap } from '../model/constants.ts'
+import { formatDateRange } from '../lib/format-date-range.ts'
 
 type EventListCardProps = {
   item: EventListItem
