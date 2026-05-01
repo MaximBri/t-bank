@@ -1,5 +1,9 @@
 name: Unit Tests
 
+concurrency:
+  group: unit-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [dev, main, test, 'test/*', 'chore/test-*']
