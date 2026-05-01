@@ -45,12 +45,12 @@ export default defineConfig({
         'src/**/*.d.ts',
         'src/index.{js,jsx,ts,tsx}',
       ],
-      // thresholds: {
-      //   statements: 80,
-      //   branches: 50,
-      //   functions: 50,
-      //   lines: 50,
-      // },
+      thresholds: {
+        statements: 0,
+        branches: 0,
+        functions: 0,
+        lines: 0,
+      },
     },
   },
 })
