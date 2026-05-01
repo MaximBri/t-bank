@@ -7,8 +7,6 @@
 
     <include file="db/changelog/migrations/01-init-db.sql" relativeToChangelogFile="false"/>
     <include file="db/changelog/migrations/02-user-full-name-nullable.sql" relativeToChangelogFile="false"/>
-    <include file="db/changelog/migrations/03-category-event-id-nullable.sql" relativeToChangelogFile="false"/>
-    <include file="db/changelog/migrations/04-seed-default-categories.sql" relativeToChangelogFile="false"/>
     <include file="db/changelog/migrations/05-user-split-full-name.sql" relativeToChangelogFile="false"/>
 
 </databaseChangeLog>
