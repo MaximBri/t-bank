@@ -20,6 +20,7 @@ import { getProfileFormFields, profileFormDefaultValues } from './constants'
 export const ProfileInfo = () => {
   const queryClient = useQueryClient()
   const userStore = useUserStore()
+  
   const [editMode, setEditMode] = useState<boolean>(false)
   const [profileValues, setProfileValues] = useState<ProfileSchemaValues>(profileFormDefaultValues)
 
