@@ -1,0 +1,26 @@
+Привет, артефакты первого дедлайна
+PR: https://github.com/MaximBri/t-bank/pull/41
+
+1. Тест-план проекта
+`docs/qa/test-plan.md`
+https://github.com/MaximBri/t-bank/pull/41/files#diff-6c0a6ebc0873a3bf5f31300242730a1ec215264eb63719bf5c275cf7c56a2d20
+
+2. Тест-кейсы для основных пользовательских сценариев
+`docs/qa/test-cases.md`
+https://github.com/MaximBri/t-bank/pull/41/files#diff-8610c8f5c9e9876db2cf11294c7abb819bf8265d98a3d23e8db3f59db25f91d6
+
+3. Чек-листы для smoke-тестирования
+`docs/qa/smoke-checklist.md`
+https://github.com/MaximBri/t-bank/pull/41/files#diff-ed38ab7a5f6c5d82148e612f095f3f35417659b22d12f4c42774c3bcfa613c38
+
+4. Список согласованых API-эндпоинтов для тестирования
+`docs/qa/api-endpoints.md`
+https://github.com/MaximBri/t-bank/pull/41/files#diff-c9515de5dafe47c859af9447a86eace4acd8fdf12f07241844e4c0fbf9283b0d
+
+5. Postman коллекция(.json.zip)
+`docs/qa/postman-collection.zip`
+https://github.com/MaximBri/t-bank/pull/41/files#diff-a1e64225b9a711e4516ea340fd79fdbe7c89322b258623e540d004193a957d9d
+
+6. Формат баг-репортов
+`docs/qa/bug-report-template.md`
+https://github.com/MaximBri/t-bank/pull/41/files#diff-154a744f65f2d7a0af9e830dae6ce402592749d2138c84ad3b211a28dd6a566e
