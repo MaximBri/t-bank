@@ -1,10 +1,10 @@
-import { EventStatusIds, type EventFiltersState } from './types.ts'
+import { EventFilterStatus, type EventFiltersState } from './types.ts'
 
 export const eventFiltersStorageKey = 'event-filters'
 
 export const initialEventFiltersState: EventFiltersState = {
   search: '',
-  status: EventStatusIds.All,
+  status: EventFilterStatus.All,
   startDate: '',
   endDate: '',
   minParticipants: '',

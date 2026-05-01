@@ -81,7 +81,7 @@ export const ProfileInfo = () => {
               Сохранить
             </Button>
           )}
-          <Button type="button" variant={ButtonEnum.Tertialy} onClick={handleExit}>
+          <Button type="button" variant={ButtonEnum.Tertiary} onClick={handleExit}>
             <ExitIcon />
             Выйти
           </Button>

@@ -65,7 +65,7 @@ export const ExpenseCategoriesSection = ({
           className="w-[125px] mt-[10px] justify-self-end gap-[10px] px-[15px] py-[4px] sm:mt-0 sm:w-auto sm:px-[30px] sm:py-[10px]"
           onClick={onAddCategory}
         >
-          <AddIcon width={16} height={16} className='flex-shrink-0' />
+          <AddIcon width={18} height={18} className="flex-shrink-0" />
           Добавить
         </Button>
         {errorMessage ? (
@@ -75,7 +75,7 @@ export const ExpenseCategoriesSection = ({
         ) : null}
       </div>
 
-      <p className="text-small font-medium text-primary sm:text-h3">
+      <p className="mt-[10px] text-small font-medium text-primary sm:text-h3">
         Категории помогут организовать учёт расходов по направлениям
       </p>
     </div>

@@ -1,6 +1,6 @@
+import { defaultExpenseCategories } from '@/entities/expense'
 import type { CreateEventFormValues } from './types.ts'
 
-export const defaultExpenseCategories = ['Транспорт', 'Проживание', 'Питание', 'Развлечения']
 export const createEventFormDefaultValues: CreateEventFormValues = {
   avatar: undefined,
   categories: defaultExpenseCategories,
