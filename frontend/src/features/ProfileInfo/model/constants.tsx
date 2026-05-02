@@ -2,13 +2,7 @@ import UserIcon from '@/shared/assets/icons/user.svg?react'
 import EmailIcon from '@/shared/assets/icons/email.svg?react'
 
 import type { ProfileSchemaValues } from './schema'
-
-export type ProfileItem = {
-  name: keyof ProfileSchemaValues
-  label: string
-  value: string
-  icon: typeof UserIcon
-}
+import { ProfileItem } from './types'
 
 export const getProfileItems = (values: ProfileSchemaValues): ProfileItem[] => [
   {

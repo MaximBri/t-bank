@@ -20,6 +20,7 @@ import { getProfileFormFields, profileFormDefaultValues } from './constants'
 export const ProfileInfo = () => {
   const queryClient = useQueryClient()
   const userStore = useUserStore()
+  
   const [editMode, setEditMode] = useState<boolean>(false)
   const [profileValues, setProfileValues] = useState<ProfileSchemaValues>(profileFormDefaultValues)
 
@@ -51,8 +52,8 @@ export const ProfileInfo = () => {
 
   return (
     <FormProvider {...form}>
-      <section className="flex flex-col gap-[10px] bg-secondary border-2 border-primary rounded-lg p-6">
-        <Text as="h2" variant="h2">
+      <section className="flex flex-col gap-[10px] bg-secondary border-2 border-primary rounded-md md:rounded-lg p-[10px] md:p-6">
+        <Text as="h2" variant="h2" className="text-h3-d">
           Персональные данные
         </Text>
         <ul className="flex flex-col gap-[12px]">
@@ -60,7 +61,7 @@ export const ProfileInfo = () => {
             <li key={item.name} className="flex gap-[15px] pb-3 border-b border-primary">
               <item.icon className="w-6 h-6 text-placeholder shrink-0 mt-1" />
               <div className="flex flex-col gap-[10px] flex-1">
-                <p className="text-h2-d font-normal text-placeholder">{item.label}</p>
+                <p className="text-h3-d md:text-h2-d font-normal text-placeholder">{item.label}</p>
                 {editMode ? (
                   <TextField {...fieldByName[item.name]} />
                 ) : (
@@ -73,16 +74,16 @@ export const ProfileInfo = () => {
         <nav className="flex flex-col gap-[10px] mt-[10px] max-w-[340px]">
           {!editMode ? (
             <Button type="button" onClick={() => setEditMode(true)}>
-              <EditIcon />
-              Редактировать
+              <EditIcon className="w-[18px] h-[16px] md:w-6 md:h-6" />
+              Редактировать профиль
             </Button>
           ) : (
             <Button type="button" onClick={handleSave} isLoading={form.formState.isSubmitting}>
               Сохранить
             </Button>
           )}
-          <Button type="button" variant={ButtonEnum.Tertialy} onClick={handleExit}>
-            <ExitIcon />
+          <Button type="button" variant={ButtonEnum.Tertiary} onClick={handleExit}>
+            <ExitIcon className="w-[18px] h-[16px] md:w-6 md:h-6" />
             Выйти
           </Button>
         </nav>

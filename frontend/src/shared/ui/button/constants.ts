@@ -1,6 +1,7 @@
 export enum ButtonEnum {
   Primary = 'primary',
   Secondary = 'secondary',
-  Tertialy = 'tertiary',
+  Tertiary = 'tertiary',
+  TertiaryLight = 'tertiarylight',
   Empty = 'empty',
 }

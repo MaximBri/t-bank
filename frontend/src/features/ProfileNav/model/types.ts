@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import type { ComponentType, SVGProps } from 'react'
 
 export enum ProfileNavItem {
   Profile = 'profile',
@@ -9,5 +9,5 @@ export enum ProfileNavItem {
 export interface ProfileNavModel {
   label: string
   value: ProfileNavItem
-  icon: ReactNode
+  Icon: ComponentType<SVGProps<SVGSVGElement>>
 }

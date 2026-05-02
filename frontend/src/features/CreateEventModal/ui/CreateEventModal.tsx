@@ -1,19 +1,21 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import { useExpenseCategories } from '@/entities/expense'
+
 import CloseIcon from '@/shared/assets/icons/close.svg?react'
 import { Button } from '@/shared/ui/button/Button.tsx'
 import { renderFormField } from '@/shared/ui/form'
 import { Modal } from '@/shared/ui/modal'
 
 import { getCreateEventFormFields } from '../lib/get-create-event-form-fields.tsx'
-import { useExpenseCategories } from '../lib/use-expense-categories.ts'
 import { createEventSchema } from '../model/schema.ts'
-import type { CreateEventFormValues } from '../model/types.ts'
-import { ExpenseCategoriesSection } from './ExpenseCategoriesSection.tsx'
 import { createEventFormDefaultValues } from '../model/constants.ts'
+import { ExpenseCategoriesSection } from './ExpenseCategoriesSection.tsx'
+
+import type { CreateEventFormFields, CreateEventFormValues } from '../model/types.ts'
+
 import { Text } from '@/shared/ui/text/Text.tsx'
-import { ButtonEnum } from '@/shared/ui/button/constants.ts'
 
 type CreateEventModalProps = {
   isOpen: boolean
@@ -35,7 +37,8 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
     setCategoryInput,
   } = useExpenseCategories(methods)
 
-  const { titleField, dateFields, descriptionField, avatarField } = getCreateEventFormFields()
+  const { titleField, dateFields, descriptionField, avatarField }: CreateEventFormFields =
+    getCreateEventFormFields()
 
   const {
     formState: { errors },
@@ -79,14 +82,13 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
           <Text as="h2" variant="h2">
             Создание события
           </Text>
-          <Button
+          <button
             aria-label="close-create-event-modal"
             className="transition-opacity hover:opacity-70"
             onClick={handleClose}
-            variant={ButtonEnum.Empty}
           >
             <CloseIcon width={20} height={20} />
-          </Button>
+          </button>
         </div>
 
         <FormProvider {...methods}>
@@ -99,7 +101,7 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
 
             <div className="flex flex-col gap-[10px] sm:flex-row sm:gap-[20px]">
               {renderFormField(descriptionField)}
-              {renderFormField(avatarField)}
+              <div className="sm:max-w-[150px]">{renderFormField(avatarField)}</div>
             </div>
 
             <ExpenseCategoriesSection

@@ -33,7 +33,6 @@ export const TextField = <
   const isPasswordField = type === 'password'
   const resolvedType = isPasswordField ? (visibleValue ? 'text' : 'password') : type
 
-
   return (
     <BaseField
       name={name}
@@ -75,7 +74,7 @@ export const TextField = <
                 className="absolute right-4 top-1/2 -translate-y-1/2"
                 aria-label={visibleValue ? 'Скрыть пароль' : 'Показать пароль'}
               >
-                {!visibleValue ? <EyeIcon width={22} height={22}/> : <ClosedEyeIcon />}
+                {!visibleValue ? <EyeIcon width={22} height={22} /> : <ClosedEyeIcon />}
               </button>
             )}
           </>

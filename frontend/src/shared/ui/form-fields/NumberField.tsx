@@ -3,6 +3,7 @@ import type { FieldPath, FieldValues } from 'react-hook-form'
 import type { NumberFieldConfig } from '@/shared/lib/forms'
 import { parseNumberValue } from '@/shared/lib/number/parseNumber.ts'
 import { BaseField } from './BaseField.tsx'
+import { FormFieldVariant } from '@/shared/lib/forms/types.ts'
 
 type NumberFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -16,6 +17,7 @@ export const NumberField = <
   name,
   label,
   labelClassName,
+  withoutClearButton,
   fieldClassName,
   placeholder,
   disabled,
@@ -25,6 +27,7 @@ export const NumberField = <
   min,
   max,
   step,
+  variant = FormFieldVariant.Filled,
 }: NumberFieldProps<TFieldValues, TName>) => {
   return (
     <BaseField
@@ -35,6 +38,8 @@ export const NumberField = <
       placeholder={placeholder}
       disabled={disabled}
       required={required}
+      variant={variant}
+      withoutClearButton={withoutClearButton}
       defaultValue={(defaultValue ?? undefined) as TFieldValues[TName]}
       rules={rules}
       isValuePresent={(value) => typeof value === 'number' && !Number.isNaN(value)}
