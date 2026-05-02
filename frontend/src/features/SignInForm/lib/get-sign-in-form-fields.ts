@@ -24,5 +24,6 @@ export const getSignInFormFields = (): TextFieldConfig<SignInByCredentialsFormVa
     fieldClassName: signInFieldInputClassName,
     placeholder: 'Ваш пароль',
     required: true,
+    withoutClearButton: true,
   }),
 ]

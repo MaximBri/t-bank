@@ -38,6 +38,7 @@ export default {
         skeleton: '#e6e6e6',
         'input-primary': '#f5f5f5',
         modal: '#d9d9d9',
+        toggle: '#c1c1c1'
       },
       textColor: {
         primary: '#000000',

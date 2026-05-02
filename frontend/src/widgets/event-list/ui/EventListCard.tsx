@@ -2,7 +2,6 @@ import clsx from 'clsx'
 
 import CalendarIcon from '@/shared/assets/icons/calendar.svg?react'
 import UsersIcon from '@/shared/assets/icons/users.svg?react'
-
 import { eventStatusMap, formatDateRange, type EventListItem } from '@/entities/event'
 import { formatParticipantsCount } from '@/shared/lib/formatParticipantsCount.ts'
 
