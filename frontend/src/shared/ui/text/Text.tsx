@@ -11,5 +11,5 @@ export const Text = <T extends ElementType = 'p'>({
 }: TextProps<T>) => {
   const Component = as || 'p'
 
-  return <Component className={clsx(variantClasses[variant], className,'')}>{children}</Component>
+  return <Component className={clsx(variantClasses[variant], className, '')}>{children}</Component>
 }

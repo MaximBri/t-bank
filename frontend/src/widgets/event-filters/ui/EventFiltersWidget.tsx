@@ -91,6 +91,7 @@ export const EventFiltersWidget = ({ onClose }: EventFiltersWidgetProps) => {
               value={startDate}
               onChange={(event) => setStartDate(event.target.value)}
               placeholder="дд.мм.гггг"
+              max={endDate || undefined}
             />
           </label>
           <label className="flex flex-col gap-[10px]">
@@ -102,6 +103,7 @@ export const EventFiltersWidget = ({ onClose }: EventFiltersWidgetProps) => {
               value={endDate}
               onChange={(event) => setEndDate(event.target.value)}
               placeholder="дд.мм.гггг"
+              min={startDate || undefined}
             />
           </label>
         </div>
@@ -113,6 +115,8 @@ export const EventFiltersWidget = ({ onClose }: EventFiltersWidgetProps) => {
           <div className="grid w-full grid-cols-2 gap-[10px] sm:gap-[15px]">
             <NumberInput
               name="min-count"
+              min={0}
+              max={maxParticipants ? Number(maxParticipants) : 100}
               value={minParticipants}
               onChange={(event) => setMinParticipants(event.target.value)}
               placeholder="от 0"
@@ -120,6 +124,8 @@ export const EventFiltersWidget = ({ onClose }: EventFiltersWidgetProps) => {
             />
             <NumberInput
               name="max-count"
+              min={minParticipants ? Number(minParticipants) : 0}
+              max={100}
               value={maxParticipants}
               onChange={(event) => setMaxParticipants(event.target.value)}
               placeholder="до 100"

@@ -23,6 +23,7 @@ export const userApi = {
   },
   
   async logout() {
+
     await api.post('/auth/logout', undefined, {
       _skipAuthRefresh: true,
     })
