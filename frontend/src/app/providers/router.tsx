@@ -9,6 +9,7 @@ import { APP_ROUTES } from '@/shared/routes'
 import { AppLayout } from '@/shared/ui/layout/AppLayout'
 import { PrivateRoute } from './PrivateRoute'
 import { PublicOnlyRoute } from './PublicOnlyRoute'
+import { ProfilePage } from '@/pages/profile'
 
 export const AppRouter = () => (
   <BrowserRouter>
@@ -18,6 +19,7 @@ export const AppRouter = () => (
           <Route path={APP_ROUTES.HOME} element={<HomePage />} />
           <Route path={APP_ROUTES.EVENT} element={<EventPage />} />
           <Route path={APP_ROUTES.NOT_FOUND} element={<NotFoundPage />} />
+          <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
       <Route element={<PublicOnlyRoute />}>
