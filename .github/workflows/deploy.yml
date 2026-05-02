@@ -80,6 +80,8 @@ jobs:
       SPRING_DATA_REDIS_PORT: ${{ secrets.SPRING_DATA_REDIS_PORT }}
       FRONTEND_PORT: ${{ secrets.FRONTEND_PORT }}
       BACKEND_PORT: ${{ secrets.BACKEND_PORT }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_COOKIE_SECURE: ${{ secrets.JWT_COOKIE_SECURE }}
 
     steps:
       - name: Checkout repository
@@ -96,6 +98,7 @@ jobs:
           test -n "$SPRING_DATASOURCE_URL"
           test -n "$SPRING_DATASOURCE_USERNAME"
           test -n "$SPRING_DATASOURCE_PASSWORD"
+          test -n "$JWT_SECRET"
 
       - name: Prepare SSH key
         run: |
@@ -133,6 +136,8 @@ jobs:
               echo 'SPRING_DATA_REDIS_PORT=${SPRING_DATA_REDIS_PORT:-6379}'; \
               echo 'FRONTEND_PORT=${FRONTEND_PORT:-3001}'; \
               echo 'BACKEND_PORT=${BACKEND_PORT:-8080}'; \
+              echo 'JWT_SECRET=${JWT_SECRET}'; \
+              echo 'JWT_COOKIE_SECURE=${JWT_COOKIE_SECURE:-true}'; \
               echo 'POSTGRES_DB=tbank'; \
               echo 'POSTGRES_USER=tbank'; \
               echo 'POSTGRES_PASSWORD=tbank'; \
