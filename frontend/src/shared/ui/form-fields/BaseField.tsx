@@ -10,6 +10,7 @@ import {
 
 import type { BaseFieldConfig } from '@/shared/lib/forms'
 import { ClearFieldButton } from '@/shared/ui/form'
+import { FormFieldVariant } from '@/shared/lib/forms/types'
 
 type BaseFieldRenderProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -40,6 +41,8 @@ type BaseFieldProps<
   defaultValue: TFieldValues[TName]
   isValuePresent: (value: TFieldValues[TName]) => boolean
   renderInput: (props: BaseFieldRenderProps<TFieldValues, TName>) => ReactNode
+  variant?: FormFieldVariant
+  withoutClearButton?: boolean
 }
 
 export const BaseField = <
@@ -56,6 +59,8 @@ export const BaseField = <
   rules,
   isValuePresent,
   renderInput,
+  variant = FormFieldVariant.Standart,
+  withoutClearButton = false,
 }: BaseFieldProps<TFieldValues, TName>) => {
   const id = `field-${name}`
   const { control, setValue } = useFormContext<TFieldValues>()
@@ -71,21 +76,29 @@ export const BaseField = <
         const hasValue = isValuePresent(field.value as TFieldValues[TName])
         const ariaDescribedBy = errorMessage ? `${id}-error` : undefined
         const inputClassName = clsx(
-          'w-full placeholder:text-placeholder disabled:cursor-not-allowed',
-          errorMessage
-            ? 'border-red-500 focus:border-red-500'
-            : 'border-slate-300 focus:border-slate-900',
-          'pr-8',
+          'w-full font-medium rounded-md border p-input text-body border-[2px] transition-colors duration-300',
           fieldClassName,
+          variant === FormFieldVariant.Filled && 'bg-input-primary',
+          variant === FormFieldVariant.Outlined && 'bg-secondary',
+          errorMessage
+            ? 'border-error focus:border-error'
+            : 'border-secondary focus:border-secondary',
         )
+
+        const handleClear = () => {
+          setValue(name, undefined as TFieldValues[TName], {
+            shouldDirty: true,
+            shouldTouch: true,
+            shouldValidate: true,
+          })
+        }
 
         return (
           <div className="relative flex w-full flex-col gap-1.5">
             <label className={clsx('font-inter font-medium', labelClassName)} htmlFor={id}>
               {label}
-              {required ? <span className="text-error"> *</span> : ''}
+              {required && <span className="text-error"> *</span>}
             </label>
-
             <div className="relative">
               {renderInput({
                 ariaDescribedBy,
@@ -95,21 +108,11 @@ export const BaseField = <
                 id,
                 inputClassName,
               })}
-
-              <ClearFieldButton
-                disabled={disabled}
-                hasValue={hasValue}
-                onClear={() =>
-                  setValue(name, undefined as TFieldValues[TName], {
-                    shouldDirty: true,
-                    shouldTouch: true,
-                    shouldValidate: true,
-                  })
-                }
-              />
+              {!withoutClearButton && (
+                <ClearFieldButton disabled={disabled} hasValue={hasValue} onClear={handleClear} />
+              )}
             </div>
-
-            {errorMessage ? (
+            {errorMessage && (
               <span
                 id={ariaDescribedBy}
                 className="absolute left-0 top-full mt-0 sm:mt-1 text-[10px] sm:text-sm text-error"
@@ -117,7 +120,7 @@ export const BaseField = <
               >
                 {errorMessage}
               </span>
-            ) : null}
+            )}
           </div>
         )
       }}

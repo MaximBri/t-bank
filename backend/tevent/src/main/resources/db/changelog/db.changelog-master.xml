@@ -6,5 +6,6 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
 
     <include file="db/changelog/migrations/01-init-db.sql" relativeToChangelogFile="false"/>
+    <include file="db/changelog/migrations/02-user-full-name-nullable.sql" relativeToChangelogFile="false"/>
 
 </databaseChangeLog>

@@ -1,0 +1,12 @@
+spring:
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+
+app:
+  security:
+    jwt:
+      secret: tevent-test-jwt-secret-for-auth-tests
+      access-token-expiration-minutes: 15
+      refresh-token-expiration-days: 30
+      cookie-secure: false
