@@ -7,11 +7,11 @@ import AddEventIcon from '@/shared/assets/icons/add.svg?react'
 import FilterIcon from '@/shared/assets/icons/filter.svg?react'
 
 import { Button } from '@/shared/ui/button/Button'
-import { EventListWidget } from '@/widgets/EventList'
+import { EventListWidget } from '@/widgets/event-list'
 import { Text } from '@/shared/ui/text/Text'
 import { ButtonEnum } from '@/shared/ui/button/constants'
 import { CreateEventModal } from '@/features/CreateEventModal'
-import { EventFiltersWidget, MobileEventFiltersModal } from '@/widgets/EventFilters'
+import { EventFiltersWidget, MobileEventFiltersModal } from '@/widgets/event-filters'
 
 const mockEvents: EventListItem[] = [
   {
