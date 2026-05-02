@@ -2,6 +2,7 @@ package com.tbank.tevent.auth.unit;
 
 import com.tbank.tevent.auth.JwtService;
 import com.tbank.tevent.config.JwtProperties;
+import com.tbank.tevent.user.User;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

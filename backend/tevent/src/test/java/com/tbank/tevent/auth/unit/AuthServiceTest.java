@@ -3,6 +3,7 @@ package com.tbank.tevent.auth.unit;
 import com.tbank.tevent.auth.AuthService;
 import com.tbank.tevent.auth.AuthTokens;
 import com.tbank.tevent.auth.JwtService;
+import com.tbank.tevent.auth.dto.CurrentUserResponse;
 import com.tbank.tevent.auth.dto.LoginRequest;
 import com.tbank.tevent.auth.dto.RegisterRequest;
 import com.tbank.tevent.auth.exception.InvalidCredentialsException;
@@ -58,7 +59,8 @@ class AuthServiceTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         assertThat(userCaptor.getValue().getLogin()).isEqualTo("user");
-        assertThat(userCaptor.getValue().getFullName()).isNull();
+        assertThat(userCaptor.getValue().getFirstName()).isNull();
+        assertThat(userCaptor.getValue().getSecondName()).isNull();
         assertThat(userCaptor.getValue().getPasswordHash()).isEqualTo("encoded-password");
         assertThat(tokens.accessToken()).isEqualTo("access-token");
         assertThat(tokens.refreshToken()).isEqualTo("refresh-token");
@@ -138,13 +140,29 @@ class AuthServiceTest {
         verifyNoInteractions(userRepository, passwordEncoder);
     }
 
+    @Test
+    void meReturnsCurrentUserWithProfileFields() {
+        User user = user("user", "encoded-password");
+        user.setFirstName("Ivan");
+        user.setSecondName("Ivanov");
+        user.setAvatarUrl("https://cdn.example/avatar.png");
+
+        when(userRepository.findByLogin("user")).thenReturn(Optional.of(user));
+
+        CurrentUserResponse response = authService.me("user");
+
+        assertThat(response.username()).isEqualTo("user");
+        assertThat(response.userId()).isEqualTo(user.getId());
+        assertThat(response.firstName()).isEqualTo("Ivan");
+        assertThat(response.secondName()).isEqualTo("Ivanov");
+        assertThat(response.avatarUrl()).isEqualTo("https://cdn.example/avatar.png");
+    }
+
     private User user(String login, String passwordHash) {
         User user = new User();
         user.setId(UUID.randomUUID());
         user.setLogin(login);
         user.setPasswordHash(passwordHash);
-        user.setFullName("Test User");
         return user;
     }
-
 }

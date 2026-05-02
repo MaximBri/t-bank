@@ -5,10 +5,7 @@ import com.tbank.tevent.auth.dto.LoginRequest;
 import com.tbank.tevent.auth.dto.RegisterResponse;
 import com.tbank.tevent.auth.dto.RegisterRequest;
 import com.tbank.tevent.auth.exception.MissingRefreshTokenException;
-
-import com.tbank.tevent.repo.entity.User;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
@@ -46,8 +42,6 @@ public class AuthController {
 
     @GetMapping("/me")
     public CurrentUserResponse me(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-        return new CurrentUserResponse(user.getLogin(), user.getId());
     }
 
     @PostMapping("/refresh")
@@ -57,10 +51,7 @@ public class AuthController {
         if (refreshToken == null) {
             throw new MissingRefreshTokenException();
         }
-        AuthTokens tokens = authService.refresh(refreshToken);
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, authCookieService.createAccessTokenCookie(tokens.accessToken()).toString())
-                .header(HttpHeaders.SET_COOKIE, authCookieService.createRefreshTokenCookie(tokens.refreshToken()).toString())
                 .build();
     }
 

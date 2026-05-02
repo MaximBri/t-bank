@@ -28,6 +28,9 @@ class AuthMeIntegrationTest extends AbstractAuthIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(login))
                 .andExpect(jsonPath("$.userId").exists())
+                .andExpect(jsonPath("$.first_name").hasJsonPath())
+                .andExpect(jsonPath("$.second_name").hasJsonPath())
+                .andExpect(jsonPath("$.avatar_url").hasJsonPath())
                 .andExpect(jsonPath("$.passwordHash").doesNotExist());
     }
 
