@@ -26,7 +26,31 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
-    setupFiles: './src/testSetup.ts',
+    setupFiles: 'tests/unit/setup-test.ts',
     globals: true,
+    include: [
+      'src/**/*.{test,spec}.{js,jsx,ts,tsx}',
+      'tests/unit/**/*.{test,spec}.{js,jsx,ts,tsx}',
+    ],
+    exclude: ['tests/e2e/**', 'node_modules/**', 'dist/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text-summary', 'text', 'html', 'lcov'],
+      reportsDirectory: './.artifacts/unit/coverage',
+      include: ['src/**/*.{js,jsx,ts,tsx}'],
+      exclude: [
+        'src/main.tsx',
+        'src/**/*.test.{js,jsx,ts,tsx}',
+        'src/**/*.spec.{js,jsx,ts,tsx}',
+        'src/**/*.d.ts',
+        'src/index.{js,jsx,ts,tsx}',
+      ],
+      thresholds: {
+        statements: 0,
+        branches: 0,
+        functions: 0,
+        lines: 0,
+      },
+    },
   },
 })
