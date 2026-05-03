@@ -1,7 +1,7 @@
 # UI Test Cases
 
 ## Test Case ID
-`TC-UI-001`
+`TC-UI-01`
 
 ## Title
 Открытие страницы логина без авторизации
@@ -26,7 +26,7 @@ UI / Authentication / Login Page
 ---
 
 ## Test Case ID
-`TC-UI-002`
+`TC-UI-02`
 
 ## Title
 Открытие страницы регистрации без авторизации
@@ -51,7 +51,7 @@ UI / Authentication / Register Page
 ---
 
 ## Test Case ID
-`TC-UI-003`
+`TC-UI-03`
 
 ## Title
 Открытие главной страницы "Мои события"
@@ -74,7 +74,7 @@ UI / Events / Home Page
 ---
 
 ## Test Case ID
-`TC-UI-004`
+`TC-UI-04`
 
 ## Title
 Просмотр модального окна принятия приглашения в событие
@@ -98,7 +98,7 @@ UI / Invitations / Accept Invitation Modal
 ---
 
 ## Test Case ID
-`TC-UI-005`
+`TC-UI-05`
 
 ## Title
 Открытие экрана создания события
@@ -122,7 +122,7 @@ UI / Events / Create Event
 ---
 
 ## Test Case ID
-`TC-UI-006`
+`TC-UI-06`
 
 ## Title
 Открытие страницы события
@@ -147,7 +147,7 @@ UI / Events / Event Page
 ---
 
 ## Test Case ID
-`TC-UI-007`
+`TC-UI-07`
 
 ## Title
 Открытие модального окна выхода из события
@@ -172,7 +172,7 @@ UI / Participants / Leave Event Modal
 ---
 
 ## Test Case ID
-`TC-UI-008`
+`TC-UI-08`
 
 ## Title
 Открытие раздела события "Расходы"
@@ -196,7 +196,7 @@ UI / Events / Expenses Section
 ---
 
 ## Test Case ID
-`TC-UI-009`
+`TC-UI-09`
 
 ## Title
 Открытие формы добавления расхода
@@ -220,7 +220,7 @@ UI / Expenses / Create Expense Form
 ---
 
 ## Test Case ID
-`TC-UI-010`
+`TC-UI-10`
 
 ## Title
 Открытие формы исправления расхода
@@ -246,7 +246,7 @@ UI / Expenses / Edit Expense Form
 ---
 
 ## Test Case ID
-`TC-UI-011`
+`TC-UI-11`
 
 ## Title
 Открытие формы оспаривания расхода
@@ -272,7 +272,7 @@ UI / Expenses / Dispute Expense Form
 ---
 
 ## Test Case ID
-`TC-UI-012`
+`TC-UI-12`
 
 ## Title
 Открытие раздела события "Взаиморасчеты"
@@ -296,7 +296,7 @@ UI / Events / Settlements Section
 ---
 
 ## Test Case ID
-`TC-UI-013`
+`TC-UI-13`
 
 ## Title
 Открытие раздела события "Участники"
@@ -320,7 +320,7 @@ UI / Events / Participants Section
 ---
 
 ## Test Case ID
-`TC-UI-014`
+`TC-UI-14`
 
 ## Title
 Открытие формы приглашения участников в событие
@@ -344,7 +344,7 @@ UI / Participants / Invite Participants Form
 ---
 
 ## Test Case ID
-`TC-UI-015`
+`TC-UI-15`
 
 ## Title
 Открытие экрана истории действий
@@ -369,7 +369,7 @@ UI / Events / History Page
 ---
 
 ## Test Case ID
-`TC-UI-016`
+`TC-UI-16`
 
 ## Title
 Открытие страницы личного кабинета
@@ -392,7 +392,7 @@ UI / User Profile / Personal Account
 ---
 
 ## Test Case ID
-`TC-UI-017`
+`TC-UI-17`
 
 ## Title
 Открытие раздела личного кабинета "Профиль"
@@ -415,7 +415,7 @@ UI / User Profile / Profile Section
 ---
 
 ## Test Case ID
-`TC-UI-018`
+`TC-UI-18`
 
 ## Title
 Открытие раздела личного кабинета "Уведомления"
@@ -438,7 +438,7 @@ UI / User Profile / Notifications Section
 ---
 
 ## Test Case ID
-`TC-UI-019`
+`TC-UI-19`
 
 ## Title
 Открытие раздела личного кабинета "Безопасность"
