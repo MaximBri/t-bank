@@ -256,3 +256,120 @@ API возвращает `401 Unauthorized` с сообщением:
 ## Environment
 - Стенд: деплой (`https://t-event.front-craft.ru/`)
 - API base URL: `https://t-event.front-craft.ru/api`
+
+
+---
+
+
+## Bug ID
+`BUG-006`
+
+## Severity (Серьёзность дефекта)
+- [ ] Высокая
+- [x] Средняя
+- [ ] Низкая
+
+## Description
+При отправке запроса с пустым request body сервер возвращает `500 Internal Server Error` вместо ошибки клиента `400 Bad Request`.
+
+Проблема воспроизводится не только при регистрации пользователя, но и при авторизации.
+
+Ожидается, что сервер будет корректно обрабатывать отсутствие тела запроса и возвращать `400 Bad Request`, без внутренней ошибки сервера, так как ошибка находится на стороне запроса, а приходит ошибка серверва 5XX
+
+## Preconditions
+1. Бэкенд запущен локально
+
+## Steps to Reproduce
+1. Создать `POST` запрос с endpoint-ом `/auth/login`
+2. Оставить request body пустым
+3. Отправить запрос
+4. Обратить внимание на HTTP status code
+5. Повторить те же шаги для endpoint-а `auth/register`
+
+## Expected Result (Ожидаемый результат)
+Сервер возвращает `400 Bad Request`.
+
+Например:
+
+    {
+      "status": 400,
+      "message": "Invalid request body"
+    }
+
+## Actual Result (Фактический результат)
+Сервер возвращает `500 Internal Server Error`.
+
+Проблема воспроизводится на endpoint-ах:
+- `POST /auth/login`
+- `POST /auth/register`
+
+## Environment
+- Stand: local
+- Header: `Content-Type: application/json`
+
+## Attachments
+- Скриншот ответа `500` для `POST /auth/login`
+- Скриншот ответа `500` для `POST /auth/register`
+
+
+---
+
+
+## Bug ID
+`BUG-007`
+
+## Title
+POST /auth/login и POST /auth/register возвращают 500 Internal Server Error при malformed JSON body вместо 400 Bad Request
+
+## Severity (Серьёзность дефекта)
+- [ ] Высокая
+- [x] Средняя
+- [ ] Низкая
+
+## Description
+При отправке запроса с некорректно сформированным JSON в request body сервер возвращает `500 Internal Server Error` вместо ошибки клиента `400 Bad Request`.
+
+Проблема воспроизводится не только при регистрации пользователя, но и при авторизации.
+
+Ожидается, что сервер будет корректно обрабатывать malformed JSON body и возвращать `400 Bad Request`, без внутренней ошибки сервера, так как ошибка находится на стороне запроса, а приходит ошибка сервера 5XX.
+
+## Preconditions
+1. Бэкенд запущен локально
+
+## Steps to Reproduce
+1. Создать `POST` запрос с endpoint-ом `/auth/login`
+2. В request body передать некорректно сформированный JSON:
+
+    {
+      "username": ""';:[]{} `~!@#$%^&*()_+-=<>?,./\|",
+      "password": "securePassword123"
+    }
+
+3. Отправить запрос
+4. Обратить внимание на HTTP status code
+5. Повторить те же шаги для endpoint-а `/auth/register`
+
+## Expected Result (Ожидаемый результат)
+Сервер возвращает `400 Bad Request`.
+
+Например:
+
+    {
+      "status": 400,
+      "message": "Invalid request body"
+    }
+
+## Actual Result (Фактический результат)
+Сервер возвращает `500 Internal Server Error`.
+
+Проблема воспроизводится на endpoint-ах:
+- `POST /auth/login`
+- `POST /auth/register`
+
+## Environment
+- Stand: local
+- Header: `Content-Type: application/json`
+
+## Attachments
+- Скриншот ответа `500` для `POST /auth/login`
+- Скриншот ответа `500` для `POST /auth/register`
