@@ -45,10 +45,9 @@
    - Провалился дополнительный assertion на текст/структуру ошибки
 
 ### Найденные дефекты
-- BUG-005: Сообщение об ошибке в теле ответа `api/auth/refresh` возвращается `Invalid credentials` при невалидном токене.
-- BUG-006: POST /auth/login возвращает 500 Internal Server Error при пустом request body вместо 400 Bad Request.
-- BUG-007: POST /auth/login и POST /auth/register возвращают 500 Internal Server Error при некорректных символах / malformed request body вместо 400 Bad Request.
-- 
+- [`BUG-005`](../bug-report/bug-005.md): Сообщение об ошибке в теле ответа `api/auth/refresh` возвращается `Invalid credentials` при невалидном токене.
+- [`BUG-006`](../bug-report/bug-006.md): `POST /auth/login` возвращает `500 Internal Server Error` при пустом request body вместо `400 Bad Request`.
+- [`BUG-007`](../bug-report/bug-007.md): `POST /auth/login` и `POST /auth/register` возвращают `500 Internal Server Error` при некорректных символах / malformed request body вместо `400 Bad Request`.
 ### Рекомендации
 Исправить обработку некорректного request body на уровне backend exception handling / validation, чтобы клиентские ошибки возвращали 400 Bad Request, а не 500 Internal Server Error.
 
@@ -56,4 +55,4 @@
 - [`auth.postman_test_run.json`](../log/auth.postman_test_run.json)
 
 ### Test-run ссылка в postman
-https://.postman.co/workspace/My-Workspace~2d7d6c9c-c339-4ecf-8542-85ab4ba32713/run/33361274-1be2e78d-213f-4430-b243-6415f57ad370?action=share&creator=33361274&active-environment=33361274-ab0b818f-f840-4c30-943e-c07bc06e9a75
+[Postman test run](https://.postman.co/workspace/My-Workspace~2d7d6c9c-c339-4ecf-8542-85ab4ba32713/run/33361274-1be2e78d-213f-4430-b243-6415f57ad370?action=share&creator=33361274&active-environment=33361274-ab0b818f-f840-4c30-943e-c07bc06e9a75)
