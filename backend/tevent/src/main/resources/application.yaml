@@ -21,6 +21,12 @@ spring:
   docker:
     compose:
       enabled: false
+
+springdoc:
+  swagger-ui:
+    url: ${SPRINGDOC_SWAGGER_UI_URL:/v3/api-docs}
+    config-url: ${SPRINGDOC_SWAGGER_UI_CONFIG_URL:/v3/api-docs/swagger-config}
+
 app:
   security:
     jwt:
