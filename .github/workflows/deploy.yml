@@ -138,6 +138,8 @@ jobs:
               echo 'BACKEND_PORT=${BACKEND_PORT:-8080}'; \
               echo 'JWT_SECRET=${JWT_SECRET}'; \
               echo 'JWT_COOKIE_SECURE=${JWT_COOKIE_SECURE:-true}'; \
+              echo 'SPRINGDOC_SWAGGER_UI_URL=/api/v3/api-docs'; \
+              echo 'SPRINGDOC_SWAGGER_UI_CONFIG_URL=/api/v3/api-docs/swagger-config'; \
               echo 'POSTGRES_DB=tbank'; \
               echo 'POSTGRES_USER=tbank'; \
               echo 'POSTGRES_PASSWORD=tbank'; \
