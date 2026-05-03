@@ -28,10 +28,10 @@ public class EventUser {
     private UUID userId;
 
     @Column(name = "role", nullable = false)
-    private String role; // OWNER, PARTICIPANT
+    private String role;
 
     @Column(name = "status", nullable = false)
-    private String status; // ACCEPTED, INVITED
+    private String status;
 
     @Column(name = "invited_at")
     private LocalDateTime invitedAt;

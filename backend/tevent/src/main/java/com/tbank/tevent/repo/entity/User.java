@@ -26,7 +26,7 @@ public class User {
     private String login;
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
-    @Column(name = "last_name")
+    @Column(name = "second_name")
     private String secondName;
     @Column(name = "first_name")
     private String firstName;

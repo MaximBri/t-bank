@@ -33,9 +33,6 @@ public class Event {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
-    @Column(name = "category", nullable = false)
-    private String category;
-
     @Column(name = "image_key")
     private String imageKey;
 
