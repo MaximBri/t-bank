@@ -21,8 +21,8 @@ public class AuthCookieService {
         return ResponseCookie.from(ACCESS_TOKEN_COOKIE)
                 .value(accessToken)
                 .httpOnly(true)
-                .secure(jwtProperties.isCookieSecure())
-                .sameSite("Strict")
+                .secure(false)
+                .sameSite("Lax")
                 .path("/")
                 .maxAge(Duration.ofMinutes(jwtProperties.getAccessTokenExpirationMinutes()))
                 .build();
