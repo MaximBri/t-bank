@@ -8,10 +8,11 @@ CREATE TABLE user_data (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     login         VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    last_name     VARCHAR(255) NOT NULL,
+    second_name     VARCHAR(255) NOT NULL,
     first_name    VARCHAR(255) NOT NULL,
     created_at    TIMESTAMP    NOT NULL,
-    updated_at    TIMESTAMP    NOT NULL
+    updated_at    TIMESTAMP    NOT NULL,
+    avatar_url    VARCHAR(255)
 );
 
 
@@ -39,7 +40,7 @@ CREATE TABLE IF NOT EXISTS event (
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
     CONSTRAINT fk_event_owner FOREIGN KEY(owner_id) REFERENCES user_data(id) ON DELETE CASCADE
-    );
+);
 
 CREATE TABLE IF NOT EXISTS event_user (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

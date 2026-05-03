@@ -31,7 +31,6 @@ public class EventService {
         event.setDescription(request.getDescription());
         event.setStartDate(request.getStartDate());
         event.setEndDate(request.getEndDate());
-        event.setCategory(request.getCategory());
         event.setOwnerId(currentUserId);
         event.setImageKey(request.getImageKey());
 
@@ -67,7 +66,6 @@ public class EventService {
         if (request.getDescription() != null) event.setDescription(request.getDescription());
         if (request.getStartDate() != null) event.setStartDate(request.getStartDate());
         if (request.getEndDate() != null) event.setEndDate(request.getEndDate());
-        if (request.getCategory() != null) event.setCategory(request.getCategory());
         if (request.getImageKey() != null) event.setImageKey(request.getImageKey());
 
         eventRepository.save(event);
@@ -108,8 +106,6 @@ public class EventService {
         resp.setTitle(event.getTitle());
         resp.setDescription(event.getDescription());
         resp.setStartDate(event.getStartDate());
-        resp.setEndDate(event.getEndDate());
-        resp.setCategory(event.getCategory());
         resp.setStatus(EventStatusCalculator.calculate(event.getStartDate(), event.getEndDate()));
         resp.setImageUrl(null);
         resp.setOwnerId(event.getOwnerId());

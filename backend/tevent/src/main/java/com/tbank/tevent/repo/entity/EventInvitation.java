@@ -34,7 +34,7 @@ public class EventInvitation {
     private UUID invitedBy;
 
     @Column(nullable = false)
-    private String status; // PENDING_APPROVAL, INVITED, ACCEPTED, DECLINED, REJECTED
+    private String status;
 
     @Column
     private String token;
