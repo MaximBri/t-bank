@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { FieldPath, FieldValues, RegisterOptions } from 'react-hook-form'
 import type { ZodTypeAny } from 'zod'
 
@@ -9,7 +10,23 @@ export type FormOption = {
   disabled?: boolean
 }
 
-export type BaseFieldType = 'text' | 'number' | 'email' | 'password' | 'checkbox' | 'select'
+export type BaseFieldType =
+  | 'text'
+  | 'textarea'
+  | 'number'
+  | 'email'
+  | 'password'
+  | 'checkbox'
+  | 'select'
+  | 'date'
+  | 'image'
+  | 'multiselect'
+
+export enum FormFieldVariant {
+  Filled = 'filled',
+  Outlined = 'outlined',
+  Standart = 'standart',
+}
 
 export type BaseFieldConfig<
   TFieldValues extends FieldValues = FieldValues,
@@ -25,6 +42,8 @@ export type BaseFieldConfig<
   required?: boolean
   defaultValue?: unknown
   rules?: RegisterOptions<TFieldValues, TName>
+  variant?: FormFieldVariant
+  withoutClearButton?: boolean
 }
 
 export type TextFieldConfig<
@@ -32,6 +51,14 @@ export type TextFieldConfig<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = BaseFieldConfig<TFieldValues, TName> & {
   type: 'text' | 'email' | 'password'
+}
+
+export type TextAreaFieldConfig<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = BaseFieldConfig<TFieldValues, TName> & {
+  type: 'textarea'
+  rows?: number
 }
 
 export type NumberFieldConfig<
@@ -66,11 +93,24 @@ export type DateFieldConfig<
   type: 'date'
   minDate?: string
   maxDate?: string
+  calendarIconSize?: string
+}
+
+export type ImageFieldConfig<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = BaseFieldConfig<TFieldValues, TName> & {
+  type: 'image'
+  accept?: string
+  emptyState?: ReactNode
+  previewClassName?: string
 }
 
 export type FormFieldConfig<TFieldValues extends FieldValues = FieldValues> =
   | TextFieldConfig<TFieldValues>
+  | TextAreaFieldConfig<TFieldValues>
   | NumberFieldConfig<TFieldValues>
   | BooleanFieldConfig<TFieldValues>
   | DateFieldConfig<TFieldValues>
+  | ImageFieldConfig<TFieldValues>
   | SelectFieldConfig<TFieldValues>

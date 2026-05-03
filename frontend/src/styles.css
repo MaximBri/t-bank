@@ -2,8 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  font-family: Inter, system-ui, sans-serif;
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-primary font-inter;
+  }
+
+  * {
+    @apply font-inter;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-placeholder;
+  }
+
+  input:disabled,
+  textarea:disabled,
+  select:disabled {
+    @apply cursor-not-allowed;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  button {
+    font: inherit;
+  }
+
+  main {
+    @apply px-[10px] py-[10px] sm:px-[30px] sm:py-[20px];
+  }
 }
 
 #root {
@@ -11,16 +50,4 @@
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-}
-
-body {
-  @apply bg-primary;
-}
-
-a {
-  color: inherit;
-}
-
-button {
-  font: inherit;
 }
