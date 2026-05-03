@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
@@ -46,7 +46,8 @@ public class AuthController {
     @GetMapping("/me")
     public CurrentUserResponse me(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return new CurrentUserResponse(user.getLogin(), user.getId());
+        return new CurrentUserResponse(user.getLogin(), user.getId(), user.getFirstName(),
+                user.getSecondName(), user.getAvatarUrl());
     }
 
     @PostMapping("/refresh")
@@ -56,7 +57,10 @@ public class AuthController {
         if (refreshToken == null) {
             throw new MissingRefreshTokenException();
         }
+        AuthTokens tokens = authService.refresh(refreshToken);
         return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, authCookieService.createAccessTokenCookie(tokens.accessToken()).toString())
+                .header(HttpHeaders.SET_COOKIE, authCookieService.createRefreshTokenCookie(tokens.refreshToken()).toString())
                 .build();
     }
 

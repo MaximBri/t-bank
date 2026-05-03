@@ -16,4 +16,10 @@ public interface EventUserRepository extends JpaRepository<EventUser, UUID> {
     Long countByEventId(UUID eventId);
 
     List<EventUser> findAllByEventId(UUID eventId);
+
+    List<EventUser> findAllByEventIdAndStatus(UUID eventId, String status);
+
+    Optional<EventUser> findByEventIdAndUserIdAndStatus(UUID eventId, UUID userId, String status);
+
+    boolean existsByEventIdAndUserIdAndRole(UUID eventId, UUID userId, String role);
 }

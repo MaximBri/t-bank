@@ -2,11 +2,22 @@ spring:
   application:
     name: tevent
   datasource:
-    url: jdbc:postgresql://localhost:5432/my_database
-    username: user
-    password: password
+    url: jdbc:postgresql://localhost:5432/tbank
+    username: tbank
+    password: tbank
     driver-class-name: org.postgresql.Driver
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
+
+  docker:
+    compose:
+      enabled: false
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      access-token-expiration-minutes: 15
+      refresh-token-expiration-days: ${JWT_REFRESH_TOKEN_EXPIRATION_DAYS:30}
+      cookie-secure: ${JWT_COOKIE_SECURE:true}

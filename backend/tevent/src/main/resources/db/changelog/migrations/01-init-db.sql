@@ -34,7 +34,6 @@ CREATE TABLE IF NOT EXISTS event (
     description VARCHAR(1000),
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL,
-    category VARCHAR(255) NOT NULL,
     image_key VARCHAR(255),
     owner_id UUID NOT NULL,
     created_at TIMESTAMP,
