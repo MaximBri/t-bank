@@ -1,0 +1,45 @@
+tryproxy@cosmic:/home/tryproxy::$ curl -i -X POST http://127.0.0.1:8080/auth/curl -i -X POST http://127.0.0.1:8080/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"test","password":"test"}'
+HTTP/1.1 400
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Tue, 28 Apr 2026 16:11:59 GMT
+Connection: close
+
+tryproxy@cosmic:/home/tryproxy::$ curl -i -X POST http://127.0.0.1:8080/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"test","password":"test1234"}'
+HTTP/1.1 201
+Set-Cookie: accessToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTc3NzM5Mjc1MywiZXhwIjoxNzc3MzkzNjUzfQ.xyAuSWVPp0D_8yqspH6bcoparlPf3-PD4lCTUgCjsUA; Path=/; Max-Age=900; Expires=Tue, 28 Apr 2026 16:27:33 GMT; Secure; HttpOnly; SameSite=Strict
+Set-Cookie: refreshToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidG9rZW5fdHlwZSI6InJlZnJlc2giLCJpYXQiOjE3NzczOTI3NTMsImV4cCI6MTc3OTk4NDc1M30.ByVN-6y1I2XlfuJOP_KD4xdUGvLZYG3JCafu2mT00oQ; Path=/auth/refresh; Max-Age=2592000; Expires=Thu, 28 May 2026 16:12:33 GMT; Secure; HttpOnly; SameSite=Strict
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Tue, 28 Apr 2026 16:12:33 GMT
+
+{"userId":"f376b74c-95ca-4450-a616-02432e587ac8","joinedGroupId":null}tryproxy@cosmic:/home/tryproxy::$ curl -i -X POST http://127.0.0.1:8080/aucurl -i -X POST http://127.0.0.1:8080/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"test","password":"test1234"}'
+HTTP/1.1 200
+Set-Cookie: accessToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidG9rZW5fdHlwZSI6ImFjY2VzcyIsImlhdCI6MTc3NzM5Mjc3MCwiZXhwIjoxNzc3MzkzNjcwfQ.laQOLZCTX_tpGqCcPMHSl6eDShxW5-bfvZyQiTQAmuc; Path=/; Max-Age=900; Expires=Tue, 28 Apr 2026 16:27:50 GMT; Secure; HttpOnly; SameSite=Strict
+Set-Cookie: refreshToken=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwidG9rZW5fdHlwZSI6InJlZnJlc2giLCJpYXQiOjE3NzczOTI3NzAsImV4cCI6MTc3OTk4NDc3MH0.mLn8CezFYocF3DncLBghrR5oNeBg6IQqMEtzo5ojTdE; Path=/auth/refresh; Max-Age=2592000; Expires=Thu, 28 May 2026 16:12:50 GMT; Secure; HttpOnly; SameSite=Strict
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 0
+Date: Tue, 28 Apr 2026 16:12:50 GMT
