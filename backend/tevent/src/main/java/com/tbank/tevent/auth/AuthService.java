@@ -97,7 +97,13 @@ public class AuthService {
                     return new InvalidCredentialsException();
                 });
 
-        return new CurrentUserResponse(user.getLogin(), user.getId());
+        return new CurrentUserResponse(
+                user.getLogin(),
+                user.getId(),
+                user.getFirstName(),
+                user.getSecondName(),
+                user.getAvatarUrl()
+        );
     }
 
     private AuthTokens generateTokens(User user) {
