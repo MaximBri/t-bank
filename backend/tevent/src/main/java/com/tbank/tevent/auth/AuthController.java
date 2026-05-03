@@ -5,7 +5,9 @@ import com.tbank.tevent.auth.dto.LoginRequest;
 import com.tbank.tevent.auth.dto.RegisterResponse;
 import com.tbank.tevent.auth.dto.RegisterRequest;
 import com.tbank.tevent.auth.exception.MissingRefreshTokenException;
+import com.tbank.tevent.repo.entity.User;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
     private final AuthCookieService authCookieService;
-
-    public AuthController(AuthService authService, AuthCookieService authCookieService) {
-        this.authService = authService;
-        this.authCookieService = authCookieService;
-    }
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -47,7 +45,9 @@ public class AuthController {
 
     @GetMapping("/me")
     public CurrentUserResponse me(Authentication authentication) {
-        return authService.me(authentication.getName());
+        User user = (User) authentication.getPrincipal();
+        return new CurrentUserResponse(user.getLogin(), user.getId(), user.getFirstName(),
+                user.getSecondName(), user.getAvatarUrl());
     }
 
     @PostMapping("/refresh")
@@ -57,9 +57,10 @@ public class AuthController {
         if (refreshToken == null) {
             throw new MissingRefreshTokenException();
         }
-
+        AuthTokens tokens = authService.refresh(refreshToken);
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, authCookieService.createAccessTokenCookie(authService.refresh(refreshToken)).toString())
+                .header(HttpHeaders.SET_COOKIE, authCookieService.createAccessTokenCookie(tokens.accessToken()).toString())
+                .header(HttpHeaders.SET_COOKIE, authCookieService.createRefreshTokenCookie(tokens.refreshToken()).toString())
                 .build();
     }
 
@@ -77,5 +78,4 @@ public class AuthController {
         headers.add(HttpHeaders.SET_COOKIE, authCookieService.createRefreshTokenCookie(tokens.refreshToken()).toString());
         return headers;
     }
-
 }
