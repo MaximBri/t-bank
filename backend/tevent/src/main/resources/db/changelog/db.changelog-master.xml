@@ -7,4 +7,12 @@
 
     <include file="db/changelog/migrations/01-init-db.sql" relativeToChangelogFile="false"/>
     <include file="db/changelog/migrations/02-add-participants-invitations.sql" relativeToChangelogFile="false"/>
+    <include file="db/changelog/migrations/03-user-avatar-and-optional-names.sql" relativeToChangelogFile="false"/>
+    <include file="db/changelog/migrations/04-create-category-expense-tables.sql" relativeToChangelogFile="false"/>
+    <include file="db/changelog/migrations/05-category-event-id-nullable.sql" relativeToChangelogFile="false"/>
+    <include file="db/changelog/migrations/06-seed-default-categories.sql" relativeToChangelogFile="false"/>
+    <include file="db/changelog/migrations/07-expense-add_status_column_and_remove_is_confirmed_column.sql" relativeToChangelogFile="false"/>
+    <include file="db/changelog/migrations/08-expense-add-reason-conflict-column.sql" relativeToChangelogFile="false"/>
+    <include file="db/changelog/migrations/09-expense-participant-add-has-responded-column.sql" relativeToChangelogFile="false"/>
+
 </databaseChangeLog>
