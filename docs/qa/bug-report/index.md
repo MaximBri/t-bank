@@ -7,3 +7,4 @@
 - [`BUG-005`](./bug-005.md) Сообщение об ошибке в теле ответа `api/auth/refresh` возвращается `Invalid credentials` при невалидном токене
 - [`BUG-006`](./bug-006.md) `POST /auth/login` и `POST /auth/register` возвращают `500 Internal Server Error` при пустом request body вместо `400 Bad Request`
 - [`BUG-007`](./bug-007.md) `POST /auth/login` и `POST /auth/register` возвращают `500 Internal Server Error` при malformed JSON body вместо `400 Bad Request`
+- [`BUG-008`](./bug-008.md) CORS-ошибка при регистрации через frontend

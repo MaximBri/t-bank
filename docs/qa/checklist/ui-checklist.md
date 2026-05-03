@@ -1,4 +1,3 @@
-
 # UI Checklist
 
 ## 1. Цель
