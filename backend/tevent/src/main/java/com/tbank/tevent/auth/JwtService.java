@@ -2,7 +2,7 @@ package com.tbank.tevent.auth;
 
 
 import com.tbank.tevent.config.JwtProperties;
-import com.tbank.tevent.user.User;
+import com.tbank.tevent.repo.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Service;

@@ -27,11 +27,13 @@ public class User {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
     @Column(name = "last_name")
-    private String lastName;
+    private String secondName;
     @Column(name = "first_name")
     private String firstName;
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 }

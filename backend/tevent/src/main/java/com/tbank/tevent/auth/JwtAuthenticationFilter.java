@@ -1,7 +1,7 @@
 package com.tbank.tevent.auth;
 
-import com.tbank.tevent.user.User;
-import com.tbank.tevent.user.UserRepository;
+import com.tbank.tevent.repo.UserRepository;
+import com.tbank.tevent.repo.entity.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
