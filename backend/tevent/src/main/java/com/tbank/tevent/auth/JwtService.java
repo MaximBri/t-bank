@@ -2,7 +2,7 @@ package com.tbank.tevent.auth;
 
 
 import com.tbank.tevent.config.JwtProperties;
-import com.tbank.tevent.user.User;
+import com.tbank.tevent.repo.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Service;
@@ -10,6 +10,8 @@ import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Service
@@ -85,4 +87,10 @@ public class JwtService {
                 .getPayload();
     }
 
+    public LocalDateTime extractExpiration(String token) {
+        Date expiration = extractAllClaims(token).getExpiration();
+        return expiration.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
 }

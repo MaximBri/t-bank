@@ -309,7 +309,7 @@ paths:
       tags:
         - Participants
       summary: Пригласить пользователя в событие
-      description: Создание приглашения для пользователя по username
+      description: Создание приглашения для пользователя по login
       parameters:
         - name: eventId
           in: path
@@ -1173,7 +1173,7 @@ components:
           example: "Петров"
         username:
           type: string
-          example: "@username"
+          example: "@login"
         email:
           type: string
           example: "ivan.petrov@example.com"

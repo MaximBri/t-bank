@@ -1,7 +1,10 @@
 package com.tbank.tevent.auth;
 
-import com.tbank.tevent.user.User;
-import com.tbank.tevent.user.UserRepository;
+
+import com.tbank.tevent.auth.exception.InvalidCredentialsException;
+import com.tbank.tevent.repo.UserRepository;
+import com.tbank.tevent.repo.entity.User;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -32,7 +36,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String token = resolveAccessToken(request);
 
@@ -47,7 +53,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String login = jwtService.extractLogin(token);
+        String login;
+        try {
+            login = jwtService.extractLogin(token);
+        } catch (ExpiredJwtException e) {
+            throw new InvalidCredentialsException("Access token expired");
+        } catch (JwtException e) {
+            throw new InvalidCredentialsException("Invalid access token");
+        }
 
         User user = userRepository.findByLogin(login).orElse(null);
 
@@ -59,12 +72,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
-                        user.getLogin(),
+                        user,
                         null,
                         List.of()
                 );
 
-        authentication.setDetails( new WebAuthenticationDetailsSource().buildDetails(request) );
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.debug("JWT authentication completed, userId={}, login={}", user.getId(), user.getLogin());

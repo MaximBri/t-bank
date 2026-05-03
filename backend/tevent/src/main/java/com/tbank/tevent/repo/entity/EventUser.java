@@ -27,11 +27,28 @@ public class EventUser {
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID userId;
 
+    @Column(name = "role", nullable = false)
+    private String role; // OWNER, PARTICIPANT
+
+    @Column(name = "status", nullable = false)
+    private String status; // ACCEPTED, INVITED
+
+    @Column(name = "invited_at")
+    private LocalDateTime invitedAt;
+
     @Column(name = "joined_at", nullable = false, updatable = false)
     private LocalDateTime joinedAt;
 
     @PrePersist
     protected void onCreate() {
-        joinedAt = LocalDateTime.now();
+        if (joinedAt == null) {
+            joinedAt = LocalDateTime.now();
+        }
+        if (role == null) {
+            role = "PARTICIPANT";
+        }
+        if (status == null) {
+            status = "ACCEPTED";
+        }
     }
 }
