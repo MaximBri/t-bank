@@ -1,52 +1,31 @@
-Артефакты второго дедлайна
+Aртефакты второго дедлайна
 
-PR: https://github.com/MaximBri/t-bank/pull/75
+Отчет link (https://github.com/MaximBri/t-bank/blob/127bdbf05b3d46711d797fe6690e679960fd67af/docs/qa/report/2-stage-mvp/index.md)
 
-I. Полнота тестирования API
+Прямые ссылки на всякий случай по артефактам:
+PR https://github.com/MaximBri/t-bank/pull/75
 
-* Статус:
-  выполнено для Auth API на момент test-run
+1. Тестирование API
+- api-testing-report.md link (https://github.com/MaximBri/t-bank/blob/127bdbf05b3d46711d797fe6690e679960fd67af/docs/qa/report/2-stage-mvp/api-testing-report.md)
+- auth.postman_test_run.json link (https://github.com/MaximBri/t-bank/pull/75/files#diff-3ad9c1d5c4b65b324786596f09dcdfe16526f5fa5c48b44ed087da342ec50dcd)
+- postman-collection.zip postman коллекция (.json/zip) link (https://github.com/MaximBri/t-bank/pull/75/files#diff-3cf0d499fc01ef0aa856ca3d42f476f66ec051f3d4d6f7885b8ac8695dd74ecf)
 
-* Документ:
-  `docs/qa/api-testing-report.md`
+2. Функциональное тестирование
+- functional-testing-report.md link (https://github.com/MaximBri/t-bank/blob/127bdbf05b3d46711d797fe6690e679960fd67af/docs/qa/report/2-stage-mvp/functional-testing-report.md)
 
-* Postman test-run (.json):
-  `docs/qa/log/auth.postman_test_run.json`
+3.Тестирование UI
+- ui-testing-report.md link (https://github.com/MaximBri/t-bank/blob/127bdbf05b3d46711d797fe6690e679960fd67af/docs/qa/report/2-stage-mvp/ui-testing-report.md)
+- ui-checklist.md link (https://github.com/MaximBri/t-bank/pull/75/changes#diff-bf8fdbb0c83eca966d83ca9c285a5e170df9a61c34ab8d0534afc87fc8aaf56f)
+- test-cases-ui.md link (https://github.com/MaximBri/t-bank/pull/75/changes#diff-eca04ae51f8df3a0bb44896cdb12dad96658ae1b50992e54e80d51afee93bd6b)
 
-* Postman коллекция актуализирована (.json/zip):
-  `docs/qa/postman-collection.zip`
+4. Баг-репорты
+- docs/qa/bug-report/index.md link (https://github.com/MaximBri/t-bank/blob/127bdbf05b3d46711d797fe6690e679960fd67af/docs/qa/bug-report/index.md)
 
-* Замечание:
-  новые endpoint-ы, добавленные в день дедлайна, вынесены в scope третьего этапа для актуализации коллекции и повторного прогона
+5. Тестирование безопасности и edge-case
+- security-testing-report.md link (https://github.com/MaximBri/t-bank/blob/127bdbf05b3d46711d797fe6690e679960fd67af/docs/qa/report/2-stage-mvp/security-testing-report.md)
 
-II. Полнота тестирования UI
-
-* Статус:
-  в работе / будет актуализировано отдельным отчетом
-
-III. Качество баг-репортов
-
-* Статус:
-  Заведено 7 баг-репортов
-
-* Документ со списком:
-  `docs/qa/bug-report/index.md`
-
-* Замечание:
-  Заведены все найденные
-
-IV. Тестирование безопасности и edge-cases
-
-* Статус:
-  частично выполнено в рамках Auth API
-
-* Покрыто:
-  invalid credentials, invalid refresh token, пустой request body, malformed input / forbidden characters
-
-* Документы:
-  `docs/qa/api-testing-report.md`
-
-V. Коммуникация с командой
-
-* Замечание:
-  ведется через Доску на GH / PR / баг-репорты / созвоны дважды в неделю / общение в тг-группе
+6. QA-автоматизация и CI
+PR https://github.com/MaximBri/t-bank/pull/76
+В дополнение настроена инфраструктура для unit и e2e тестов, с интеграцией CI в Github Actions
+- e2e.yml link (https://github.com/MaximBri/t-bank/pull/76/changes#diff-55f05888fd854d9962bdd4d8ccf23a07b610990f58174397b2586b58f8937428)
+- check.yml link (https://github.com/MaximBri/t-bank/pull/76/changes#diff-3e103440521ada06efd263ae09b259e5507e4b8f7408308dc227621ad9efa31e)
