@@ -1,0 +1,52 @@
+Артефакты второго дедлайна
+
+PR: https://github.com/MaximBri/t-bank/pull/75
+
+I. Полнота тестирования API
+
+* Статус:
+  выполнено для Auth API на момент test-run
+
+* Документ:
+  `docs/qa/api-testing-report.md`
+
+* Postman test-run (.json):
+  `docs/qa/log/auth.postman_test_run.json`
+
+* Postman коллекция актуализирована (.json/zip):
+  `docs/qa/postman-collection.zip`
+
+* Замечание:
+  новые endpoint-ы, добавленные в день дедлайна, вынесены в scope третьего этапа для актуализации коллекции и повторного прогона
+
+II. Полнота тестирования UI
+
+* Статус:
+  в работе / будет актуализировано отдельным отчетом
+
+III. Качество баг-репортов
+
+* Статус:
+  Заведено 7 баг-репортов
+
+* Документ со списком:
+  `docs/qa/bug-report/index.md`
+
+* Замечание:
+  Заведены все найденные
+
+IV. Тестирование безопасности и edge-cases
+
+* Статус:
+  частично выполнено в рамках Auth API
+
+* Покрыто:
+  invalid credentials, invalid refresh token, пустой request body, malformed input / forbidden characters
+
+* Документы:
+  `docs/qa/api-testing-report.md`
+
+V. Коммуникация с командой
+
+* Замечание:
+  ведется через Доску на GH / PR / баг-репорты / созвоны дважды в неделю / общение в тг-группе
