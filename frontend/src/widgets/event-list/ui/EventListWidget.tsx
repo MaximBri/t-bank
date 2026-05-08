@@ -7,7 +7,7 @@ import { skeletonItems } from '../model/constants.ts'
 
 export type EventListWidgetProps = {
   isLoading?: boolean
-  items: EventListItem[]
+  items: EventListItem[] | undefined
   onCreateEvent?: () => void
 }
 
@@ -16,7 +16,7 @@ export const EventListWidget = ({
   isLoading = false,
   onCreateEvent,
 }: EventListWidgetProps) => {
-  if (isLoading) {
+  if (isLoading || !items) {
     return (
       <div className="grid gap-[10px] [grid-template-columns:repeat(auto-fit,minmax(341px,1fr))] sm:gap-[20px] sm:[grid-template-columns:repeat(auto-fit,minmax(450px,1fr))]">
         {skeletonItems.map((item) => (

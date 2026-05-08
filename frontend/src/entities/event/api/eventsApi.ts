@@ -8,28 +8,28 @@ import {
 
 export const eventsApi = {
   getAll: async ({
-    search = '',
-    status = undefined,
-    startDate = '',
-    endDate = '',
-    minParticipants = 0,
-    maxParticipants = undefined,
+    search,
+    status,
+    startDate,
+    endDate,
+    minParticipants,
+    maxParticipants,
   }: GetEventsParams) => {
-    const { data } = await api.get<UserEventDto[]>('events/user/events', {
+    const { data } = await api.get<UserEventDto[]>('/events/user/events', {
       params: {
         search,
         startDate,
         maxParticipants,
         minParticipants,
         endDate,
-        status
-      }
+        status,
+      },
     })
     return data
   },
 
   getById: async (id: string) => {
-    const { data } = await api.get<EventResponse>(`events/${id}`)
+    const { data } = await api.get<EventResponse>(`/events/${id}`)
     return data
   },
 

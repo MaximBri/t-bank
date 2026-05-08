@@ -15,7 +15,7 @@ import ExitIcon from '@/shared/assets/icons/exit.svg?react'
 import { getProfileItems } from '../model/constants'
 import { profileSchema, type ProfileSchemaValues } from '../model/schema'
 import { getProfileFormFields, profileFormDefaultValues } from './constants'
-import { userApi } from '@/entities/event'
+import { userApi } from '@/entities/user'
 
 export const ProfileInfo = () => {
   const queryClient = useQueryClient()

@@ -3,22 +3,32 @@ import { eventsApi } from '@/entities/event'
 import { UseGetEventsParams } from '@/entities/event/api/types.ts'
 
 export function useGetEvents({
-  search = '',
-  status = undefined,
-  startDate = '',
-  endDate = '',
-  minParticipants = 0,
-  maxParticipants = undefined,
+  search,
+  status,
+  startDate,
+  endDate,
+  minParticipants,
+  maxParticipants,
 }: UseGetEventsParams) {
   return useQuery({
-    queryKey: ['events', 'list', search, status, startDate, endDate, minParticipants, maxParticipants],
-    queryFn: () => eventsApi.getAll({
+    queryKey: [
+      'events',
+      'list',
       search,
       status,
       startDate,
       endDate,
       minParticipants,
       maxParticipants,
-    }),
+    ],
+    queryFn: () =>
+      eventsApi.getAll({
+        search,
+        status,
+        startDate,
+        endDate,
+        minParticipants,
+        maxParticipants,
+      }),
   })
 }

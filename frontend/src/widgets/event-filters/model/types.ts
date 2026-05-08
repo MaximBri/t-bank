@@ -1,8 +1,8 @@
-export enum EventFilterStatus {
+export enum EventFilterStatus  {
   All = 'all',
   Active = 'active',
   Planned = 'planned',
-  Completed = 'completed',
+  Completed = 'completed'
 }
 
 export type EventFiltersState = {

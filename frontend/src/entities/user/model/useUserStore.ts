@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 import type { User, UserStore } from './types'
-import { userApi } from '@/entities/event'
+import { userApi } from '..'
 
 const mapCurrentUser = (payload: { userId: string; username: string }): User => ({
   id: payload.userId,

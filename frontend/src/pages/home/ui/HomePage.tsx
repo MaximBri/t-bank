@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { EventStatus, type EventListItem } from '@/entities/event'
+// import { EventStatus, type EventListItem } from '@/entities/event'
 import clsx from 'clsx'
 
 import AddEventIcon from '@/shared/assets/icons/add.svg?react'
@@ -12,63 +12,81 @@ import { Text } from '@/shared/ui/text/Text'
 import { ButtonEnum } from '@/shared/ui/button/constants'
 import { CreateEventModal } from '@/features/CreateEventModal'
 import { EventFiltersWidget, MobileEventFiltersModal } from '@/widgets/event-filters'
-
-const mockEvents: EventListItem[] = [
-  {
-    id: 'sochi-active-1',
-    title: 'Поездка в Сочи',
-    startDate: '2026-04-06',
-    endDate: '2026-04-20',
-    participantsCount: 5,
-    status: EventStatus.Active,
-    imageUrl: '/logo.svg',
-  },
-  {
-    id: 'sochi-active-2',
-    title: 'Поездка в Сочи',
-    startDate: '2026-04-06',
-    endDate: '2026-04-20',
-    participantsCount: 5,
-    status: EventStatus.Active,
-  },
-  {
-    id: 'restaurant-planned-1',
-    title: 'Сходка в ресторане',
-    startDate: '2026-05-15',
-    endDate: '2026-06-20',
-    participantsCount: 5,
-    status: EventStatus.Planned,
-  },
-  {
-    id: 'long-planned',
-    title: 'Очень длинное назв...',
-    startDate: '2026-05-15',
-    endDate: '2026-06-20',
-    participantsCount: 1,
-    status: EventStatus.Planned,
-  },
-  {
-    id: 'sochi-completed',
-    title: 'Поездка в Сочи',
-    startDate: '2026-04-06',
-    endDate: '2026-04-20',
-    participantsCount: 5,
-    status: EventStatus.Completed,
-  },
-  {
-    id: 'restaurant-planned-2',
-    title: 'Сходка в ресторане',
-    startDate: '2026-05-15',
-    participantsCount: 5,
-    status: EventStatus.Planned,
-  },
-]
+import { useGetEvents } from "@/entities/event/api/hooks/useGetEvents.ts";
+import {useEventFiltersStore} from "@/widgets/event-filters/model/useEventFiltersStore.ts";
+import {parseNumberValue} from "@/shared/lib/number/parseNumber.ts";
+import {EventFilterStatus} from "@/widgets/event-filters/model/types.ts";
+import {EventStatus} from "@/entities/event";
+import {useDebouncedValue} from "@/shared/lib/debounce/useDebouncedValue.ts";
+// const mockEvents: EventListItem[] = [
+//   {
+//     id: 'sochi-active-1',
+//     title: 'Поездка в Сочи',
+//     startDate: '2026-04-06',
+//     endDate: '2026-04-20',
+//     participantsCount: 5,
+//     status: EventStatus.Active,
+//     imageUrl: '/logo.svg',
+//   },
+//   {
+//     id: 'sochi-active-2',
+//     title: 'Поездка в Сочи',
+//     startDate: '2026-04-06',
+//     endDate: '2026-04-20',
+//     participantsCount: 5,
+//     status: EventStatus.Active,
+//   },
+//   {
+//     id: 'restaurant-planned-1',
+//     title: 'Сходка в ресторане',
+//     startDate: '2026-05-15',
+//     endDate: '2026-06-20',
+//     participantsCount: 5,
+//     status: EventStatus.Planned,
+//   },
+//   {
+//     id: 'long-planned',
+//     title: 'Очень длинное назв...',
+//     startDate: '2026-05-15',
+//     endDate: '2026-06-20',
+//     participantsCount: 1,
+//     status: EventStatus.Planned,
+//   },
+//   {
+//     id: 'sochi-completed',
+//     title: 'Поездка в Сочи',
+//     startDate: '2026-04-06',
+//     endDate: '2026-04-20',
+//     participantsCount: 5,
+//     status: EventStatus.Completed,
+//   },
+//   {
+//     id: 'restaurant-planned-2',
+//     title: 'Сходка в ресторане',
+//     startDate: '2026-05-15',
+//     participantsCount: 5,
+//     status: EventStatus.Planned,
+//   },
+// ]
 
 export const HomePage = () => {
   const [isCreateEventModalOpen, setCreateEventModalOpen] = useState(false)
   const [isFiltersModalOpen, setFiltersModalOpen] = useState(false)
-  const events = mockEvents
-  const isLoading = false
+  const { search, status, startDate, endDate, minParticipants, maxParticipants } =
+    useEventFiltersStore()
+
+  const debouncedSearch = useDebouncedValue(search, 600)
+  const debouncedMinParticipants = useDebouncedValue(minParticipants, 600)
+  const debouncedMaxParticipants = useDebouncedValue(maxParticipants,600)
+
+  const { data: events, isLoading } = useGetEvents({
+    search: debouncedSearch === '' ? undefined : debouncedSearch,
+    status: status === EventFilterStatus.All ? undefined : (status as unknown as EventStatus),
+    startDate: startDate === '' ? undefined : startDate,
+    endDate: endDate === '' ? undefined : endDate,
+    minParticipants: parseNumberValue(debouncedMinParticipants),
+    maxParticipants: parseNumberValue(debouncedMaxParticipants),
+  })
 
   return (
     <>
@@ -97,7 +115,7 @@ export const HomePage = () => {
           <div
             className={clsx(
               'sm:grid sm:grid-cols-[445px_minmax(0,1fr)] sm:gap-[25px]',
-              events.length > 0 && 'sm:items-start',
+              'sm:items-start',
             )}
           >
             <div className="hidden sm:block">
