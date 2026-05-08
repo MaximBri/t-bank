@@ -1,0 +1,586 @@
+{
+	"id": "1be2e78d-213f-4430-b243-6415f57ad370",
+	"name": "T-Event",
+	"timestamp": "2026-05-03T00:47:17.772Z",
+	"collection_id": "33361274-30ca5b96-15ab-466f-b0d8-77f11a7b0eb7",
+	"folder_id": "33361274-147b6a82-bf85-4996-a8bd-92f5baeaa929",
+	"environment_id": "33361274-ab0b818f-f840-4c30-943e-c07bc06e9a75",
+	"totalPass": 15,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2026-05-03T00:47:15.666Z",
+	"totalFail": 4,
+	"results": [
+		{
+			"id": "2593f479-9bf3-4f5f-9e23-dd60fd5482d2",
+			"name": "Регистрация нового пользователя |  201 - success",
+			"url": "http://127.0.0.1:8080/auth/register",
+			"time": 112,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				112
+			],
+			"allTests": [
+				{
+					"Status code is 201": true
+				}
+			]
+		},
+		{
+			"id": "ab5999dd-da41-4e84-b304-0e914714de59",
+			"name": "Регистрация нового пользователя |  201 - without invite code",
+			"url": "http://127.0.0.1:8080/auth/register",
+			"time": 107,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				107
+			],
+			"allTests": [
+				{
+					"Status code is 201": true
+				}
+			]
+		},
+		{
+			"id": "30ae66b5-ee0f-47f4-ac2f-265d09c82b32",
+			"name": "Регистрация нового пользователя | 409 - username already exist",
+			"url": "http://127.0.0.1:8080/auth/register",
+			"time": 7,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"Status code is 409": true
+			},
+			"testPassFailCounts": {
+				"Status code is 409": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 409": true
+				}
+			]
+		},
+		{
+			"id": "2903c691-3d60-4729-973e-706afb7bc0a0",
+			"name": "Регистрация нового пользователя | 400 - empty password",
+			"url": "http://127.0.0.1:8080/auth/register",
+			"time": 6,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Status code is 400": true
+				}
+			]
+		},
+		{
+			"id": "70270ba2-7a4c-4b06-a876-3b8a99eaf21f",
+			"name": "Регистрация нового пользователя | 400 - empty username",
+			"url": "http://127.0.0.1:8080/auth/register",
+			"time": 6,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Status code is 400": true
+				}
+			]
+		},
+		{
+			"id": "76ab4558-e9a1-4f06-b33a-6cf2ce034fa5",
+			"name": "Регистрация нового пользователя | 400 - invalid password length",
+			"url": "http://127.0.0.1:8080/auth/register",
+			"time": 5,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Status code is 400": true
+				}
+			]
+		},
+		{
+			"id": "cc8f790e-c30b-4f11-8621-f152f53da0b0",
+			"name": "Регистрация нового пользователя | 201 - short login length",
+			"url": "http://127.0.0.1:8080/auth/register",
+			"time": 81,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				81
+			],
+			"allTests": [
+				{
+					"Status code is 201": true
+				}
+			]
+		},
+		{
+			"id": "9e416bd5-204d-4371-8b89-9d7fba978e93",
+			"name": "Регистрация нового пользователя | 400 - forbidden characters",
+			"url": "http://127.0.0.1:8080/auth/register",
+			"time": 5,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 400": false
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Status code is 400": false
+				}
+			]
+		},
+		{
+			"id": "51f48c59-96a8-483e-afde-db7cc5a94bb9",
+			"name": "Вход в систему | 200 - success",
+			"url": "http://127.0.0.1:8080/auth/login",
+			"time": 85,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				85
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "692e9a51-cf38-4c3a-8691-b395da33514a",
+			"name": "Вход в систему | 401 - invalid credentials",
+			"url": "http://127.0.0.1:8080/auth/login",
+			"time": 7,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status code is 401": true
+			},
+			"testPassFailCounts": {
+				"Status code is 401": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 401": true
+				}
+			]
+		},
+		{
+			"id": "a3eadd26-b854-447f-901c-796b0f16b56c",
+			"name": "Вход в систему | 400 - empty password",
+			"url": "http://127.0.0.1:8080/auth/login",
+			"time": 4,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				4
+			],
+			"allTests": [
+				{
+					"Status code is 400": true
+				}
+			]
+		},
+		{
+			"id": "3a641b17-f5bb-4d00-b903-f38d6ebabb1f",
+			"name": "Вход в систему | 400 - empty username",
+			"url": "http://127.0.0.1:8080/auth/login",
+			"time": 6,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Status code is 400": true
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Status code is 400": true
+				}
+			]
+		},
+		{
+			"id": "552ea004-fb37-45ef-826d-f319cf5b1894",
+			"name": "Вход в систему | 400 - forbidden empty body (500 - internal server error)",
+			"url": "http://127.0.0.1:8080/auth/login",
+			"time": 5,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 400": false
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Status code is 400": false
+				}
+			]
+		},
+		{
+			"id": "eeba2840-834f-4945-8f91-0aa4fd01cfa9",
+			"name": "Вход в систему | 400 - forbidden characters (500 - internal server error)",
+			"url": "http://127.0.0.1:8080/auth/login",
+			"time": 7,
+			"responseCode": {
+				"code": 500,
+				"name": "Internal Server Error"
+			},
+			"tests": {
+				"Status code is 400": false
+			},
+			"testPassFailCounts": {
+				"Status code is 400": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 400": false
+				}
+			]
+		},
+		{
+			"id": "0a498af7-e531-44c1-815c-7974c6ad554f",
+			"name": "Проверка текущей сессии | 200 - success",
+			"url": "http://127.0.0.1:8080/auth/me",
+			"time": 7,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "85340eb1-ed1a-4607-8929-dd85a94f7668",
+			"name": "Проверка текущей сессии | 401 - не авторизован",
+			"url": "http://127.0.0.1:8080/auth/me",
+			"time": 3,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status code is 401": true
+			},
+			"testPassFailCounts": {
+				"Status code is 401": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Status code is 401": true
+				}
+			]
+		},
+		{
+			"id": "8f9243f3-480c-4301-a1b9-bd42b6177ded",
+			"name": "Обновление Access Token | 200 - success",
+			"url": "http://127.0.0.1:8080/auth/refresh",
+			"time": 12,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				12
+			],
+			"allTests": [
+				{
+					"Status code is 200": true
+				}
+			]
+		},
+		{
+			"id": "1c8915f6-3484-4f1a-941a-daf815f71365",
+			"name": "Обновление Access Token | 401 - invalid refresh token",
+			"url": "http://127.0.0.1:8080/auth/refresh",
+			"time": 7,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Status code is 401": true,
+				"Invalid refresh token": false
+			},
+			"testPassFailCounts": {
+				"Status code is 401": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Invalid refresh token": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				7
+			],
+			"allTests": [
+				{
+					"Status code is 401": true,
+					"Invalid refresh token": false
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 472,
+	"collection": {
+		"requests": [
+			{
+				"id": "2593f479-9bf3-4f5f-9e23-dd60fd5482d2",
+				"method": "POST"
+			},
+			{
+				"id": "ab5999dd-da41-4e84-b304-0e914714de59",
+				"method": "POST"
+			},
+			{
+				"id": "30ae66b5-ee0f-47f4-ac2f-265d09c82b32",
+				"method": "POST"
+			},
+			{
+				"id": "2903c691-3d60-4729-973e-706afb7bc0a0",
+				"method": "POST"
+			},
+			{
+				"id": "70270ba2-7a4c-4b06-a876-3b8a99eaf21f",
+				"method": "POST"
+			},
+			{
+				"id": "76ab4558-e9a1-4f06-b33a-6cf2ce034fa5",
+				"method": "POST"
+			},
+			{
+				"id": "cc8f790e-c30b-4f11-8621-f152f53da0b0",
+				"method": "POST"
+			},
+			{
+				"id": "9e416bd5-204d-4371-8b89-9d7fba978e93",
+				"method": "POST"
+			},
+			{
+				"id": "51f48c59-96a8-483e-afde-db7cc5a94bb9",
+				"method": "POST"
+			},
+			{
+				"id": "692e9a51-cf38-4c3a-8691-b395da33514a",
+				"method": "POST"
+			},
+			{
+				"id": "a3eadd26-b854-447f-901c-796b0f16b56c",
+				"method": "POST"
+			},
+			{
+				"id": "3a641b17-f5bb-4d00-b903-f38d6ebabb1f",
+				"method": "POST"
+			},
+			{
+				"id": "552ea004-fb37-45ef-826d-f319cf5b1894",
+				"method": "POST"
+			},
+			{
+				"id": "eeba2840-834f-4945-8f91-0aa4fd01cfa9",
+				"method": "POST"
+			},
+			{
+				"id": "0a498af7-e531-44c1-815c-7974c6ad554f",
+				"method": "GET"
+			},
+			{
+				"id": "85340eb1-ed1a-4607-8929-dd85a94f7668",
+				"method": "GET"
+			},
+			{
+				"id": "8f9243f3-480c-4301-a1b9-bd42b6177ded",
+				"method": "POST"
+			},
+			{
+				"id": "1c8915f6-3484-4f1a-941a-daf815f71365",
+				"method": "POST"
+			}
+		]
+	}
+}

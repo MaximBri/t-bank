@@ -30,25 +30,6 @@ public class EventUser {
     @Column(name = "role", nullable = false)
     private String role;
 
-    @Column(name = "status", nullable = false)
-    private String status;
-
-    @Column(name = "invited_at")
-    private LocalDateTime invitedAt;
-
     @Column(name = "joined_at", nullable = false, updatable = false)
     private LocalDateTime joinedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        if (joinedAt == null) {
-            joinedAt = LocalDateTime.now();
-        }
-        if (role == null) {
-            role = "PARTICIPANT";
-        }
-        if (status == null) {
-            status = "ACCEPTED";
-        }
-    }
 }
