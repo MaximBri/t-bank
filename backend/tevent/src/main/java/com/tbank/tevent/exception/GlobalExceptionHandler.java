@@ -5,86 +5,84 @@ import com.tbank.tevent.auth.exception.MissingRefreshTokenException;
 import com.tbank.tevent.auth.exception.UserAlreadyExistsException;
 import com.tbank.tevent.category.exception.CategoryAlreadyExistsException;
 import com.tbank.tevent.category.exception.CategoryNotFoundException;
-import com.tbank.tevent.expenses.exception.ExpenseNotFoundException;
-import com.tbank.tevent.expenses.exception.ExpenseParticipantNotFoundException;
-import com.tbank.tevent.expenses.exception.InvalidExpenseStatusException;
-import com.tbank.tevent.expenses.exception.MissingConflictReasonException;
-import com.tbank.tevent.expenses.exception.ParticipantNotFoundException;
-import com.tbank.tevent.expenses.exception.UserNotFoundException;
+import com.tbank.tevent.event.EventNotFoundException;
+import com.tbank.tevent.event.ValidationException;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ApiError> handleUserAlreadyExists(UserAlreadyExistsException ex) {
-        return buildError(HttpStatus.CONFLICT, ex.getMessage());
-    }
-
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ApiError> handleInvalidCredentials(InvalidCredentialsException ex) {
-        return buildError(HttpStatus.UNAUTHORIZED, ex.getMessage());
-    }
-
-    @ExceptionHandler(MissingRefreshTokenException.class)
-    public ResponseEntity<ApiError> handleMissingRefreshToken(MissingRefreshTokenException ex) {
-        return buildError(HttpStatus.UNAUTHORIZED, ex.getMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                .findFirst()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .orElse("Validation failed");
-
-        return buildError(HttpStatus.BAD_REQUEST, message);
-    }
-
     @ExceptionHandler({
-            CategoryAlreadyExistsException.class
+            InvalidCredentialsException.class,
+            MissingRefreshTokenException.class,
+            org.springframework.security.core.AuthenticationException.class
     })
-    public ResponseEntity<ApiError> handleConflict(RuntimeException ex) {
-        return buildError(HttpStatus.CONFLICT, ex.getMessage());
+    public ResponseEntity<ApiError> handleUnauthorized(Exception ex) {
+        return buildError(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex) {
+
+        return buildError(HttpStatus.FORBIDDEN, "You don't have permission to access this resource");
+    }
+
+
     @ExceptionHandler({
-            CategoryNotFoundException.class,
-            com.tbank.tevent.category.exception.EventNotFoundException.class,
-            com.tbank.tevent.expenses.exception.EventNotFoundException.class,
-            ExpenseNotFoundException.class,
-            ExpenseParticipantNotFoundException.class
+            EventNotFoundException.class,
+            CategoryNotFoundException.class
     })
     public ResponseEntity<ApiError> handleNotFound(RuntimeException ex) {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
+
+
     @ExceptionHandler({
-            ParticipantNotFoundException.class,
-            InvalidExpenseStatusException.class,
-            MissingConflictReasonException.class,
-            com.tbank.tevent.expenses.exception.CategoryNotFoundException.class
+            UserAlreadyExistsException.class,
+            CategoryAlreadyExistsException.class,
     })
-    public ResponseEntity<ApiError> handleBadRequest(RuntimeException ex) {
-        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage());
+    public ResponseEntity<ApiError> handleConflict(RuntimeException ex) {
+        return buildError(HttpStatus.CONFLICT, ex.getMessage());
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiError> handleUnauthorized(UserNotFoundException ex) {
-        return buildError(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        return buildError(HttpStatus.BAD_REQUEST, message);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiError> handleRuntime(RuntimeException ex) {
-        log.error("Unhandled runtime exception", ex);
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+    @ExceptionHandler({
+            ConstraintViolationException.class,
+            IllegalArgumentException.class,
+            ValidationException.class,
+            org.springframework.http.converter.HttpMessageNotReadableException.class
+    })
+    public ResponseEntity<ApiError> handleBadRequest(Exception ex) {
+        return buildError(HttpStatus.BAD_REQUEST, "Invalid request structure or parameters");
+    }
+
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleAll(Exception ex) {
+        log.error("Unhandled exception caught: ", ex);
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
     }
 
     private ResponseEntity<ApiError> buildError(HttpStatus status, String message) {

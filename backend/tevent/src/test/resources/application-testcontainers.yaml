@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: tevent-testcontainers
+  datasource:
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: test
+    password: test
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+  liquibase:
+    enabled: false
+
+app:
+  security:
+    jwt:
+      secret: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      access-token-expiration-minutes: 60
+      refresh-token-expiration-days: 30
+      cookie-secure: false
+
+logging:
+  level:
+    org.springframework: WARN
+    org.hibernate: WARN
+    org.testcontainers: WARN
+
+server:
+  port: 0

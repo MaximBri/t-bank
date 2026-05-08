@@ -46,18 +46,15 @@ public class Event {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "invite_token")
-    private String inviteToken;
-
-    @Column(name = "invite_token_created_at")
-    private LocalDateTime inviteTokenCreatedAt;
-
-    @Column(name = "invite_token_expires_at")
-    private LocalDateTime inviteTokenExpiresAt;
+    @Column(name = "invite_token_id", nullable = false)
+    @JdbcTypeCode(SqlTypes.UUID)
+    private UUID inviteTokenId;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
         updatedAt = LocalDateTime.now();
     }
 

@@ -9,42 +9,35 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "event_invitation")
+@Table(name = "invite_token")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EventInvitation {
+public class InviteToken {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID id;
 
-    @Column(name = "event_id", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
-    private UUID eventId;
-
-    @Column(name = "user_id", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
-    private UUID userId;
-
-    @Column(name = "invited_by", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
-    private UUID invitedBy;
-
     @Column(nullable = false)
-    private String status; // PENDING_APPROVAL, INVITED, ACCEPTED, DECLINED, REJECTED
+    private String token;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
         updatedAt = LocalDateTime.now();
     }
 

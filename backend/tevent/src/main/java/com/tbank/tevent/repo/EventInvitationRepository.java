@@ -12,6 +12,4 @@ public interface EventInvitationRepository extends JpaRepository<EventInvitation
     List<EventInvitation> findAllByUserIdAndStatus(UUID userId, String status);
     List<EventInvitation> findAllByEventIdAndStatus(UUID eventId, String status);
     boolean existsByEventIdAndUserIdAndStatus(UUID eventId, UUID userId, String status);
-    Optional<EventInvitation> findByToken(String token);
-    List<EventInvitation> findAllByExpiresAtBeforeAndStatus(java.time.LocalDateTime expiresAt, String status);
 }
