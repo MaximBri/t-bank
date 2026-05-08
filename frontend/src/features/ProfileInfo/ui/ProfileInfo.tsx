@@ -5,7 +5,6 @@ import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { useUserStore } from '@/entities/user'
-import { userApi } from '@/shared/api/user'
 import { Text } from '@/shared/ui/text/Text'
 import { Button } from '@/shared/ui/button/Button'
 import { ButtonEnum } from '@/shared/ui/button/constants'
@@ -16,6 +15,7 @@ import ExitIcon from '@/shared/assets/icons/exit.svg?react'
 import { getProfileItems } from '../model/constants'
 import { profileSchema, type ProfileSchemaValues } from '../model/schema'
 import { getProfileFormFields, profileFormDefaultValues } from './constants'
+import { userApi } from '@/entities/event'
 
 export const ProfileInfo = () => {
   const queryClient = useQueryClient()

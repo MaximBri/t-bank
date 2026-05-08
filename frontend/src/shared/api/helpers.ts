@@ -1,5 +1,5 @@
-import { isAxiosError } from "axios"
-import { ApiErrorDto } from "./types"
+import { isAxiosError } from 'axios'
+import { ApiErrorDto } from './types.ts'
 
 export const getErrorInfo = (error: unknown): { message: string; status?: number } => {
   if (isAxiosError<ApiErrorDto>(error)) {

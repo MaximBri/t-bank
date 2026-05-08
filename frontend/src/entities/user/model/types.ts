@@ -15,3 +15,17 @@ export type UserStore = {
   register: (payload: { login: string; password: string }) => Promise<void>
   setUser: (user: User | null) => void
 }
+
+export type AuthCredentials = {
+  login: string
+  password: string
+}
+export type CurrentUserDto = {
+  userId: string
+  username: string
+}
+export type RegisterResponseDto = {
+  userId: string
+  joinedGroupId: string | null
+}
+
