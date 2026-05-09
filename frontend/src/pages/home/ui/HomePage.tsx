@@ -18,56 +18,6 @@ import {parseNumberValue} from "@/shared/lib/number/parseNumber.ts";
 import {EventFilterStatus} from "@/widgets/event-filters/model/types.ts";
 import {EventStatus} from "@/entities/event";
 import {useDebouncedValue} from "@/shared/lib/debounce/useDebouncedValue.ts";
-// const mockEvents: EventListItem[] = [
-//   {
-//     id: 'sochi-active-1',
-//     title: 'Поездка в Сочи',
-//     startDate: '2026-04-06',
-//     endDate: '2026-04-20',
-//     participantsCount: 5,
-//     status: EventStatus.Active,
-//     imageUrl: '/logo.svg',
-//   },
-//   {
-//     id: 'sochi-active-2',
-//     title: 'Поездка в Сочи',
-//     startDate: '2026-04-06',
-//     endDate: '2026-04-20',
-//     participantsCount: 5,
-//     status: EventStatus.Active,
-//   },
-//   {
-//     id: 'restaurant-planned-1',
-//     title: 'Сходка в ресторане',
-//     startDate: '2026-05-15',
-//     endDate: '2026-06-20',
-//     participantsCount: 5,
-//     status: EventStatus.Planned,
-//   },
-//   {
-//     id: 'long-planned',
-//     title: 'Очень длинное назв...',
-//     startDate: '2026-05-15',
-//     endDate: '2026-06-20',
-//     participantsCount: 1,
-//     status: EventStatus.Planned,
-//   },
-//   {
-//     id: 'sochi-completed',
-//     title: 'Поездка в Сочи',
-//     startDate: '2026-04-06',
-//     endDate: '2026-04-20',
-//     participantsCount: 5,
-//     status: EventStatus.Completed,
-//   },
-//   {
-//     id: 'restaurant-planned-2',
-//     title: 'Сходка в ресторане',
-//     startDate: '2026-05-15',
-//     participantsCount: 5,
-//     status: EventStatus.Planned,
-//   },
-// ]
 
 export const HomePage = () => {
   const [isCreateEventModalOpen, setCreateEventModalOpen] = useState(false)

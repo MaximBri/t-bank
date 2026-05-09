@@ -8,23 +8,9 @@ import {
 } from '@/entities/event/model/types.ts'
 
 export const eventsApi = {
-  getAll: async ({
-    search,
-    status,
-    startDate,
-    endDate,
-    minParticipants,
-    maxParticipants,
-  }: GetEventsParams) => {
+  getAll: async (params: GetEventsParams) => {
     const { data } = await api.get<UserEventDto>('/events/user/events', {
-      params: {
-        search,
-        startDate,
-        maxParticipants,
-        minParticipants,
-        endDate,
-        status,
-      },
+      params: params,
     })
     return data.events
   },
