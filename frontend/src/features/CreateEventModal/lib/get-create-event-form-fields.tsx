@@ -40,6 +40,7 @@ export const getCreateEventFormFields = (): CreateEventFormFields => {
     label: 'Дата конца',
     labelClassName: createEventFieldLabelClassName,
     fieldClassName: createEventFieldInputClassName,
+    required: true,
     placeholder: 'дд.мм.гггг',
     calendarIconSize: '24px',
   })

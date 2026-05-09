@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { CreateEventDto } from '@/entities/event/api/types.ts'
 import { eventsApi } from '@/entities/event'
+import {CreateEventDto} from "@/entities/event/model/types.ts";
 
 export const useCreateEvent = () => {
   const queryClient = useQueryClient()

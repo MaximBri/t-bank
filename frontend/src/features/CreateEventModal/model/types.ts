@@ -5,10 +5,11 @@ export type CreateEventFormValues = {
   avatar?: File
   categories: ExpenseCategoryList
   description?: string
-  endDate?: string
+  endDate: string
   startDate: string
   title: string
 }
+
 export type CreateEventFormFields = {
   titleField: FormFieldConfig<CreateEventFormValues>
   dateFields: [FormFieldConfig<CreateEventFormValues>, FormFieldConfig<CreateEventFormValues>]

@@ -1,10 +1,11 @@
 import { api } from '@/shared/api/api.ts'
 import {
-  CreateEventDto, GetEventsParams,
+  CreateEventDto,
   EventResponse,
+  GetEventsParams,
   UpdateEventDto,
   UserEventDto,
-} from '@/entities/event/api/types.ts'
+} from '@/entities/event/model/types.ts'
 
 export const eventsApi = {
   getAll: async ({
@@ -15,7 +16,7 @@ export const eventsApi = {
     minParticipants,
     maxParticipants,
   }: GetEventsParams) => {
-    const { data } = await api.get<UserEventDto[]>('/events/user/events', {
+    const { data } = await api.get<UserEventDto>('/events/user/events', {
       params: {
         search,
         startDate,
@@ -25,7 +26,7 @@ export const eventsApi = {
         status,
       },
     })
-    return data
+    return data.events
   },
 
   getById: async (id: string) => {

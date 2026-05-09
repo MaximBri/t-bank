@@ -5,7 +5,7 @@ export const createEventFormDefaultValues: CreateEventFormValues = {
   avatar: undefined,
   categories: defaultExpenseCategories,
   description: '',
-  endDate: undefined,
+  endDate: '',
   startDate: '',
   title: '',
 }

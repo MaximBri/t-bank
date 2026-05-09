@@ -1,13 +1,14 @@
-import type { EventListItem } from '@/entities/event'
 import { Button } from '@/shared/ui/button/Button.tsx'
 
 import { EventCardSkeleton } from './EventCardSkeleton.tsx'
 import { EventListCard } from './EventListCard.tsx'
 import { skeletonItems } from '../model/constants.ts'
 
+import {EventResponse} from "@/entities/event/model/types.ts";
+
 export type EventListWidgetProps = {
   isLoading?: boolean
-  items: EventListItem[] | undefined
+  items: EventResponse[] | undefined
   onCreateEvent?: () => void
 }
 
@@ -25,7 +26,6 @@ export const EventListWidget = ({
       </div>
     )
   }
-
   if (items.length === 0) {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center gap-[20px] sm:h-full sm:min-h-0">

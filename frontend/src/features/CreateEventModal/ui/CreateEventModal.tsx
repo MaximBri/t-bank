@@ -16,6 +16,8 @@ import { ExpenseCategoriesSection } from './ExpenseCategoriesSection.tsx'
 import type { CreateEventFormFields, CreateEventFormValues } from '../model/types.ts'
 
 import { Text } from '@/shared/ui/text/Text.tsx'
+import { CreateEventDto } from '@/entities/event/model/types.ts'
+import { useCreateEvent } from '@/entities/event/api/hooks/useCreateEvent.ts'
 
 type CreateEventModalProps = {
   isOpen: boolean
@@ -28,6 +30,8 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
     mode: 'onTouched',
     defaultValues: createEventFormDefaultValues,
   })
+  const { mutate: createEvent } = useCreateEvent()
+
   const {
     addCategory,
     categories,
@@ -57,17 +61,16 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
   }
 
   const submitForm = handleSubmit((values) => {
-    const data = {
-      ...values,
-      avatar: values.avatar
-        ? {
-            name: values.avatar.name,
-            size: values.avatar.size,
-            type: values.avatar.type,
-          }
-        : undefined,
+    const data: CreateEventDto = {
+      title: values.title,
+      description: values.description,
+      startDate: new Date(values.startDate).toISOString(),
+      endDate: new Date(values.endDate).toISOString(),
+      imageKey: values.avatar ? values.avatar.name : '',
+      categories: values.categories,
     }
-    console.log(data)
+    createEvent(data)
+
     handleClose()
   })
 

@@ -11,7 +11,7 @@ export const createEventSchema = createFormSchema({
   categories: expenseCategoriesAddSchema,
   description: z.string().optional(),
   startDate: requiredString(),
-  endDate: z.string().optional(),
+  endDate: requiredString(),
   title: requiredString(),
 }).refine(
   (values) => {
