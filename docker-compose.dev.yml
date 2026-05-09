@@ -1,4 +1,11 @@
 services:
+  frontend:
+    image: ${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/frontend:${IMAGE_TAG}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-3001}:80"
+    depends_on:
+      - backend
   backend:
     build:
       context: .
