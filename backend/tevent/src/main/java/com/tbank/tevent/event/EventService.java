@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -107,6 +108,10 @@ public class EventService {
                                         LocalDate endDate,
                                         Integer minParticipants,
                                         Integer maxParticipants) {
+        if (state != null && !Set.of("PLANNED", "ACTIVE", "COMPLETED").contains(state)) {
+            throw new ValidationException("Invalid state value. Allowed values: PLANNED, ACTIVE, COMPLETED");
+        }
+
         UUID currentUserId = SecurityUtils.getCurrentUserId();
 
         List<Event> events = eventRepository.findUserEventsWithFilters(
