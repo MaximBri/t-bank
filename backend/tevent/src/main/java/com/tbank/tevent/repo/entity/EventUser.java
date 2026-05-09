@@ -28,7 +28,7 @@ public class EventUser {
     private UUID userId;
 
     @Column(name = "role", nullable = false)
-    private String role; // OWNER, PARTICIPANT
+    private String role;
 
     @Column(name = "joined_at", nullable = false, updatable = false)
     private LocalDateTime joinedAt;

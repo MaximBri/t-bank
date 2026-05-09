@@ -6,6 +6,13 @@ spring:
     username: tbank
     password: tbank
     driver-class-name: org.postgresql.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: validate
+#  logging:
+#    level:
+#      org.hibernate.orm.model.naming: DEBUG
+#      org.hibernate.orm.results: DEBUG
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
@@ -20,4 +27,4 @@ app:
       secret: ${JWT_SECRET}
       access-token-expiration-minutes: 15
       refresh-token-expiration-days: ${JWT_REFRESH_TOKEN_EXPIRATION_DAYS:30}
-      cookie-secure: ${JWT_COOKIE_SECURE:true}
+      cookie-secure: ${JWT_COOKIE_SECURE:false}
