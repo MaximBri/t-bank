@@ -62,8 +62,8 @@ create table category_event(
 
 CREATE TABLE event_invitation (
       id UUID PRIMARY KEY,
-      event_id UUID NOT NULL,
-      user_id UUID NOT NULL,
+      event_id UUID NOT NULL REFERENCES event(id),
+      user_id UUID NOT NULL  REFERENCES user_data(id),
       invited_by UUID NOT NULL,
       status VARCHAR(50) NOT NULL,
       created_at TIMESTAMP NOT NULL,
