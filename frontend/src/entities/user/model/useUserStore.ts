@@ -1,11 +1,14 @@
 import { create } from 'zustand'
 
-import type { User, UserStore } from './types'
+import type { CurrentUserDto, User, UserStore } from './types'
 import { userApi } from '..'
 
-const mapCurrentUser = (payload: { userId: string; username: string }): User => ({
-  id: payload.userId,
-  username: payload.username,
+const mapCurrentUser = (payload: CurrentUserDto): User => ({
+  id: payload.user_id,
+  login: payload.login,
+  firstName: payload.first_name,
+  lastName: payload.second_name,
+  avatarUrl: payload.avatar_url,
 })
 
 export const useUserStore = create<UserStore>()((set) => ({

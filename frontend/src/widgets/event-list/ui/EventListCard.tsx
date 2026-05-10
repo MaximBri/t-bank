@@ -1,9 +1,11 @@
 import clsx from 'clsx'
+import { Link } from 'react-router-dom'
 
 import CalendarIcon from '@/shared/assets/icons/calendar.svg?react'
 import UsersIcon from '@/shared/assets/icons/users.svg?react'
 import { eventStatusMap, formatDateRange } from '@/entities/event'
 import { formatParticipantsCount } from '@/shared/lib/formatParticipantsCount.ts'
+import { buildEventRoute } from '@/shared/routes'
 
 import { EventPreview } from './EventPreview.tsx'
 import { Text } from '@/shared/ui/text/Text'
@@ -15,10 +17,12 @@ type EventListCardProps = {
 }
 
 export const EventListCard = ({ item }: EventListCardProps) => (
-  <div
+  <Link
+    to={buildEventRoute(item.id)}
+    aria-label={`Открыть событие ${item.title}`}
     className={clsx(
       'h-[143px] sm:h-[176px] flex flex-col rounded-md border-[2px] border-primary bg-secondary p-[10px] sm:p-[20px]',
-      'hover:border-yellow transition-colors cursor-pointer ease-in-out',
+      'hover:border-yellow transition-colors ease-in-out',
     )}
   >
     <div className="flex items-start justify-between gap-[8px]">
@@ -47,5 +51,5 @@ export const EventListCard = ({ item }: EventListCardProps) => (
 
       {item.imageUrl && <EventPreview img={item.imageUrl} />}
     </div>
-  </div>
+  </Link>
 )

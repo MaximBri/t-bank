@@ -9,10 +9,11 @@ export enum EventStatus {
 export type EventResponse = {
   id: string
   title: string
+  description?: string
   startDate: string
   endDate: string
   countOfParticipants: number
-  categories: ExpenseCategoryList[]
+  categories: ExpenseCategoryList
   status: EventStatus
   imageUrl: string
   ownerId: string
@@ -44,3 +45,19 @@ export type CreateEventDto = {
 }
 
 export type UpdateEventDto = CreateEventDto
+
+export type Participant = {
+  userId: string
+  login: string
+  firstName: string | null
+  lastName: string | null
+}
+
+export type ParticipantsResponse = {
+  participants: Participant[]
+}
+
+export type EventInviteToken = {
+  token: string
+  expiresAt: string
+}
