@@ -4,7 +4,7 @@ import type { SignInByCredentialsFormValues } from '../model/types.ts'
 
 const signInFieldLabelClassName = 'text-body font-inter font-medium text-primary'
 const signInFieldInputClassName =
-  'font-inter font-medium rounded-md border px-[16px] py-[14px] text-body border-[2px]'
+  'font-inter font-medium rounded-md border px-[16px] py-[14px] text-body border-[2px] max-h-[47px]'
 
 export const getSignInFormFields = (): TextFieldConfig<SignInByCredentialsFormValues>[] => [
   createTextField<SignInByCredentialsFormValues>({
