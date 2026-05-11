@@ -1,6 +1,10 @@
 export type User = {
   id: string
   username: string
+  login: string
+  firstName: string | null
+  lastName: string | null
+  avatarUrl: string | null
 }
 
 export type UserStore = {

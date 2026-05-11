@@ -4,8 +4,11 @@ export type AuthCredentials = {
 }
 
 export type CurrentUserDto = {
-  userId: string
-  username: string
+  user_id: string
+  login: string
+  first_name: string | null
+  second_name: string | null
+  avatar_url: string | null
 }
 
 export type RegisterResponseDto = {

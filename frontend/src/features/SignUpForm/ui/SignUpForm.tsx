@@ -54,7 +54,7 @@ export const SignUpForm = ({ onSubmit }: SignUpFormProps) => {
 
         <div className="flex flex-col gap-[16px] sm:gap-[27px]">
           {signUpFields.map((field) => (
-            <TextField key={field.name} {...field} />
+            <TextField key={field.name} {...field} fieldClassName='max-h-[47px]' />
           ))}
           <div className="flex flex-col items-center justify-center gap-[14px] sm:gap-[21px]">
             <Button
