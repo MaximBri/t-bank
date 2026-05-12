@@ -108,7 +108,7 @@ CREATE TABLE expense_split (
        expense_id UUID NOT NULL REFERENCES expense(id) ON DELETE CASCADE,
        user_id UUID NOT NULL REFERENCES user_data(id),
        amount DECIMAL(19, 2) NOT NULL,
-       is_confirmed BOOLEAN DEFAULT FALSE 
+       is_confirmed BOOLEAN DEFAULT FALSE
 );
 
 -- 4. Платежи (взаиморасчеты)
