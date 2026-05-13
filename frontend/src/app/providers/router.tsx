@@ -19,13 +19,13 @@ export const AppRouter = () => (
         <Route element={<AppLayout />}>
           <Route path={APP_ROUTES.HOME} element={<HomePage />} />
           <Route path={APP_ROUTES.EVENT} element={<EventPage />} />
-          <Route path={APP_ROUTES.INVITE} element={<InvitePage />} />
           <Route path={APP_ROUTES.NOT_FOUND} element={<NotFoundPage />} />
           <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
       <Route element={<PublicOnlyRoute />}>
         <Route path={APP_ROUTES.LOGIN} element={<LoginPage />} />
+        <Route path={APP_ROUTES.INVITE} element={<InvitePage />} />
         <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
       </Route>
     </Routes>
