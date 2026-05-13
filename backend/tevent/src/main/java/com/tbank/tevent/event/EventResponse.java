@@ -5,20 +5,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class EventResponse {
-    private UUID id;
-    private String title;
-    private String description;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private String category;
-    private String status;
-    private String imageUrl;
-    private UUID ownerId;
-}
+public record EventResponse (
+    UUID id,
+    String title,
+    String description,
+    LocalDateTime startDate,
+    LocalDateTime endDate,
+    List<String> categories,
+    String status,
+    String imageUrl,
+    UUID ownerId,
+    Long countOfParticipants
+){}

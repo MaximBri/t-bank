@@ -1,7 +1,9 @@
 package com.tbank.tevent.repo.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -12,6 +14,8 @@ import java.util.UUID;
 @Entity
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "event_user")
 public class EventUser {
     @Id
@@ -30,25 +34,6 @@ public class EventUser {
     @Column(name = "role", nullable = false)
     private String role;
 
-    @Column(name = "status", nullable = false)
-    private String status;
-
-    @Column(name = "invited_at")
-    private LocalDateTime invitedAt;
-
     @Column(name = "joined_at", nullable = false, updatable = false)
     private LocalDateTime joinedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        if (joinedAt == null) {
-            joinedAt = LocalDateTime.now();
-        }
-        if (role == null) {
-            role = "PARTICIPANT";
-        }
-        if (status == null) {
-            status = "ACCEPTED";
-        }
-    }
 }

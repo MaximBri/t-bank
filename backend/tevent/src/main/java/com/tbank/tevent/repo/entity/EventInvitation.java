@@ -36,12 +36,6 @@ public class EventInvitation {
     @Column(nullable = false)
     private String status;
 
-    @Column
-    private String token;
-
-    @Column(name = "expires_at")
-    private LocalDateTime expiresAt;
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
