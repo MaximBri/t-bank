@@ -50,7 +50,7 @@ public class InviteService {
                 .eventId(event.getId())
                 .userId(user.getId())
                 .invitedBy(event.getOwnerId())
-                .status("PENDING_APPROVAL")
+                .status("PENDING")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

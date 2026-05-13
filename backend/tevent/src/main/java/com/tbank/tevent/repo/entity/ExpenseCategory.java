@@ -12,28 +12,25 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "event_user")
-public class EventUser {
+@Table(name = "expense_category")
+public class ExpenseCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID id;
 
-    @Column(name = "event_id", nullable = false)
+    @Column(name = "expense_id", nullable = false)
     @JdbcTypeCode(SqlTypes.UUID)
-    private UUID eventId;
+    private UUID expenseId;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "category_id", nullable = false)
     @JdbcTypeCode(SqlTypes.UUID)
-    private UUID userId;
+    private UUID categoryId;
 
-    @Column(name = "role", nullable = false)
-    private String role;
-
-    @Column(name = "joined_at", nullable = false, updatable = false)
-    private LocalDateTime joinedAt;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

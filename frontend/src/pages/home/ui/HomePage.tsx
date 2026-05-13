@@ -42,17 +42,17 @@ export const HomePage = () => {
     <>
       <main>
         <section className="mx-auto flex w-full flex-col gap-[22px]">
-          <div className="flex flex-col gap-[10px] sm:flex-row items-start sm:items-center sm:justify-between sm:gap-0">
+          <div className="flex flex-col gap-[10px] lg:flex-row items-start lg:items-center lg:justify-between lg:gap-0">
             <Text variant="h1" as="h1">
               Мои события
             </Text>
-            <div className="flex w-full sm:w-auto flex-row justify-between flex-wrap gap-[10px]">
+            <div className="flex w-full lg:w-auto flex-row justify-between flex-wrap gap-[10px]">
               <Button className="sm:max-h-[47px]" onClick={() => setCreateEventModalOpen(true)}>
                 <AddEventIcon width={24} height={24} />
                 Создать событие
               </Button>
               <Button
-                className="sm:hidden"
+                className="lg:hidden"
                 onClick={() => setFiltersModalOpen(true)}
                 variant={ButtonEnum.Secondary}
               >
@@ -64,11 +64,11 @@ export const HomePage = () => {
 
           <div
             className={clsx(
-              'sm:grid sm:grid-cols-[445px_minmax(0,1fr)] sm:gap-[25px]',
-              'sm:items-start',
+              'lg:grid lg:grid-cols-[445px_minmax(0,1fr)] sm:gap-[25px]',
+              (events?.length ?? 0) > 0 && 'sm:items-start',
             )}
           >
-            <div className="hidden sm:block">
+            <div className="hidden lg:block">
               <EventFiltersWidget />
             </div>
             <EventListWidget

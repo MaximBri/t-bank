@@ -33,13 +33,13 @@ export const EventFiltersWidget = ({ onClose }: EventFiltersWidgetProps) => {
     <div className="text-h3 sm:text-h3-d rounded-md sm:rounded-lg border-[2px] border-primary bg-secondary p-[15px] sm:p-[20px]">
       <div className="flex flex-col gap-[14px] sm:gap-[20px]">
         <div className="flex flex-col gap-[14px] sm:gap-[20px]">
-          <div className="flex w-full justify-between flex-row sm:block">
+          <div className="flex w-full justify-between flex-row lg:block">
             <Text as="h2" variant="h2" className="text-h3-d">
               Фильтры и поиск
             </Text>
             <Button
               aria-label="close-filters-modal"
-              className="sm:hidden"
+              className="lg:hidden"
               variant={ButtonEnum.Empty}
               onClick={onClose}
             >
