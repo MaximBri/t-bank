@@ -1,7 +1,10 @@
 package com.tbank.tevent.repo;
 
+import com.tbank.tevent.event.ParticipantResponse;
 import com.tbank.tevent.repo.entity.EventUser;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,9 +20,22 @@ public interface EventUserRepository extends JpaRepository<EventUser, UUID> {
 
     List<EventUser> findAllByEventId(UUID eventId);
 
-    List<EventUser> findAllByEventIdAndStatus(UUID eventId, String status);
-
-    Optional<EventUser> findByEventIdAndUserIdAndStatus(UUID eventId, UUID userId, String status);
-
     boolean existsByEventIdAndUserIdAndRole(UUID eventId, UUID userId, String role);
+
+    @Query("""
+           SELECT new com.tbank.tevent.repo.EventParticipantCount(eu.eventId, COUNT(eu)) 
+           FROM EventUser eu 
+           WHERE eu.eventId IN :eventIds 
+           GROUP BY eu.eventId
+           """)
+    List<EventParticipantCount> countParticipantsByEventIds(@Param("eventIds") List<UUID> eventIds);
+
+    @Query("""
+        SELECT u.id as userId, u.login as login, u.firstName as firstName, u.secondName as lastName
+        FROM EventUser eu, User u
+        WHERE eu.userId = u.id
+          AND eu.eventId = :eventId
+        ORDER BY u.login ASC
+    """)
+    List<ParticipantResponse> findAllParticipantsByEventId(@Param("eventId") UUID eventId);
 }

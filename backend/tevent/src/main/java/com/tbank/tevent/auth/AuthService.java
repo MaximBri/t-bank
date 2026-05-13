@@ -5,6 +5,7 @@ import com.tbank.tevent.auth.dto.LoginRequest;
 import com.tbank.tevent.auth.dto.RegisterRequest;
 import com.tbank.tevent.auth.exception.InvalidCredentialsException;
 import com.tbank.tevent.auth.exception.UserAlreadyExistsException;
+import com.tbank.tevent.invitations.InviteService;
 import com.tbank.tevent.repo.RefreshTokenRepository;
 import com.tbank.tevent.repo.UserRepository;
 import com.tbank.tevent.repo.entity.RefreshToken;
@@ -29,6 +30,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final InviteService inviteService;
 
     @Transactional
     public AuthTokens register(RegisterRequest request) {
@@ -42,12 +44,18 @@ public class AuthService {
                     .updatedAt(LocalDateTime.now())
                     .build();
             User savedUser = userRepository.saveAndFlush(user);
+
+            if (request.inviteToken() != null && !request.inviteToken().isBlank()) {
+                log.info("Processing invite token during login for user: {}", user.getLogin());
+                inviteService.applyToken(user, request.inviteToken());
+            }
             return generateTokens(savedUser);
 
         } catch (DataIntegrityViolationException ex) {
             log.info("Registration failed: login already exists");
             throw new UserAlreadyExistsException();
         }
+
     }
 
     @Transactional
@@ -61,6 +69,11 @@ public class AuthService {
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             log.info("Login rejected: invalid password, login={}", login);
             throw new InvalidCredentialsException("Login rejected: invalid password");
+        }
+
+        if (request.inviteToken() != null && !request.inviteToken().isBlank()) {
+            log.info("Processing invite token during login for user: {}", user.getLogin());
+            inviteService.applyToken(user, request.inviteToken());
         }
         log.info("User logged in successfully, userId={}, login={}", user.getId(), user.getLogin());
         return generateTokens(user);
