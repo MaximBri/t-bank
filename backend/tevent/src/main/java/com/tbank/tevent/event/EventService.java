@@ -99,6 +99,11 @@ public class EventService {
 
         eventRepository.saveAndFlush(event);
 
+        // Sync categories if provided
+        if (request.categories() != null) {
+            categoryService.syncCategoriesWithEvent(eventId, request.categories());
+        }
+
         return getEvent(eventId);
     }
 

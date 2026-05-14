@@ -35,8 +35,14 @@ api.interceptors.response.use(
 
       return api(originalRequest)
     } catch (refreshError) {
-      const { useUserStore } = await import('@/entities/user')
-      useUserStore.getState().clearUser()
+      const isOffline = typeof navigator !== 'undefined' && navigator.onLine === false
+      const refreshAxiosError = refreshError as AxiosError | undefined
+      const isNetworkError = !refreshAxiosError?.response
+
+      if (!isOffline && !isNetworkError) {
+        const { useUserStore } = await import('@/entities/user')
+        useUserStore.getState().clearUser()
+      }
 
       return Promise.reject(refreshError)
     }

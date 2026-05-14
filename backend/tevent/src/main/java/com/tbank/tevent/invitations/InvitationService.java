@@ -53,7 +53,7 @@ public class InvitationService {
             throw new AccessDeniedException("Вы не овнер этого ивента");
         }
 
-        if (!"PENDING_APPROVAL".equals(invite.getStatus())) {
+        if (!"PENDING".equals(invite.getStatus())) {
             throw new IllegalStateException("Решение уже принято");
         }
 

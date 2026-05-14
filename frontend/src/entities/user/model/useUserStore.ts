@@ -1,31 +1,40 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-import type { User, UserStore } from './types'
+import { clearApiCache } from '@/shared/lib/clearApiCache'
+import type { CurrentUserDto, User, UserStore } from './types'
 import { userApi } from '..'
 
-const mapCurrentUser = (payload: { userId: string; username: string }): User => ({
-  id: payload.userId,
-  username: payload.username,
+const mapCurrentUser = (payload: CurrentUserDto): User => ({
+  id: payload.user_id,
+  login: payload.login,
+  firstName: payload.first_name,
+  lastName: payload.second_name,
+  avatarUrl: payload.avatar_url,
 })
 
-export const useUserStore = create<UserStore>()((set) => ({
-  user: null,
-  isAuthResolved: false,
-  isAuthenticated: false,
-  isLoading: false,
+export const useUserStore = create<UserStore>()(
+  persist(
+    (set) => ({
+      user: null,
+      isAuthResolved: false,
+      isAuthenticated: false,
+      isLoading: false,
   setUser: (user) =>
     set({
       user,
       isAuthResolved: true,
       isAuthenticated: Boolean(user),
     }),
-  clearUser: () =>
+  clearUser: () => {
+    void clearApiCache()
     set({
       user: null,
       isAuthResolved: true,
       isAuthenticated: false,
       isLoading: false,
-    }),
+    })
+  },
   fetchCurrentUser: async () => {
     set({ isLoading: true })
 
@@ -42,13 +51,7 @@ export const useUserStore = create<UserStore>()((set) => ({
 
       return user
     } catch {
-      set({
-        user: null,
-        isAuthResolved: true,
-        isAuthenticated: false,
-        isLoading: false,
-      })
-
+      set({ isAuthResolved: true, isLoading: false })
       return null
     }
   },
@@ -56,6 +59,7 @@ export const useUserStore = create<UserStore>()((set) => ({
     set({ isLoading: true })
 
     try {
+      await clearApiCache()
       await userApi.login(payload)
       const response = await userApi.me()
       const user = mapCurrentUser(response)
@@ -78,6 +82,7 @@ export const useUserStore = create<UserStore>()((set) => ({
     set({ isLoading: true })
 
     try {
+      await clearApiCache()
       await userApi.register(payload)
       const response = await userApi.me()
       const user = mapCurrentUser(response)
@@ -102,6 +107,7 @@ export const useUserStore = create<UserStore>()((set) => ({
     try {
       await userApi.logout()
     } finally {
+      await clearApiCache()
       set({
         user: null,
         isAuthResolved: true,
@@ -110,4 +116,13 @@ export const useUserStore = create<UserStore>()((set) => ({
       })
     }
   },
-}))
+    }),
+    {
+      name: 'user-store',
+      partialize: (state) => ({
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
+    },
+  ),
+)

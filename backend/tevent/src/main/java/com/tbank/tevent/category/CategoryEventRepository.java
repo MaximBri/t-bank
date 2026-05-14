@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface CategoryEventRepository extends JpaRepository<CategoryEvent, UUID> {
     List<CategoryEvent> findAllByEventIdOrderByIdAsc(UUID eventId);
+    void deleteAllByEventId(UUID eventId);
 }

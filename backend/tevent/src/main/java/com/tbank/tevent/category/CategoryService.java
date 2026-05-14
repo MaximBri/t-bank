@@ -23,7 +23,12 @@ public class CategoryService {
 
     @Transactional
     public void syncCategoriesWithEvent(UUID eventId, List<String> categoryNames) {
-        if (categoryNames == null || categoryNames.isEmpty()) return;
+        // Delete existing relations for this event
+        categoryEventRepository.deleteAllByEventId(eventId);
+        
+        if (categoryNames == null || categoryNames.isEmpty()) {
+            return;
+        }
 
         List<String> cleanNames = categoryNames.stream()
                 .map(String::trim)

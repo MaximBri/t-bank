@@ -1,5 +1,7 @@
+import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 import { useExpenseCategories } from '@/entities/expense'
 
@@ -9,6 +11,7 @@ import { renderFormField } from '@/shared/ui/form'
 import { Modal } from '@/shared/ui/modal'
 
 import { getCreateEventFormFields } from '../lib/get-create-event-form-fields.tsx'
+import { eventToFormValues } from '../lib/event-to-form-values.ts'
 import { createEventSchema } from '../model/schema.ts'
 import { createEventFormDefaultValues } from '../model/constants.ts'
 import { ExpenseCategoriesSection } from './ExpenseCategoriesSection.tsx'
@@ -16,21 +19,26 @@ import { ExpenseCategoriesSection } from './ExpenseCategoriesSection.tsx'
 import type { CreateEventFormFields, CreateEventFormValues } from '../model/types.ts'
 
 import { Text } from '@/shared/ui/text/Text.tsx'
-import { CreateEventDto } from '@/entities/event/model/types.ts'
+import { CreateEventDto, EventResponse } from '@/entities/event/model/types.ts'
 import { useCreateEvent } from '@/entities/event/api/hooks/useCreateEvent.ts'
+import { useUpdateEvent } from '@/entities/event/api/hooks/useUpdateEvent.ts'
 
 type CreateEventModalProps = {
   isOpen: boolean
   onClose: () => void
+  event?: EventResponse
 }
 
-export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => {
+export const CreateEventModal = ({ isOpen, onClose, event }: CreateEventModalProps) => {
+  const isEdit = !!event
+
   const methods = useForm<CreateEventFormValues>({
     resolver: zodResolver(createEventSchema),
     mode: 'onTouched',
     defaultValues: createEventFormDefaultValues,
   })
   const { mutate: createEvent } = useCreateEvent()
+  const { mutate: updateEvent } = useUpdateEvent(event?.id ?? '')
 
   const {
     addCategory,
@@ -49,6 +57,11 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
     handleSubmit,
     reset,
   } = methods
+
+  useEffect(() => {
+    if (!isOpen) return
+    reset(event ? eventToFormValues(event) : createEventFormDefaultValues)
+  }, [isOpen, event, reset])
 
   const resetModalState = () => {
     reset(createEventFormDefaultValues)
@@ -69,7 +82,18 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
       imageKey: values.avatar ? values.avatar.name : '',
       categories: values.categories,
     }
-    createEvent(data)
+
+    if (isEdit) {
+      updateEvent(data, {
+        onSuccess: () => toast.success('Событие обновлено'),
+        onError: () => toast.error('Не удалось обновить событие'),
+      })
+    } else {
+      createEvent(data, {
+        onSuccess: () => toast.success('Событие создано'),
+        onError: () => toast.error('Не удалось создать событие'),
+      })
+    }
 
     handleClose()
   })
@@ -83,7 +107,7 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
       <div className="p-[15px] sm:px-[30px] sm:py-[24px]">
         <div className="mb-[10px] flex items-center justify-between gap-4">
           <Text as="h2" variant="h2">
-            Создание события
+            {isEdit ? 'Редактирование события' : 'Создание события'}
           </Text>
           <button
             aria-label="close-create-event-modal"
@@ -118,7 +142,7 @@ export const CreateEventModal = ({ isOpen, onClose }: CreateEventModalProps) => 
 
             <div className="sm:pt-[20px]">
               <Button type="submit" className="font-medium w-[200px]">
-                Создать
+                {isEdit ? 'Сохранить' : 'Создать'}
               </Button>
             </div>
           </form>
