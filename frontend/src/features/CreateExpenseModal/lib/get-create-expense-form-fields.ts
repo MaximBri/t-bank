@@ -83,7 +83,6 @@ export const getCreateExpenseFormFields = ({
     fieldClassName: 'sm:h-[150px] bg-secondary rounded-md border-dashed border-[2px]',
     label: 'Чек или подтверждающий документ',
     accept: 'image/*,.pdf,application/pdf',
-    required: true,
   })
 
   const participantsField: ParticipantsFieldConfig<CreateExpenseFormValues> = {
