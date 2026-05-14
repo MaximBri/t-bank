@@ -1,5 +1,8 @@
 package com.tbank.tevent.event;
 
+import com.tbank.tevent.event.dto.EventRequest;
+import com.tbank.tevent.invite_token.EventTokenResponse;
+import com.tbank.tevent.invite_token.InviteTokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,9 +20,11 @@ import java.util.UUID;
 public class EventController {
 
     private final EventService eventService;
+    private final EventMemberService eventMemberService;
+    private final InviteTokenService inviteTokenService;
 
     @PostMapping
-    public ResponseEntity<EventResponse> createEvent(@Valid @RequestBody CreateEventRequest request) {
+    public ResponseEntity<EventResponse> createEvent(@Valid @RequestBody EventRequest request) {
         EventResponse response = eventService.createEvent(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -32,21 +37,31 @@ public class EventController {
 
     @PatchMapping("/{eventId}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable UUID eventId,
-                                                     @RequestBody UpdateEventRequest request) {
+                                                     @RequestBody EventRequest request) {
         EventResponse response = eventService.updateEvent(eventId, request);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/user/events")
-    public ResponseEntity<List<UserEventDTO>> getUserEvents(
-            @RequestParam(required = false) String search,
+    public ResponseEntity<EventsResponse> getUserEvents(
+            @RequestParam(required = false) String state,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) Integer minParticipants,
             @RequestParam(required = false) Integer maxParticipants) {
 
-        List<UserEventDTO> events = eventService.getUserEvents(
-                search, startDate, endDate, minParticipants, maxParticipants);
+        EventsResponse events = eventService.getUserEvents(
+                state, startDate, endDate, minParticipants, maxParticipants);
         return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/{eventId}/participants")
+    public ResponseEntity<ParticipantsResponse> getParticipants(@PathVariable UUID eventId) {
+        return ResponseEntity.ok(new ParticipantsResponse(eventMemberService.getParticipants(eventId)));
+    }
+
+    @GetMapping("/{eventId}/token")
+    public ResponseEntity<EventTokenResponse> getEventToken(@PathVariable UUID eventId) {
+        return ResponseEntity.ok(inviteTokenService.getTokenForEvent(eventId));
     }
 }

@@ -5,19 +5,23 @@ import clsx from 'clsx'
 interface UserAvatarProps {
   firstName?: string | null
   lastName?: string | null
-  email?: string | null
+  login?: string | null
   variant?: UserAvatarSizes
 }
 
 export const UserAvatar: FC<UserAvatarProps> = ({
   firstName,
   lastName,
-  email,
+  login,
   variant = UserAvatarSizes.S,
 }) => {
-  const hasLastName = !!lastName
-  const nickname =
-    `${firstName?.[0] ?? email?.[0] ?? ''}.${hasLastName ? lastName?.[0] + '.' : ''}`.toUpperCase()
+  const firstInitial = firstName?.[0] ?? ''
+  const lastInitial = lastName?.[0] ?? ''
+  const nickname = (
+    firstInitial || lastInitial
+      ? `${firstInitial ? firstInitial + '.' : ''}${lastInitial ? lastInitial + '.' : ''}`
+      : (login?.[0] ?? '')
+  ).toUpperCase()
 
   return (
     <div

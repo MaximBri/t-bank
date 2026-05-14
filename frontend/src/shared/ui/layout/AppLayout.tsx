@@ -34,7 +34,9 @@ export const AppLayout = () => {
         <Link to={APP_ROUTES.PROFILE} aria-label="Перейти в профиль">
           <UserAvatar
             variant={isMobile ? UserAvatarSizes.Xs : UserAvatarSizes.S}
-            email={user?.username}
+            firstName={user?.firstName}
+            lastName={user?.lastName}
+            login={user?.login}
           />
         </Link>
       </header>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { EventStatus, type EventListItem } from '@/entities/event'
+// import { EventStatus, type EventListItem } from '@/entities/event'
 import clsx from 'clsx'
 
 import AddEventIcon from '@/shared/assets/icons/add.svg?react'
@@ -12,79 +12,47 @@ import { Text } from '@/shared/ui/text/Text'
 import { ButtonEnum } from '@/shared/ui/button/constants'
 import { CreateEventModal } from '@/features/CreateEventModal'
 import { EventFiltersWidget, MobileEventFiltersModal } from '@/widgets/event-filters'
-
-const mockEvents: EventListItem[] = [
-  {
-    id: 'sochi-active-1',
-    title: 'Поездка в Сочи',
-    startDate: '2026-04-06',
-    endDate: '2026-04-20',
-    participantsCount: 5,
-    status: EventStatus.Active,
-    imageUrl: '/logo.svg',
-  },
-  {
-    id: 'sochi-active-2',
-    title: 'Поездка в Сочи',
-    startDate: '2026-04-06',
-    endDate: '2026-04-20',
-    participantsCount: 5,
-    status: EventStatus.Active,
-  },
-  {
-    id: 'restaurant-planned-1',
-    title: 'Сходка в ресторане',
-    startDate: '2026-05-15',
-    endDate: '2026-06-20',
-    participantsCount: 5,
-    status: EventStatus.Planned,
-  },
-  {
-    id: 'long-planned',
-    title: 'Очень длинное назв...',
-    startDate: '2026-05-15',
-    endDate: '2026-06-20',
-    participantsCount: 1,
-    status: EventStatus.Planned,
-  },
-  {
-    id: 'sochi-completed',
-    title: 'Поездка в Сочи',
-    startDate: '2026-04-06',
-    endDate: '2026-04-20',
-    participantsCount: 5,
-    status: EventStatus.Completed,
-  },
-  {
-    id: 'restaurant-planned-2',
-    title: 'Сходка в ресторане',
-    startDate: '2026-05-15',
-    participantsCount: 5,
-    status: EventStatus.Planned,
-  },
-]
+import { useGetEvents } from "@/entities/event/api/hooks/useGetEvents.ts";
+import {useEventFiltersStore} from "@/widgets/event-filters/model/useEventFiltersStore.ts";
+import {parseNumberValue} from "@/shared/lib/number/parseNumber.ts";
+import {EventFilterStatus} from "@/widgets/event-filters/model/types.ts";
+import {EventStatus} from "@/entities/event";
+import {useDebouncedValue} from "@/shared/lib/debounce/useDebouncedValue.ts";
 
 export const HomePage = () => {
   const [isCreateEventModalOpen, setCreateEventModalOpen] = useState(false)
   const [isFiltersModalOpen, setFiltersModalOpen] = useState(false)
-  const events = mockEvents
-  const isLoading = false
+  const { search, status, startDate, endDate, minParticipants, maxParticipants } =
+    useEventFiltersStore()
+
+  const debouncedSearch = useDebouncedValue(search, 600)
+  const debouncedMinParticipants = useDebouncedValue(minParticipants, 600)
+  const debouncedMaxParticipants = useDebouncedValue(maxParticipants,600)
+
+  const { data: events, isLoading } = useGetEvents({
+    search: debouncedSearch === '' ? undefined : debouncedSearch,
+    status: status === EventFilterStatus.All ? undefined : (status as unknown as EventStatus),
+    startDate: startDate === '' ? undefined : startDate,
+    endDate: endDate === '' ? undefined : endDate,
+    minParticipants: parseNumberValue(debouncedMinParticipants),
+    maxParticipants: parseNumberValue(debouncedMaxParticipants),
+  })
 
   return (
     <>
       <main>
         <section className="mx-auto flex w-full flex-col gap-[22px]">
-          <div className="flex flex-col gap-[10px] sm:flex-row items-start sm:items-center sm:justify-between sm:gap-0">
+          <div className="flex flex-col gap-[10px] lg:flex-row items-start lg:items-center lg:justify-between lg:gap-0">
             <Text variant="h1" as="h1">
               Мои события
             </Text>
-            <div className="flex w-full sm:w-auto flex-row justify-between flex-wrap gap-[10px]">
+            <div className="flex w-full lg:w-auto flex-row justify-between flex-wrap gap-[10px]">
               <Button className="sm:max-h-[47px]" onClick={() => setCreateEventModalOpen(true)}>
                 <AddEventIcon width={24} height={24} />
                 Создать событие
               </Button>
               <Button
-                className="sm:hidden"
+                className="lg:hidden"
                 onClick={() => setFiltersModalOpen(true)}
                 variant={ButtonEnum.Secondary}
               >
@@ -96,11 +64,11 @@ export const HomePage = () => {
 
           <div
             className={clsx(
-              'sm:grid sm:grid-cols-[445px_minmax(0,1fr)] sm:gap-[25px]',
-              events.length > 0 && 'sm:items-start',
+              'lg:grid lg:grid-cols-[445px_minmax(0,1fr)] sm:gap-[25px]',
+              (events?.length ?? 0) > 0 && 'sm:items-start',
             )}
           >
-            <div className="hidden sm:block">
+            <div className="hidden lg:block">
               <EventFiltersWidget />
             </div>
             <EventListWidget

@@ -5,11 +5,11 @@ export const createEventFormDefaultValues: CreateEventFormValues = {
   avatar: undefined,
   categories: defaultExpenseCategories,
   description: '',
-  endDate: undefined,
+  endDate: '',
   startDate: '',
   title: '',
 }
 
 export const createEventFieldLabelClassName = 'text-body sm:text-h3-d font-medium text-primary'
 export const createEventFieldInputClassName =
-  'bg-input-primary px-[16px] py-[10px] text-body text-medium border-[2px] rounded-md'
+  'px-[16px] py-[10px] text-body text-medium border-[2px] rounded-md'
