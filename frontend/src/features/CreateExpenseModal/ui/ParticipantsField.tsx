@@ -53,9 +53,11 @@ export const ParticipantsField = <
 
         const selectedValueSet = new Set<string | number>(selectedValues)
 
+        const lockedIds = participants.filter((p) => p.isLocked).map((p) => p.id)
         const allSelected = selectedValueSet.size === participants.length
 
-        const handleToggleValue = (valueToToggle: number) => {
+        const handleToggleValue = (valueToToggle: string, isLocked?: boolean) => {
+          if (isLocked) return
           const nextSelectedValues = selectedValueSet.has(valueToToggle)
             ? selectedValues.filter((item) => item !== valueToToggle)
             : [...selectedValues, valueToToggle]
@@ -65,7 +67,7 @@ export const ParticipantsField = <
 
         const handleToggleAll = () => {
           if (allSelected) {
-            field.onChange([])
+            field.onChange(lockedIds)
             return
           }
           field.onChange(participants.map((participant) => participant.id))
@@ -139,14 +141,18 @@ export const ParticipantsField = <
                       <label
                         key={String(participant.id)}
                         className={clsx(
-                          'flex cursor-pointer items-center gap-[14px] px-[8px] py-[10px]',
+                          'flex items-center gap-[14px] px-[8px] py-[10px]',
+                          participant.isLocked ? 'cursor-not-allowed' : 'cursor-pointer',
                         )}
                       >
                         <input
                           type="checkbox"
-                          checked={selectedValueSet.has(participant.id)}
-                          onChange={() => handleToggleValue(participant.id)}
-                          className="h-[20px] w-[20px] rounded bg-input-primary border-primary accent-yellow"
+                          checked={selectedValueSet.has(participant.id) || !!participant.isLocked}
+                          disabled={participant.isLocked}
+                          onChange={() =>
+                            handleToggleValue(participant.id, participant.isLocked)
+                          }
+                          className="h-[20px] w-[20px] rounded bg-input-primary border-primary accent-yellow disabled:opacity-60"
                         />
                         <Text variant="body" className="font-medium">
                           {participant.fullName}

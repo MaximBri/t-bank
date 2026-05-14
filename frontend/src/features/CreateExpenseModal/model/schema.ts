@@ -20,7 +20,7 @@ export const createExpenseSchema = createFormSchema({
   ),
   category: requiredString('Выберите категорию для расхода'),
   participants: z
-    .array(z.number(), {
+    .array(z.string(), {
       required_error: 'Выберите хотя бы одного участника',
     })
     .min(1, 'Выберите хотя бы одного участника'),
@@ -28,5 +28,6 @@ export const createExpenseSchema = createFormSchema({
   checkImage: z
     .instanceof(File, { message: 'Поле обязательно' })
     .refine((file) => allowedMimeTypes.includes(file.type), 'Недопустимый формат файла')
-    .refine((file) => file.size <= 5 * 1024 * 1024, 'Размер файла должен быть не больше 5 МБ'),
+    .refine((file) => file.size <= 5 * 1024 * 1024, 'Размер файла должен быть не больше 5 МБ')
+    .optional(),
 })

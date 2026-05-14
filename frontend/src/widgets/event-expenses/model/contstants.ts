@@ -1,4 +1,5 @@
 import { ExpenseStatus } from '@/entities/expense/model/types.ts'
+import { ExpenseResponseStatus } from '@/entities/expense'
 
 export const statusClassMap: Record<ExpenseStatus, string> = {
   confirmed: 'border-[#86d8a1] bg-green-light text-[#37ac62]',
@@ -10,6 +11,18 @@ export const statusLabelMap: Record<ExpenseStatus, string> = {
   confirmed: 'Подтверждён',
   pending: 'На проверке',
   disputed: 'Оспорен',
+}
+
+export const serverStatusClassMap: Record<ExpenseResponseStatus, string> = {
+  [ExpenseResponseStatus.Confirmed]: 'border-[#86d8a1] bg-green-light text-[#37ac62]',
+  [ExpenseResponseStatus.Pending]: 'border-yellow bg-[#fff9de] text-[#bda21b]',
+  [ExpenseResponseStatus.Rejected]: 'border-[#f698a4] bg-error-light text-error',
+}
+
+export const serverStatusLabelMap: Record<ExpenseResponseStatus, string> = {
+  [ExpenseResponseStatus.Confirmed]: 'Подтверждён',
+  [ExpenseResponseStatus.Pending]: 'На проверке',
+  [ExpenseResponseStatus.Rejected]: 'Отклонён',
 }
 
 export const actionButtonClassName =

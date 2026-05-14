@@ -5,15 +5,16 @@ import { BaseFieldConfig, FormFieldConfig } from '@/shared/lib/forms'
 import type { FieldPath, FieldValues } from 'react-hook-form'
 
 export type ExpenseCandidate = {
-  id: number
+  id: string
   fullName: string
+  isLocked?: boolean
 }
 
 export type CreateExpenseFormValues = {
   title: string
   amount?: number
   category: ExpenseCategory
-  participants: number[]
+  participants: string[]
   comment?: string
   checkImage?: File
 }

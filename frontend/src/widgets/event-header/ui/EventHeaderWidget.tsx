@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom'
 import { eventStatusMap, formatDateRange } from '@/entities/event'
 import { useGetEvent } from '@/entities/event/api/hooks/useGetEvent'
 import { useGetEventParticipants } from '@/entities/event/api/hooks/useGetEventParticipants'
+import { useUserStore } from '@/entities/user'
 import { CreateEventModal } from '@/features/CreateEventModal'
 import { formatParticipantsCount } from '@/shared/lib/formatParticipantsCount'
 import { getUserInitials } from '@/shared/lib/getUserInitials'
@@ -24,12 +25,14 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
   const { eventId } = useParams<{ eventId: string }>()
   const { data: event } = useGetEvent(eventId)
   const { data: participants = [] } = useGetEventParticipants(eventId)
+  const currentUserId = useUserStore((state) => state.user?.id)
   const [isEditOpen, setIsEditOpen] = useState(false)
 
   if (!event) return null
 
   const visibleParticipants = participants.slice(0, 5)
   const status = eventStatusMap[event.status]
+  const isOwner = !!currentUserId && currentUserId === event.ownerId
 
   return (
     <section className="rounded-[16px] border-[2px] border-primary bg-secondary p-[10px] sm:p-[20px]">
@@ -66,29 +69,35 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
               {status.label}
             </Text>
             <div className="mt-auto flex w-fit flex-col gap-[10px] self-end sm:flex-row">
-              <Button
-                type="button"
-                className="flex h-[30px] gap-[10px] rounded-[10px] bg-yellow px-[12px] sm:h-[40px] sm:rounded-[16px] sm:px-[30px]"
-                onClick={() => setIsEditOpen(true)}
-              >
-                <EditIcon className="h-[21px] w-[21px] sm:h-[28px] sm:w-[28px]" />
-                <Text className="font-normal text-body sm:text-h2-d">Редактировать</Text>
-              </Button>
-              <Button
-                type="button"
-                className="h-[30px] rounded-[10px] bg-yellow px-[12px] sm:h-[40px] sm:rounded-[16px] sm:px-[30px]"
-              >
-                <Text className="font-normal text-body sm:text-h2-d">Завершить событие</Text>
-              </Button>
-              <Button
-                type="button"
-                variant={ButtonEnum.TertiaryLight}
-                className="flex h-[30px] gap-[10px] rounded-[10px] px-[12px] sm:h-[40px] sm:rounded-[16px] sm:px-[30px]"
-                onClick={onLeaveEventClick}
-              >
-                <ExitIcon className="h-[18px] w-[18px] sm:h-[22px] sm:w-[22px] text-error" />
-                <Text className="font-normal text-body sm:text-h2-d">Покинуть событие</Text>
-              </Button>
+              {isOwner && (
+                <>
+                  <Button
+                    type="button"
+                    className="flex h-[30px] gap-[10px] rounded-[10px] bg-yellow px-[12px] sm:h-[40px] sm:rounded-[16px] sm:px-[30px]"
+                    onClick={() => setIsEditOpen(true)}
+                  >
+                    <EditIcon className="h-[21px] w-[21px] sm:h-[28px] sm:w-[28px]" />
+                    <Text className="font-normal text-body sm:text-h2-d">Редактировать</Text>
+                  </Button>
+                  <Button
+                    type="button"
+                    className="h-[30px] rounded-[10px] bg-yellow px-[12px] sm:h-[40px] sm:rounded-[16px] sm:px-[30px]"
+                  >
+                    <Text className="font-normal text-body sm:text-h2-d">Завершить событие</Text>
+                  </Button>
+                </>
+              )}
+              {!isOwner && (
+                <Button
+                  type="button"
+                  variant={ButtonEnum.TertiaryLight}
+                  className="flex h-[30px] gap-[10px] rounded-[10px] px-[12px] sm:h-[40px] sm:rounded-[16px] sm:px-[30px]"
+                  onClick={onLeaveEventClick}
+                >
+                  <ExitIcon className="h-[18px] w-[18px] sm:h-[22px] sm:w-[22px] text-error" />
+                  <Text className="font-normal text-body sm:text-h2-d">Покинуть событие</Text>
+                </Button>
+              )}
             </div>
           </div>
         </div>
