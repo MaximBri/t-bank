@@ -1,5 +1,5 @@
 export enum InvitationStatus {
-  PendingApproval = 'PENDING_APPROVAL',
+  PendingApproval = 'PENDING',
   Accepted = 'ACCEPTED',
   Rejected = 'REJECTED',
 }
