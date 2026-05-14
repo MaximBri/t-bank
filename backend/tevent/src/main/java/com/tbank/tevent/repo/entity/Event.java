@@ -40,24 +40,25 @@ public class Event {
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID ownerId;
 
-    @Column(name = "created_at")
+    @Column(name = "version", nullable = false)
+    @Builder.Default
+    private Long version = 0L;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(name = "invite_token")
-    private String inviteToken;
-
-    @Column(name = "invite_token_created_at")
-    private LocalDateTime inviteTokenCreatedAt;
-
-    @Column(name = "invite_token_expires_at")
-    private LocalDateTime inviteTokenExpiresAt;
+    @Column(name = "invite_token_id", nullable = false)
+    @JdbcTypeCode(SqlTypes.UUID)
+    private UUID inviteTokenId;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
         updatedAt = LocalDateTime.now();
     }
 

@@ -5,6 +5,7 @@ import { useUserStore } from '@/entities/user'
 import { LogoWithForm } from '@/shared/ui/LogoWithForm.tsx'
 import { SignInByCredentialsSubmit, SignInForm } from '@/features/SignInForm'
 import { APP_ROUTES } from '@/shared/routes'
+import { pendingInvite } from '@/shared/lib/pendingInvite'
 
 export const LoginPage = () => {
   const navigate = useNavigate()
@@ -12,8 +13,10 @@ export const LoginPage = () => {
 
   const submitSignInForm: SignInByCredentialsSubmit = async (payload) => {
     try {
-      await login(payload)
-      toast.success('Вход выполнен')
+      const inviteToken = pendingInvite.get()
+      await login({ ...payload, inviteToken })
+      pendingInvite.clear()
+      toast.success(inviteToken ? 'Заявка отправлена организатору' : 'Вход выполнен')
       navigate(APP_ROUTES.HOME)
     } catch (error) {
       const status = (error as { status?: number })?.status

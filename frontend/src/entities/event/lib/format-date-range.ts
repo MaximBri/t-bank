@@ -15,7 +15,7 @@ export function formatDateRange(start: string, end?: string): string {
   ]
 
   const parse = (value: string) => {
-    const [year, month, day] = value.split('-').map(Number)
+    const [year, month, day] = value.split('T')[0].split('-').map(Number)
     return { year, month, day }
   }
 

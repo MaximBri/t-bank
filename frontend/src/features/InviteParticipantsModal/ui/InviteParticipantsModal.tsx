@@ -1,11 +1,11 @@
-import { useState } from 'react'
-
 import QRCode from 'react-qr-code'
+import { toast } from 'sonner'
 import CloseIcon from '@/shared/assets/icons/close.svg?react'
 import CopyIcon from '@/shared/assets/icons/copy.svg?react'
 import RefreshIcon from '@/shared/assets/icons/refresh.svg?react'
 
-import { buildInviteLink } from '@/features/InviteParticipantsModal/lib/buildInivteLink.ts'
+import { useGetEventInviteToken } from '@/entities/event/api/hooks/useGetEventInviteToken.ts'
+import { buildInviteLink } from '@/features/InviteParticipantsModal/lib/build-invite-link.ts'
 
 import { Button } from '@/shared/ui/button/Button.tsx'
 import { ButtonEnum } from '@/shared/ui/button/constants.ts'
@@ -13,15 +13,31 @@ import { Modal } from '@/shared/ui/modal'
 import { Text } from '@/shared/ui/text/Text.tsx'
 
 type InviteParticipantsModalProps = {
+  eventId?: string
   isOpen: boolean
   onClose: () => void
 }
 
-export const InviteParticipantsModal = ({ isOpen, onClose }: InviteParticipantsModalProps) => {
-  const [inviteLink, setInviteLink] = useState(() => buildInviteLink())
+export const InviteParticipantsModal = ({
+  eventId,
+  isOpen,
+  onClose,
+}: InviteParticipantsModalProps) => {
+  const { data, refetch, isFetching } = useGetEventInviteToken(eventId, isOpen)
+  const inviteLink = data?.token && eventId ? buildInviteLink(eventId, data.token) : ''
 
   const handleRegenerate = () => {
-    setInviteLink(buildInviteLink())
+    refetch()
+  }
+
+  const handleCopy = async () => {
+    if (!inviteLink) return
+    try {
+      await navigator.clipboard.writeText(inviteLink)
+      toast.success('Ссылка скопирована')
+    } catch {
+      toast.error('Не удалось скопировать ссылку')
+    }
   }
 
   return (
@@ -41,7 +57,7 @@ export const InviteParticipantsModal = ({ isOpen, onClose }: InviteParticipantsM
         </div>
 
         <div className="self-center flex items-center justify-center w-[240px] h-[240px]">
-          <QRCode value={inviteLink} />
+          {inviteLink ? <QRCode value={inviteLink} /> : null}
         </div>
 
         <Text className="text-center sm:text-start text-body">
@@ -51,7 +67,7 @@ export const InviteParticipantsModal = ({ isOpen, onClose }: InviteParticipantsM
         <div className="flex w-full flex-col gap-[10px] sm:flex-row sm:items-stretch">
           <div className="min-w-0 flex h-[35px] sm:h-[47px] flex-1 items-center rounded-[18px] border-[2px] border-primary bg-primary px-[16px] sm:rounded-md">
             <Text as="span" className="truncate">
-              {inviteLink}
+              {inviteLink || 'Загрузка...'}
             </Text>
           </div>
 
@@ -59,6 +75,8 @@ export const InviteParticipantsModal = ({ isOpen, onClose }: InviteParticipantsM
             type="button"
             variant={ButtonEnum.Primary}
             className="rounded-[18px] px-[18px] max-h-[35px] text-h3 sm:rounded-[20px]"
+            onClick={handleCopy}
+            disabled={!inviteLink}
           >
             <CopyIcon className="w-[24px] h-[24px]" />
             <Text variant="body">Скопировать</Text>
@@ -69,7 +87,8 @@ export const InviteParticipantsModal = ({ isOpen, onClose }: InviteParticipantsM
           <button
             type="button"
             onClick={handleRegenerate}
-            className="flex w-full items-center justify-center gap-[10px] sm:py-[6px] rounded-[18px] border-[2px] border-primary"
+            disabled={isFetching}
+            className="flex w-full items-center justify-center gap-[10px] sm:py-[6px] rounded-[18px] border-[2px] border-primary disabled:opacity-60"
           >
             <RefreshIcon className="w-[16px] h-[16px] sm:w-[20px] sw:h-[20px]" />
             <Text variant="h3" className="font-normal sm:text-h2-d">

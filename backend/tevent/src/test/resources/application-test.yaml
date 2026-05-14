@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: tevent-test
+
+  datasource:
+    # URL, username и password будут автоматически подменены Testcontainers
+    # через @ServiceConnection, поэтому здесь оставляем пустые значения или драйвер
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+    # Опционально: можно указать контекст, если есть тестовые данные в логах
+    # contexts: test
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+  docker:
+    compose:
+      enabled: false # Выключаем, чтобы не конфликтовало с Testcontainers
+
+app:
+  security:
+    jwt:
+      # В тестах используем фиксированный ключ длиной не менее 32 символов
+      secret: "test-secret-key-very-long-and-secure-for-integration-tests"
+      access-token-expiration-minutes: 15
+      refresh-token-expiration-days: 30
+      cookie-secure: false # Для тестов на localhost ставим false
+
