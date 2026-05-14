@@ -5,6 +5,7 @@ import { useUserStore } from '@/entities/user'
 import { SignUpForm, type SignUpByCredentialsSubmit } from '@/features/SignUpForm'
 import { APP_ROUTES } from '@/shared/routes'
 import { LogoWithForm } from '@/shared/ui/LogoWithForm.tsx'
+import { pendingInvite } from '@/shared/lib/pendingInvite'
 
 export const RegisterPage = () => {
   const navigate = useNavigate()
@@ -12,8 +13,10 @@ export const RegisterPage = () => {
 
   const submitSignUpForm: SignUpByCredentialsSubmit = async (payload) => {
     try {
-      await register(payload)
-      toast.success('Аккаунт создан')
+      const inviteToken = pendingInvite.get()
+      await register({ ...payload, inviteToken })
+      pendingInvite.clear()
+      toast.success(inviteToken ? 'Аккаунт создан, заявка отправлена организатору' : 'Аккаунт создан')
       navigate(APP_ROUTES.HOME)
     } catch (error) {
       toast.error('Не удалось зарегистрироваться')

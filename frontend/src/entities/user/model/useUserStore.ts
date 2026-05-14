@@ -1,14 +1,12 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import { userApi } from '@/shared/api/user'
 import { clearApiCache } from '@/shared/lib/clearApiCache'
-import type { CurrentUserDto } from '@/shared/api/user/types'
-import type { User, UserStore } from './types'
+import type { CurrentUserDto, User, UserStore } from './types'
+import { userApi } from '..'
 
 const mapCurrentUser = (payload: CurrentUserDto): User => ({
   id: payload.user_id,
-  username: payload.login,
   login: payload.login,
   firstName: payload.first_name,
   lastName: payload.second_name,

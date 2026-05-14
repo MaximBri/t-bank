@@ -10,8 +10,14 @@ export const createEventSchema = createFormSchema({
     .optional(),
   categories: expenseCategoriesAddSchema,
   description: z.string().optional(),
-  startDate: requiredString(),
-  endDate: z.string().optional(),
+  startDate: requiredString().refine(
+      (inputDate) => {
+        const minDate = new Date().toISOString().split('T')[0]
+        return inputDate > minDate
+      },
+      'Минимальная дата начала - завтрашний день'
+  ),
+  endDate: requiredString(),
   title: requiredString(),
 }).refine(
   (values) => {

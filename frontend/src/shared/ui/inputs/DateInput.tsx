@@ -17,7 +17,7 @@ export const DateInput = ({ className, calendarIconSize = 18, ...props }: DateIn
       className={clsx(
         '[&::-webkit-calendar-picker-indicator]:cursor-pointer',
         '[&::-webkit-calendar-picker-indicator]:opacity-0',
-        'border-primary text-body px-[16px] py-[6px] text-primary outline-none transition-colors placeholder:text-placeholder',
+        'text-body px-[16px] py-[6px] text-primary outline-none transition-colors placeholder:text-placeholder',
         className,
       )}
     />
