@@ -27,7 +27,7 @@ public class UserController {
     })
     @Operation(summary = "Получить профиль текущего пользователя")
     public ResponseEntity<UserProfileDto> getUser() {
-        return userService.getUserData();
+        return ResponseEntity.ok(userService.getUserData());
     }
 
 
@@ -40,7 +40,7 @@ public class UserController {
     })
     @Operation(summary = "Обновить данные текущего пользователя")
     public ResponseEntity<UserProfileDto> updateUser(@Valid @RequestBody UpdateProfileRequest request) {
-        return userService.updateUser(request);
+        return ResponseEntity.ok(userService.updateUser(request));
     }
 
     @PostMapping("/password")

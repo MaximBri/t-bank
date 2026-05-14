@@ -10,13 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDateTime;
 
 @Service
@@ -28,8 +26,7 @@ public class UserService {
 
     @Transactional
     public void updateUserPassword(PasswordChangeRequest request) {
-        log.debug("Attempting to update password for authenticated user");
-
+        log.debug("Attempt to update password for authenticated user");
         User currentUser = getCurrentUser();
         log.debug("User found: userId={}", currentUser.getId());
 
@@ -50,32 +47,31 @@ public class UserService {
         log.info("Password updated successfully for userId={}", currentUser.getId());
     }
 
-    public ResponseEntity<UserProfileDto> getUserData() {
+    public UserProfileDto getUserData() {
         log.debug("Fetching user profile data");
 
         User currentUser = getCurrentUser();
         UserProfileDto userProfile = mapToUserProfileDto(currentUser);
 
         log.debug("User profile fetched successfully for userId={}", currentUser.getId());
-        return ResponseEntity.ok(userProfile);
+        return userProfile;
     }
 
     @Transactional
-    public ResponseEntity<UserProfileDto> updateUser(UpdateProfileRequest request) {
-        log.debug("Attempting to update user profile");
-
+    public UserProfileDto updateUser(UpdateProfileRequest request) {
+        log.debug("Attempt to update user profile");
         User currentUser = getCurrentUser();
         log.debug("User found: userId={}", currentUser.getId());
 
-        if (request.username() != null && !request.username().isBlank()) {
-            if (!request.username().equals(currentUser.getLogin())) {
-                if (userRepository.findByLogin(request.username()).isPresent()) {
-                    log.warn("Profile update failed - username already exists: {}", request.username());
+        if (request.login() != null && !request.login().isBlank()) {
+            if (!request.login().equals(currentUser.getLogin())) {
+                if (userRepository.findByLogin(request.login()).isPresent()) {
+                    log.warn("Profile update failed - username already exists: {}", request.login());
                     throw new ResponseStatusException(HttpStatus.CONFLICT, "Логин уже используется");
                 }
                 log.debug("Updating username from '{}' to '{}' for userId={}",
-                        currentUser.getLogin(), request.username(), currentUser.getId());
-                currentUser.setLogin(request.username());
+                        currentUser.getLogin(), request.login(), currentUser.getId());
+                currentUser.setLogin(request.login());
             }
         }
 
@@ -95,7 +91,7 @@ public class UserService {
         userRepository.save(currentUser);
 
         log.info("User profile updated successfully for userId={}", currentUser.getId());
-        return ResponseEntity.ok(mapToUserProfileDto(currentUser));
+        return mapToUserProfileDto(currentUser);
     }
 
     private User getCurrentUser() {
@@ -126,7 +122,6 @@ public class UserService {
                 user.getLogin(),
                 user.getFirstName(),
                 user.getSecondName(),
-                user.getAvatarUrl(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );
