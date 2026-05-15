@@ -9,11 +9,53 @@ services:
       POSTGRES_PASSWORD: tbank
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - mynetwork
 
   redis:
     image: redis:7
     ports:
       - "6379:6379"
+    networks:
+      - mynetwork
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  create-bucket:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minioadmin minioadmin123;
+      mc mb local/tbank-receipts --ignore-existing;
+      echo 'Bucket tbank-receipts created';
+      "
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
 
 volumes:
   pgdata:
+  minio_data:
