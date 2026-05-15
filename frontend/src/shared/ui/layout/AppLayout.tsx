@@ -7,6 +7,7 @@ import { UserAvatar } from '../userAvatar/UserAvatar'
 import { useMediaQuery } from 'react-responsive'
 import { UserAvatarSizes } from '../userAvatar/constants'
 import { useUserStore } from '@/entities/user'
+import { NotificationsBell } from '@/widgets/notifications-bell'
 
 export const AppLayout = () => {
   const isMobile = useMediaQuery({ maxWidth: 767 })
@@ -31,14 +32,17 @@ export const AppLayout = () => {
             <Text className="hidden m-0 mt-[2px] md:inline leading-[1.2]">Управление бюджетом</Text>
           </div>
         </div>
-        <Link to={APP_ROUTES.PROFILE} aria-label="Перейти в профиль">
-          <UserAvatar
-            variant={isMobile ? UserAvatarSizes.Xs : UserAvatarSizes.S}
-            firstName={user?.firstName}
-            lastName={user?.lastName}
-            login={user?.login}
-          />
-        </Link>
+        <div className="flex items-center gap-[8px] sm:gap-[12px]">
+          <NotificationsBell />
+          <Link to={APP_ROUTES.PROFILE} aria-label="Перейти в профиль">
+            <UserAvatar
+              variant={isMobile ? UserAvatarSizes.Xs : UserAvatarSizes.S}
+              firstName={user?.firstName}
+              lastName={user?.lastName}
+              login={user?.login}
+            />
+          </Link>
+        </div>
       </header>
       <Outlet />
     </div>
