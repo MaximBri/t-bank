@@ -76,35 +76,35 @@ beforeEach(() => {
 })
 
 describe('EventParticipantsWidget', () => {
-  it('renders heading "Участники"', () => {
+  it('отображает заголовок "Участники"', () => {
     renderWithProviders(<EventParticipantsWidget />)
     expect(screen.getByText('Участники')).toBeInTheDocument()
   })
 
-  it('renders filter buttons (Все, Приняли приглашение, Приглашённые)', () => {
+  it('отображает кнопки фильтров (Все, Приняли приглашение, Приглашённые)', () => {
     renderWithProviders(<EventParticipantsWidget />)
     expect(screen.getByText('Все')).toBeInTheDocument()
     expect(screen.getByText('Приняли приглашение')).toBeInTheDocument()
     expect(screen.getByText('Приглашённые')).toBeInTheDocument()
   })
 
-  it('renders search input', () => {
+  it('отображает поле поиска', () => {
     renderWithProviders(<EventParticipantsWidget />)
     expect(screen.getByPlaceholderText('Поиск по участникам')).toBeInTheDocument()
   })
 
-  it('renders "Пригласить участников" button', () => {
+  it('отображает кнопку "Пригласить участников"', () => {
     renderWithProviders(<EventParticipantsWidget />)
     expect(screen.getByText('Пригласить участников')).toBeInTheDocument()
   })
 
-  it('shows participant count', () => {
+  it('отображает количество участников', () => {
     setupMocks({ participantsCount: 3, visibleRows: [] })
     renderWithProviders(<EventParticipantsWidget />)
     expect(screen.getByText(/Всего участников: 3/)).toBeInTheDocument()
   })
 
-  it('renders participant row with name, login, status label', () => {
+  it('отображает строку участника с именем, логином и меткой статуса', () => {
     setupMocks({ participantsCount: 1, visibleRows: [participantRow] })
     renderWithProviders(<EventParticipantsWidget />)
 
@@ -113,7 +113,7 @@ describe('EventParticipantsWidget', () => {
     expect(screen.getByText('Участник')).toBeInTheDocument()
   })
 
-  it('pending row shows "Принять заявку" and "Отклонить заявку" buttons', () => {
+  it('pending строка отображает кнопки "Принять заявку" и "Отклонить заявку"', () => {
     setupMocks({ participantsCount: 0, visibleRows: [pendingRow] })
     renderWithProviders(<EventParticipantsWidget />)
 
@@ -121,7 +121,7 @@ describe('EventParticipantsWidget', () => {
     expect(screen.getByRole('button', { name: 'Отклонить заявку' })).toBeInTheDocument()
   })
 
-  it('clicking "Принять заявку" calls decideInvitation with accepted status', () => {
+  it('клик на "Принять заявку" вызывает decideInvitation со статусом accepted', () => {
     const mutate = vi.fn()
     mockUseDecideInvitation.mockReturnValue({ mutate, isPending: false } as any)
     setupMocks({ participantsCount: 0, visibleRows: [pendingRow] })
@@ -136,7 +136,7 @@ describe('EventParticipantsWidget', () => {
     })
   })
 
-  it('clicking "Отклонить заявку" calls decideInvitation with rejected status', () => {
+  it('клик на "Отклонить заявку" вызывает decideInvitation со статусом rejected', () => {
     const mutate = vi.fn()
     mockUseDecideInvitation.mockReturnValue({ mutate, isPending: false } as any)
     setupMocks({ participantsCount: 0, visibleRows: [pendingRow] })
@@ -151,7 +151,7 @@ describe('EventParticipantsWidget', () => {
     })
   })
 
-  it('owner row does NOT show action buttons', () => {
+  it('строка владельца НЕ отображает кнопки действий', () => {
     setupMocks({ participantsCount: 1, visibleRows: [ownerRow] })
     renderWithProviders(<EventParticipantsWidget />)
 
@@ -160,14 +160,14 @@ describe('EventParticipantsWidget', () => {
     expect(screen.queryByRole('button', { name: 'Исключить участника' })).not.toBeInTheDocument()
   })
 
-  it('non-owner participant row shows "Исключить участника" button', () => {
+  it('строка участника-не-владельца отображает кнопку "Исключить участника"', () => {
     setupMocks({ participantsCount: 1, visibleRows: [participantRow] })
     renderWithProviders(<EventParticipantsWidget />)
 
     expect(screen.getByRole('button', { name: 'Исключить участника' })).toBeInTheDocument()
   })
 
-  it('clicking "Пригласить участников" opens the InviteParticipantsModal', () => {
+  it('клик на "Пригласить участников" открывает InviteParticipantsModal', () => {
     renderWithProviders(<EventParticipantsWidget />)
 
     expect(screen.queryByTestId('invite-modal')).not.toBeInTheDocument()

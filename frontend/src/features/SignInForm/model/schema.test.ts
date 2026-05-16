@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { signInByCredentialsSchema } from './schema'
 
 describe('signInByCredentialsSchema', () => {
-  it('passes with valid data', () => {
+  it('проходит валидацию с корректными данными', () => {
     const result = signInByCredentialsSchema.safeParse({
       login: 'user123',
       password: 'secret',
@@ -10,7 +10,7 @@ describe('signInByCredentialsSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('fails when login is empty', () => {
+  it('не проходит валидацию когда login пустой', () => {
     const result = signInByCredentialsSchema.safeParse({
       login: '',
       password: 'secret',
@@ -23,7 +23,7 @@ describe('signInByCredentialsSchema', () => {
     }
   })
 
-  it('fails when password is empty', () => {
+  it('не проходит валидацию когда password пустой', () => {
     const result = signInByCredentialsSchema.safeParse({
       login: 'user123',
       password: '',
@@ -36,17 +36,17 @@ describe('signInByCredentialsSchema', () => {
     }
   })
 
-  it('fails when login is missing', () => {
+  it('не проходит валидацию когда login отсутствует', () => {
     const result = signInByCredentialsSchema.safeParse({ password: 'secret' })
     expect(result.success).toBe(false)
   })
 
-  it('fails when password is missing', () => {
+  it('не проходит валидацию когда password отсутствует', () => {
     const result = signInByCredentialsSchema.safeParse({ login: 'user123' })
     expect(result.success).toBe(false)
   })
 
-  it('fails with wrong types', () => {
+  it('не проходит валидацию с неверными типами данных', () => {
     const result = signInByCredentialsSchema.safeParse({ login: 123, password: true })
     expect(result.success).toBe(false)
   })

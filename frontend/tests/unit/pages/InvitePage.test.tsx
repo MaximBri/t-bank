@@ -56,56 +56,56 @@ beforeEach(() => {
 })
 
 describe('InvitePage', () => {
-  it('renders "Приглашение в событие" heading', () => {
+  it('отображает заголовок "Приглашение в событие"', () => {
     renderWithProviders(<InvitePage />)
     expect(screen.getByText('Приглашение в событие')).toBeInTheDocument()
   })
 
-  it('shows "Войти" button when not authenticated', () => {
+  it('отображает кнопку "Войти" когда пользователь не аутентифицирован', () => {
     renderWithProviders(<InvitePage />)
     expect(screen.getByRole('button', { name: 'Войти' })).toBeInTheDocument()
   })
 
-  it('shows "Зарегистрироваться" button when not authenticated', () => {
+  it('отображает кнопку "Зарегистрироваться" когда пользователь не аутентифицирован', () => {
     renderWithProviders(<InvitePage />)
     expect(screen.getByRole('button', { name: 'Зарегистрироваться' })).toBeInTheDocument()
   })
 
-  it('shows "Отклонить" button', () => {
+  it('отображает кнопку "Отклонить"', () => {
     renderWithProviders(<InvitePage />)
     expect(screen.getByRole('button', { name: 'Отклонить' })).toBeInTheDocument()
   })
 
-  it('shows "Перезайти и присоединиться" button when authenticated (not "Войти")', () => {
+  it('отображает кнопку "Перезайти и присоединиться" когда аутентифицирован (без "Войти")', () => {
     useUserStore.setState({ user: { id: 'user-1' } as any, isAuthenticated: true })
     renderWithProviders(<InvitePage />)
     expect(screen.getByRole('button', { name: 'Перезайти и присоединиться' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Войти' })).not.toBeInTheDocument()
   })
 
-  it('does NOT show "Зарегистрироваться" when authenticated', () => {
+  it('не отображает "Зарегистрироваться" когда пользователь аутентифицирован', () => {
     useUserStore.setState({ user: { id: 'user-1' } as any, isAuthenticated: true })
     renderWithProviders(<InvitePage />)
     expect(screen.queryByRole('button', { name: 'Зарегистрироваться' })).not.toBeInTheDocument()
   })
 
-  it('renders event title "Поездка в горы" when event data loaded', () => {
+  it('отображает заголовок события "Поездка в горы" когда данные события загружены', () => {
     renderWithProviders(<InvitePage />)
     expect(screen.getByText('Поездка в горы')).toBeInTheDocument()
   })
 
-  it('shows unauthenticated text message (contains "Войдите или зарегистрируйтесь")', () => {
+  it('отображает текст для неаутентифицированного пользователя (содержит "Войдите или зарегистрируйтесь")', () => {
     renderWithProviders(<InvitePage />)
     expect(screen.getByText(/Войдите или зарегистрируйтесь/)).toBeInTheDocument()
   })
 
-  it('shows authenticated text message (contains "нужно перезайти") when isAuthenticated=true', () => {
+  it('отображает текст для аутентифицированного пользователя (содержит "нужно перезайти") когда isAuthenticated=true', () => {
     useUserStore.setState({ user: { id: 'user-1' } as any, isAuthenticated: true })
     renderWithProviders(<InvitePage />)
     expect(screen.getByText(/нужно перезайти/)).toBeInTheDocument()
   })
 
-  it('clicking "Отклонить" calls pendingInvite.clear and navigate', () => {
+  it('клик на "Отклонить" вызывает pendingInvite.clear и navigate', () => {
     renderWithProviders(<InvitePage />)
     fireEvent.click(screen.getByRole('button', { name: 'Отклонить' }))
     expect(vi.mocked(pendingInvite.clear)).toHaveBeenCalled()

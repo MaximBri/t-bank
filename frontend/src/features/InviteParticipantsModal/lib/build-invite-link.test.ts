@@ -10,12 +10,12 @@ describe('buildInviteLink', () => {
     vi.unstubAllGlobals()
   })
 
-  it('builds link with eventId and token', () => {
+  it('формирует ссылку с eventId и token', () => {
     const result = buildInviteLink('event-123', 'token-abc')
     expect(result).toBe('https://example.com/invite/event-123/token-abc')
   })
 
-  it('includes origin in the link', () => {
+  it('включает origin в ссылку', () => {
     const result = buildInviteLink('ev1', 'tok1')
     expect(result).toContain('https://example.com')
   })

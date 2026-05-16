@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { signUpByCredentialsSchema } from './schema'
 
 describe('signUpByCredentialsSchema', () => {
-  it('passes with valid matching passwords', () => {
+  it('проходит валидацию с совпадающими корректными паролями', () => {
     const result = signUpByCredentialsSchema.safeParse({
       login: 'user123',
       password: 'password123',
@@ -11,7 +11,7 @@ describe('signUpByCredentialsSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('fails when login is too short', () => {
+  it('не проходит валидацию когда login слишком короткий', () => {
     const result = signUpByCredentialsSchema.safeParse({
       login: 'ab',
       password: 'password123',
@@ -24,7 +24,7 @@ describe('signUpByCredentialsSchema', () => {
     }
   })
 
-  it('fails when login is empty', () => {
+  it('не проходит валидацию когда login пустой', () => {
     const result = signUpByCredentialsSchema.safeParse({
       login: '',
       password: 'password123',
@@ -37,7 +37,7 @@ describe('signUpByCredentialsSchema', () => {
     }
   })
 
-  it('fails when password is too short', () => {
+  it('не проходит валидацию когда password слишком короткий', () => {
     const result = signUpByCredentialsSchema.safeParse({
       login: 'user123',
       password: 'short',
@@ -50,7 +50,7 @@ describe('signUpByCredentialsSchema', () => {
     }
   })
 
-  it('fails when passwords do not match', () => {
+  it('не проходит валидацию когда пароли не совпадают', () => {
     const result = signUpByCredentialsSchema.safeParse({
       login: 'user123',
       password: 'password123',
@@ -63,7 +63,7 @@ describe('signUpByCredentialsSchema', () => {
     }
   })
 
-  it('fails when passwordRepeat is empty', () => {
+  it('не проходит валидацию когда passwordRepeat пустой', () => {
     const result = signUpByCredentialsSchema.safeParse({
       login: 'user123',
       password: 'password123',
@@ -72,7 +72,7 @@ describe('signUpByCredentialsSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('fails when required fields are missing', () => {
+  it('не проходит валидацию когда отсутствуют обязательные поля', () => {
     const result = signUpByCredentialsSchema.safeParse({})
     expect(result.success).toBe(false)
   })

@@ -10,18 +10,18 @@ describe('clearApiCache', () => {
     vi.unstubAllGlobals()
   })
 
-  it('returns early when caches is undefined', async () => {
+  it('досрочно завершается когда caches не определён', async () => {
     await expect(clearApiCache()).resolves.toBeUndefined()
   })
 
-  it('calls caches.delete with "api-cache"', async () => {
+  it('вызывает caches.delete с аргументом "api-cache"', async () => {
     const mockDelete = vi.fn().mockResolvedValue(true)
     vi.stubGlobal('caches', { delete: mockDelete })
     await clearApiCache()
     expect(mockDelete).toHaveBeenCalledWith('api-cache')
   })
 
-  it('handles error from caches.delete without throwing', async () => {
+  it('обрабатывает ошибку от caches.delete без выброса исключения', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.stubGlobal('caches', { delete: vi.fn().mockRejectedValue(new Error('fail')) })
     await expect(clearApiCache()).resolves.toBeUndefined()

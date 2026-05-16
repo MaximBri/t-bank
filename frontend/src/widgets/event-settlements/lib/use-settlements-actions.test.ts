@@ -18,7 +18,7 @@ describe('useSettlementsActions', () => {
     } as any)
   })
 
-  it('calls paySettlement.mutate with correct payload', () => {
+  it('вызывает paySettlement.mutate с корректными данными', () => {
     const { result } = renderHook(() => useSettlementsActions({ eventId: 'event-1' }))
     act(() => {
       result.current.pay({ toUserId: 'user-2', amount: 500 })
@@ -26,7 +26,7 @@ describe('useSettlementsActions', () => {
     expect(mockMutate).toHaveBeenCalledWith({ eventId: 'event-1', toUserId: 'user-2', amount: 500 })
   })
 
-  it('does not call mutate when eventId is undefined', () => {
+  it('не вызывает mutate когда eventId не определён', () => {
     const { result } = renderHook(() => useSettlementsActions({ eventId: undefined }))
     act(() => {
       result.current.pay({ toUserId: 'user-2', amount: 500 })
@@ -34,7 +34,7 @@ describe('useSettlementsActions', () => {
     expect(mockMutate).not.toHaveBeenCalled()
   })
 
-  it('reflects isMutating from usePaySettlement', () => {
+  it('отражает isMutating из usePaySettlement', () => {
     vi.mocked(usePaySettlement).mockReturnValue({ mutate: mockMutate, isPending: true } as any)
     const { result } = renderHook(() => useSettlementsActions({ eventId: 'event-1' }))
     expect(result.current.isMutating).toBe(true)

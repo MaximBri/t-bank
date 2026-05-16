@@ -41,7 +41,7 @@ beforeEach(() => {
 })
 
 describe('EventSettlementsWidget', () => {
-  it('renders "Итоговые взаиморасчёты" heading', () => {
+  it('отображает заголовок "Итоговые взаиморасчёты"', () => {
     vi.mocked(useGetEventSettlements).mockReturnValue({
       data: mockSettlements,
       isLoading: false,
@@ -50,7 +50,7 @@ describe('EventSettlementsWidget', () => {
     expect(screen.getByText('Итоговые взаиморасчёты')).toBeInTheDocument()
   })
 
-  it('shows "Загружаем расчёты..." when isLoading=true and settlements=[]', () => {
+  it('отображает "Загружаем расчёты..." когда isLoading=true и settlements=[]', () => {
     vi.mocked(useGetEventSettlements).mockReturnValue({
       data: [],
       isLoading: true,
@@ -59,7 +59,7 @@ describe('EventSettlementsWidget', () => {
     expect(screen.getByText('Загружаем расчёты...')).toBeInTheDocument()
   })
 
-  it('shows "Никто никому не должен" when isLoading=false and settlements=[]', () => {
+  it('отображает "Никто никому не должен" когда isLoading=false и settlements=[]', () => {
     vi.mocked(useGetEventSettlements).mockReturnValue({
       data: [],
       isLoading: false,
@@ -68,7 +68,7 @@ describe('EventSettlementsWidget', () => {
     expect(screen.getByText(/Никто никому не должен/)).toBeInTheDocument()
   })
 
-  it('renders settlement row with fromUser fullName "Alice Smith"', () => {
+  it('отображает строку взаиморасчёта с полным именем fromUser "Alice Smith"', () => {
     vi.mocked(useGetEventSettlements).mockReturnValue({
       data: mockSettlements,
       isLoading: false,
@@ -77,7 +77,7 @@ describe('EventSettlementsWidget', () => {
     expect(screen.getByText('Alice Smith')).toBeInTheDocument()
   })
 
-  it('renders settlement row with toUser fullName "Bob"', () => {
+  it('отображает строку взаиморасчёта с полным именем toUser "Bob"', () => {
     vi.mocked(useGetEventSettlements).mockReturnValue({
       data: mockSettlements,
       isLoading: false,
@@ -86,7 +86,7 @@ describe('EventSettlementsWidget', () => {
     expect(screen.getByText('Bob')).toBeInTheDocument()
   })
 
-  it('renders formatted amount (contains "1" and "500")', () => {
+  it('отображает отформатированную сумму (содержит "1" и "500")', () => {
     vi.mocked(useGetEventSettlements).mockReturnValue({
       data: mockSettlements,
       isLoading: false,
@@ -96,7 +96,7 @@ describe('EventSettlementsWidget', () => {
     expect(amountEl).toBeInTheDocument()
   })
 
-  it('shows "Оплатить" button when isMyDebt=true (fromUserId === currentUserId)', () => {
+  it('отображает кнопку "Оплатить" когда isMyDebt=true (fromUserId === currentUserId)', () => {
     vi.mocked(useGetEventSettlements).mockReturnValue({
       data: mockSettlements,
       isLoading: false,
@@ -105,7 +105,7 @@ describe('EventSettlementsWidget', () => {
     expect(screen.getByText('Оплатить')).toBeInTheDocument()
   })
 
-  it('does NOT show "Оплатить" when isMyDebt=false (fromUserId !== currentUserId)', () => {
+  it('НЕ отображает "Оплатить" когда isMyDebt=false (fromUserId !== currentUserId)', () => {
     useUserStore.setState({ user: { id: 'user-3' }, isAuthenticated: true })
     vi.mocked(useGetEventSettlements).mockReturnValue({
       data: mockSettlements,

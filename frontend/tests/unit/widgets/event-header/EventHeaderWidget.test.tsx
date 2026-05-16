@@ -57,7 +57,7 @@ beforeEach(() => {
 })
 
 describe('EventHeaderWidget', () => {
-  it('returns null when event is undefined', () => {
+  it('возвращает null когда событие не определено', () => {
     mockUseGetEvent.mockReturnValue({ data: undefined } as any)
     const { container } = renderWithProviders(
       <EventHeaderWidget onLeaveEventClick={vi.fn()} />,
@@ -65,42 +65,42 @@ describe('EventHeaderWidget', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('renders event title "Корпоратив"', () => {
+  it('отображает заголовок события "Корпоратив"', () => {
     renderWithProviders(<EventHeaderWidget onLeaveEventClick={vi.fn()} />)
     expect(screen.getByText('Корпоратив')).toBeInTheDocument()
   })
 
-  it('renders event status label from eventStatusMap', () => {
+  it('отображает метку статуса события из eventStatusMap', () => {
     renderWithProviders(<EventHeaderWidget onLeaveEventClick={vi.fn()} />)
     const statusLabel = eventStatusMap[EventStatus.Active].label
     expect(screen.getByText(statusLabel)).toBeInTheDocument()
   })
 
-  it('renders "Редактировать" button when currentUser is owner', () => {
+  it('отображает кнопку "Редактировать" когда текущий пользователь является владельцем', () => {
     useUserStore.setState({ user: { id: 'owner-1' } } as any)
     renderWithProviders(<EventHeaderWidget onLeaveEventClick={vi.fn()} />)
     expect(screen.getByText('Редактировать')).toBeInTheDocument()
   })
 
-  it('renders "Завершить событие" button when currentUser is owner', () => {
+  it('отображает кнопку "Завершить событие" когда текущий пользователь является владельцем', () => {
     useUserStore.setState({ user: { id: 'owner-1' } } as any)
     renderWithProviders(<EventHeaderWidget onLeaveEventClick={vi.fn()} />)
     expect(screen.getByText('Завершить событие')).toBeInTheDocument()
   })
 
-  it('does NOT render "Покинуть событие" when owner', () => {
+  it('не отображает "Покинуть событие" когда пользователь является владельцем', () => {
     useUserStore.setState({ user: { id: 'owner-1' } } as any)
     renderWithProviders(<EventHeaderWidget onLeaveEventClick={vi.fn()} />)
     expect(screen.queryByText('Покинуть событие')).not.toBeInTheDocument()
   })
 
-  it('renders "Покинуть событие" when NOT owner', () => {
+  it('отображает "Покинуть событие" когда пользователь НЕ является владельцем', () => {
     useUserStore.setState({ user: { id: 'other-user' } } as any)
     renderWithProviders(<EventHeaderWidget onLeaveEventClick={vi.fn()} />)
     expect(screen.getByText('Покинуть событие')).toBeInTheDocument()
   })
 
-  it('clicking "Покинуть событие" calls onLeaveEventClick', () => {
+  it('клик на "Покинуть событие" вызывает onLeaveEventClick', () => {
     useUserStore.setState({ user: { id: 'other-user' } } as any)
     const onLeaveEventClick = vi.fn()
     renderWithProviders(<EventHeaderWidget onLeaveEventClick={onLeaveEventClick} />)
@@ -108,7 +108,7 @@ describe('EventHeaderWidget', () => {
     expect(onLeaveEventClick).toHaveBeenCalledTimes(1)
   })
 
-  it('renders participant avatars with getUserInitials', () => {
+  it('отображает аватары участников с использованием getUserInitials', () => {
     renderWithProviders(<EventHeaderWidget onLeaveEventClick={vi.fn()} />)
     const initialsAlice = getUserInitials('Alice', 'Smith', 'alice')
     const initialsBob = getUserInitials('Bob', null, 'bob')
@@ -116,7 +116,7 @@ describe('EventHeaderWidget', () => {
     expect(screen.getByText(initialsBob)).toBeInTheDocument()
   })
 
-  it('renders participant count text', () => {
+  it('отображает текст с количеством участников', () => {
     renderWithProviders(<EventHeaderWidget onLeaveEventClick={vi.fn()} />)
     expect(screen.getByText('3 участника')).toBeInTheDocument()
   })

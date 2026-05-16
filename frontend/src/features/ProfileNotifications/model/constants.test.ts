@@ -2,11 +2,11 @@ import { describe, it, expect } from 'vitest'
 import { notificationItems, notificationDefaults, type NotificationItemId } from './constants'
 
 describe('notificationItems', () => {
-  it('has 4 notification items', () => {
+  it('содержит 4 элемента уведомлений', () => {
     expect(notificationItems).toHaveLength(4)
   })
 
-  it('contains expected ids', () => {
+  it('содержит ожидаемые идентификаторы', () => {
     const ids = notificationItems.map((item) => item.id)
     expect(ids).toContain('event-start')
     expect(ids).toContain('expense-added')
@@ -14,7 +14,7 @@ describe('notificationItems', () => {
     expect(ids).toContain('notification-4')
   })
 
-  it('each item has id and label', () => {
+  it('каждый элемент имеет id и label', () => {
     notificationItems.forEach((item) => {
       expect(item.id).toBeTruthy()
       expect(item.label).toBeTruthy()
@@ -30,13 +30,13 @@ describe('notificationDefaults', () => {
     'notification-4',
   ]
 
-  it('has entries for all notification ids', () => {
+  it('содержит записи для всех идентификаторов уведомлений', () => {
     validIds.forEach((id) => {
       expect(notificationDefaults[id]).toBeDefined()
     })
   })
 
-  it('each entry has onSite and byEmail booleans', () => {
+  it('каждая запись имеет булевые поля onSite и byEmail', () => {
     validIds.forEach((id) => {
       const settings = notificationDefaults[id]
       expect(typeof settings.onSite).toBe('boolean')
@@ -44,19 +44,19 @@ describe('notificationDefaults', () => {
     })
   })
 
-  it('event-start has correct defaults', () => {
+  it('event-start имеет корректные значения по умолчанию', () => {
     expect(notificationDefaults['event-start']).toEqual({ onSite: false, byEmail: true })
   })
 
-  it('expense-added has correct defaults', () => {
+  it('expense-added имеет корректные значения по умолчанию', () => {
     expect(notificationDefaults['expense-added']).toEqual({ onSite: false, byEmail: false })
   })
 
-  it('notification-3 has correct defaults', () => {
+  it('notification-3 имеет корректные значения по умолчанию', () => {
     expect(notificationDefaults['notification-3']).toEqual({ onSite: true, byEmail: true })
   })
 
-  it('notification-4 has correct defaults', () => {
+  it('notification-4 имеет корректные значения по умолчанию', () => {
     expect(notificationDefaults['notification-4']).toEqual({ onSite: true, byEmail: false })
   })
 })

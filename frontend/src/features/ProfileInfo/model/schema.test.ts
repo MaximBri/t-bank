@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { profileSchema } from './schema'
 
 describe('profileSchema', () => {
-  it('passes with valid data', () => {
+  it('проходит валидацию с корректными данными', () => {
     const result = profileSchema.safeParse({
       firstName: 'Иван',
       lastName: 'Иванов',
@@ -11,7 +11,7 @@ describe('profileSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('fails when firstName is empty', () => {
+  it('не проходит валидацию когда firstName пустой', () => {
     const result = profileSchema.safeParse({
       firstName: '',
       lastName: 'Иванов',
@@ -24,7 +24,7 @@ describe('profileSchema', () => {
     }
   })
 
-  it('fails when lastName is empty', () => {
+  it('не проходит валидацию когда lastName пустой', () => {
     const result = profileSchema.safeParse({
       firstName: 'Иван',
       lastName: '',
@@ -37,7 +37,7 @@ describe('profileSchema', () => {
     }
   })
 
-  it('fails with invalid email', () => {
+  it('не проходит валидацию с некорректным email', () => {
     const result = profileSchema.safeParse({
       firstName: 'Иван',
       lastName: 'Иванов',
@@ -50,7 +50,7 @@ describe('profileSchema', () => {
     }
   })
 
-  it('fails when email is empty', () => {
+  it('не проходит валидацию когда email пустой', () => {
     const result = profileSchema.safeParse({
       firstName: 'Иван',
       lastName: 'Иванов',
@@ -59,7 +59,7 @@ describe('profileSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('fails when required fields are missing', () => {
+  it('не проходит валидацию когда отсутствуют обязательные поля', () => {
     const result = profileSchema.safeParse({})
     expect(result.success).toBe(false)
   })

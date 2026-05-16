@@ -3,12 +3,12 @@ import { disputeExpenseSchema } from './schema'
 import { disputeExpenseReasonMaxLength } from './constants'
 
 describe('disputeExpenseSchema', () => {
-  it('passes with valid reason', () => {
+  it('проходит валидацию с корректной причиной', () => {
     const result = disputeExpenseSchema.safeParse({ reason: 'Сумма неверна' })
     expect(result.success).toBe(true)
   })
 
-  it('fails when reason is empty', () => {
+  it('не проходит валидацию когда reason пустой', () => {
     const result = disputeExpenseSchema.safeParse({ reason: '' })
     expect(result.success).toBe(false)
     if (!result.success) {
@@ -17,12 +17,12 @@ describe('disputeExpenseSchema', () => {
     }
   })
 
-  it('fails when reason is missing', () => {
+  it('не проходит валидацию когда reason отсутствует', () => {
     const result = disputeExpenseSchema.safeParse({})
     expect(result.success).toBe(false)
   })
 
-  it('fails when reason exceeds max length', () => {
+  it('не проходит валидацию когда reason превышает максимальную длину', () => {
     const longReason = 'a'.repeat(disputeExpenseReasonMaxLength + 1)
     const result = disputeExpenseSchema.safeParse({ reason: longReason })
     expect(result.success).toBe(false)
@@ -32,7 +32,7 @@ describe('disputeExpenseSchema', () => {
     }
   })
 
-  it('passes when reason is exactly at max length', () => {
+  it('проходит валидацию когда reason ровно максимальной длины', () => {
     const exactReason = 'a'.repeat(disputeExpenseReasonMaxLength)
     const result = disputeExpenseSchema.safeParse({ reason: exactReason })
     expect(result.success).toBe(true)

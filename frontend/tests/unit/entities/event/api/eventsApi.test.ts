@@ -23,20 +23,20 @@ describe('eventsApi', () => {
   afterEach(() => mock.reset())
 
   describe('getAll', () => {
-    it('returns events array on success', async () => {
+    it('возвращает массив событий при успешном запросе', async () => {
       mock.onGet('/api/events/user/events').reply(200, { events: [mockEvent] })
       const result = await eventsApi.getAll({})
       expect(result).toHaveLength(1)
       expect(result[0].id).toBe('e1')
     })
 
-    it('passes query params to the request', async () => {
+    it('передаёт параметры запроса в запрос', async () => {
       mock.onGet('/api/events/user/events').reply(200, { events: [] })
       const result = await eventsApi.getAll({ status: EventStatus.Planned, search: 'trip' })
       expect(result).toHaveLength(0)
     })
 
-    it('returns empty array when events is empty', async () => {
+    it('возвращает пустой массив когда events пустой', async () => {
       mock.onGet('/api/events/user/events').reply(200, { events: [] })
       const result = await eventsApi.getAll({})
       expect(result).toEqual([])
@@ -44,21 +44,21 @@ describe('eventsApi', () => {
   })
 
   describe('getById', () => {
-    it('returns the event data', async () => {
+    it('возвращает данные события', async () => {
       mock.onGet('/api/events/e1').reply(200, mockEvent)
       const result = await eventsApi.getById('e1')
       expect(result.id).toBe('e1')
       expect(result.title).toBe('Test Event')
     })
 
-    it('throws on 404', async () => {
+    it('выбрасывает ошибку при 404', async () => {
       mock.onGet('/api/events/missing').reply(404)
       await expect(eventsApi.getById('missing')).rejects.toThrow()
     })
   })
 
   describe('create', () => {
-    it('returns created event data', async () => {
+    it('возвращает данные созданного события', async () => {
       const payload = {
         title: 'New Event',
         startDate: '2026-03-01',
@@ -70,7 +70,7 @@ describe('eventsApi', () => {
       expect(result.title).toBe('New Event')
     })
 
-    it('throws on server error', async () => {
+    it('выбрасывает ошибку при ошибке сервера', async () => {
       const payload = {
         title: '',
         startDate: '2026-03-01',
@@ -83,7 +83,7 @@ describe('eventsApi', () => {
   })
 
   describe('update', () => {
-    it('returns updated event data', async () => {
+    it('возвращает данные обновлённого события', async () => {
       const payload = {
         title: 'Updated Title',
         startDate: '2026-01-01',
@@ -95,7 +95,7 @@ describe('eventsApi', () => {
       expect(result.title).toBe('Updated Title')
     })
 
-    it('throws on 404 when event not found', async () => {
+    it('выбрасывает ошибку при 404 когда событие не найдено', async () => {
       const payload = {
         title: 'X',
         startDate: '2026-01-01',
@@ -108,7 +108,7 @@ describe('eventsApi', () => {
   })
 
   describe('getParticipants', () => {
-    it('returns participants array', async () => {
+    it('возвращает массив участников', async () => {
       const participants = [
         { userId: 'u1', login: 'alice', firstName: 'Alice', lastName: null },
         { userId: 'u2', login: 'bob', firstName: 'Bob', lastName: 'Smith' },
@@ -119,20 +119,20 @@ describe('eventsApi', () => {
       expect(result[0].userId).toBe('u1')
     })
 
-    it('returns empty array when no participants', async () => {
+    it('возвращает пустой массив когда участников нет', async () => {
       mock.onGet('/api/events/e1/participants').reply(200, { participants: [] })
       const result = await eventsApi.getParticipants('e1')
       expect(result).toEqual([])
     })
 
-    it('throws on error', async () => {
+    it('выбрасывает ошибку при ошибке запроса', async () => {
       mock.onGet('/api/events/e1/participants').reply(500)
       await expect(eventsApi.getParticipants('e1')).rejects.toThrow()
     })
   })
 
   describe('getInviteToken', () => {
-    it('returns token and expiresAt', async () => {
+    it('возвращает token и expiresAt', async () => {
       const tokenData = { token: 'abc123', expiresAt: '2026-01-11T00:00:00Z' }
       mock.onGet('/api/events/e1/token').reply(200, tokenData)
       const result = await eventsApi.getInviteToken('e1')
@@ -140,7 +140,7 @@ describe('eventsApi', () => {
       expect(result.expiresAt).toBe('2026-01-11T00:00:00Z')
     })
 
-    it('throws on error', async () => {
+    it('выбрасывает ошибку при ошибке запроса', async () => {
       mock.onGet('/api/events/e1/token').reply(403)
       await expect(eventsApi.getInviteToken('e1')).rejects.toThrow()
     })

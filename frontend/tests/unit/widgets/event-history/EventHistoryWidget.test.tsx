@@ -6,12 +6,12 @@ import { EventHistoryWidget } from '@/widgets/event-history/ui/EventHistoryWidge
 vi.mock('@/shared/assets/icons/search.svg?react', () => ({ default: () => null }))
 
 describe('EventHistoryWidget', () => {
-  it('renders heading "История событий"', () => {
+  it('отображает заголовок "История событий"', () => {
     renderWithProviders(<EventHistoryWidget />)
     expect(screen.getByText('История событий')).toBeInTheDocument()
   })
 
-  it('renders all 4 filter buttons', () => {
+  it('отображает все 4 кнопки фильтров', () => {
     renderWithProviders(<EventHistoryWidget />)
     expect(screen.getByText('Все')).toBeInTheDocument()
     expect(screen.getByText('Расходы')).toBeInTheDocument()
@@ -19,23 +19,23 @@ describe('EventHistoryWidget', () => {
     expect(screen.getByText('События')).toBeInTheDocument()
   })
 
-  it('renders "Всего записей: 9"', () => {
+  it('отображает "Всего записей: 9"', () => {
     renderWithProviders(<EventHistoryWidget />)
     expect(screen.getByText('Всего записей: 8')).toBeInTheDocument()
   })
 
-  it('renders the first record detail text "Событие завершено"', () => {
+  it('отображает текст первой записи "Событие завершено"', () => {
     renderWithProviders(<EventHistoryWidget />)
     expect(screen.getByText('Событие завершено')).toBeInTheDocument()
   })
 
-  it('renders userFullName of first record "Антон Сидоров"', () => {
+  it('отображает полное имя пользователя первой записи "Антон Сидоров"', () => {
     renderWithProviders(<EventHistoryWidget />)
     const elements = screen.getAllByText('Антон Сидоров')
     expect(elements.length).toBeGreaterThan(0)
   })
 
-  it('clicking "Расходы" filter button activates it without error', () => {
+  it('клик на кнопку фильтра "Расходы" активирует его без ошибок', () => {
     renderWithProviders(<EventHistoryWidget />)
     fireEvent.click(screen.getByText('Расходы'))
     expect(screen.getByText('Расходы')).toBeInTheDocument()

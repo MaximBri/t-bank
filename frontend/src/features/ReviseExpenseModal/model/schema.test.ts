@@ -8,7 +8,7 @@ const makeFile = (type: string, size = 1024) => {
 }
 
 describe('reviseExpenseSchema', () => {
-  it('passes with valid data', () => {
+  it('проходит валидацию с корректными данными', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: 'Правильная сумма',
       amount: 100,
@@ -18,7 +18,7 @@ describe('reviseExpenseSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('passes when amount is a numeric string', () => {
+  it('проходит валидацию когда amount — числовая строка', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: 'Правильная сумма',
       amount: '150.50',
@@ -28,7 +28,7 @@ describe('reviseExpenseSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('fails when comment is empty', () => {
+  it('не проходит валидацию когда comment пустой', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: '',
       amount: 100,
@@ -42,7 +42,7 @@ describe('reviseExpenseSchema', () => {
     }
   })
 
-  it('fails when comment exceeds max length', () => {
+  it('не проходит валидацию когда comment превышает максимальную длину', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: 'a'.repeat(reviseCommentMaxLength + 1),
       amount: 100,
@@ -56,7 +56,7 @@ describe('reviseExpenseSchema', () => {
     }
   })
 
-  it('fails when amount is zero', () => {
+  it('не проходит валидацию когда amount равен нулю', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: 'Правильная сумма',
       amount: 0,
@@ -70,7 +70,7 @@ describe('reviseExpenseSchema', () => {
     }
   })
 
-  it('fails when amount is negative', () => {
+  it('не проходит валидацию когда amount отрицательный', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: 'Правильная сумма',
       amount: -50,
@@ -84,7 +84,7 @@ describe('reviseExpenseSchema', () => {
     }
   })
 
-  it('fails when amount is non-numeric string', () => {
+  it('не проходит валидацию когда amount — нечисловая строка', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: 'Правильная сумма',
       amount: 'abc',
@@ -98,7 +98,7 @@ describe('reviseExpenseSchema', () => {
     }
   })
 
-  it('fails when category is empty', () => {
+  it('не проходит валидацию когда category пустой', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: 'Правильная сумма',
       amount: 100,
@@ -108,7 +108,7 @@ describe('reviseExpenseSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('fails when checkImage has invalid mime type', () => {
+  it('не проходит валидацию когда checkImage имеет недопустимый MIME-тип', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: 'Правильная сумма',
       amount: 100,
@@ -122,7 +122,7 @@ describe('reviseExpenseSchema', () => {
     }
   })
 
-  it('fails when checkImage exceeds 5MB', () => {
+  it('не проходит валидацию когда checkImage превышает 5 МБ', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: 'Правильная сумма',
       amount: 100,
@@ -136,7 +136,7 @@ describe('reviseExpenseSchema', () => {
     }
   })
 
-  it('passes with pdf checkImage', () => {
+  it('проходит валидацию с checkImage в формате pdf', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: 'Правильная сумма',
       amount: 100,

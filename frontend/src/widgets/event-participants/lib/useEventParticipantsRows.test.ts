@@ -70,7 +70,7 @@ beforeEach(() => {
 })
 
 describe('useEventParticipantsRows', () => {
-  it('returns empty rows when no participants and no inbox', () => {
+  it('возвращает пустые строки когда нет участников и входящих запросов', () => {
     const { result } = renderHook(() =>
       useEventParticipantsRows({
         eventId: EVENT_ID,
@@ -83,7 +83,7 @@ describe('useEventParticipantsRows', () => {
     expect(result.current.participantsCount).toBe(0)
   })
 
-  it('returns participant rows with correct status (owner vs participant)', () => {
+  it('возвращает строки участников с корректным статусом (owner vs participant)', () => {
     mockUseGetEventParticipants.mockReturnValue({
       data: [participantOwner, participantUser],
     } as any)
@@ -108,7 +108,7 @@ describe('useEventParticipantsRows', () => {
     expect((userRow as any).status).toBe(EventParticipantStatus.participant)
   })
 
-  it('filter=Accepted hides pending rows', () => {
+  it('filter=Accepted скрывает pending строки', () => {
     useUserStore.setState({
       user: { id: OWNER_ID, login: 'owner', firstName: 'Владелец', lastName: null, avatarUrl: '' },
       isAuthenticated: true,
@@ -129,7 +129,7 @@ describe('useEventParticipantsRows', () => {
     expect(rows.find((r) => r.kind === ParticipantRowKind.Pending)).toBeUndefined()
   })
 
-  it('filter=Invited hides participant rows', () => {
+  it('filter=Invited скрывает строки участников', () => {
     useUserStore.setState({
       user: { id: OWNER_ID, login: 'owner', firstName: 'Владелец', lastName: null, avatarUrl: '' },
       isAuthenticated: true,
@@ -150,7 +150,7 @@ describe('useEventParticipantsRows', () => {
     expect(rows.find((r) => r.kind === ParticipantRowKind.Participant)).toBeUndefined()
   })
 
-  it('searchQuery filters by login', () => {
+  it('searchQuery фильтрует по login', () => {
     mockUseGetEventParticipants.mockReturnValue({
       data: [participantUser, participantOwner],
     } as any)
@@ -168,7 +168,7 @@ describe('useEventParticipantsRows', () => {
     expect((rows[0] as any).login).toBe('ivan')
   })
 
-  it('owner sees pending inbox requests when currentUser.id === ownerId', () => {
+  it('владелец видит входящие pending-запросы когда currentUser.id === ownerId', () => {
     useUserStore.setState({
       user: { id: OWNER_ID, login: 'owner', firstName: 'Владелец', lastName: null, avatarUrl: '' },
       isAuthenticated: true,
@@ -188,7 +188,7 @@ describe('useEventParticipantsRows', () => {
     expect((pending[0] as any).login).toBe('newuser')
   })
 
-  it('non-owner does not see pending inbox requests', () => {
+  it('не-владелец не видит входящие pending-запросы', () => {
     useUserStore.setState({
       user: { id: 'user-1', login: 'ivan', firstName: 'Иван', lastName: 'Иванов', avatarUrl: '' },
       isAuthenticated: true,
@@ -207,7 +207,7 @@ describe('useEventParticipantsRows', () => {
     expect(pending).toHaveLength(0)
   })
 
-  it('participantsCount equals participants array length', () => {
+  it('participantsCount равен длине массива участников', () => {
     mockUseGetEventParticipants.mockReturnValue({
       data: [participantUser, participantOwner],
     } as any)

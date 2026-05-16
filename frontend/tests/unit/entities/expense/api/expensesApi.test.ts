@@ -31,20 +31,20 @@ describe('expensesApi', () => {
   afterEach(() => mock.reset())
 
   describe('create', () => {
-    it('returns created expense id', async () => {
+    it('возвращает id созданного расхода', async () => {
       mock.onPost('/api/events/ev1/expenses').reply(201, 'exp-1')
       const result = await expensesApi.create('ev1', createPayload)
       expect(result).toBe('exp-1')
     })
 
-    it('throws on validation error', async () => {
+    it('выбрасывает ошибку при ошибке валидации', async () => {
       mock.onPost('/api/events/ev1/expenses').reply(400)
       await expect(expensesApi.create('ev1', createPayload)).rejects.toThrow()
     })
   })
 
   describe('getAll', () => {
-    it('returns expenses list and total sum', async () => {
+    it('возвращает список расходов и общую сумму', async () => {
       mock.onGet('/api/events/ev1/expenses').reply(200, {
         expenses: [mockExpense],
         eventTotalSum: 3000,
@@ -55,69 +55,69 @@ describe('expensesApi', () => {
       expect(result.eventTotalSum).toBe(3000)
     })
 
-    it('returns empty expenses list', async () => {
+    it('возвращает пустой список расходов', async () => {
       mock.onGet('/api/events/ev1/expenses').reply(200, { expenses: [], eventTotalSum: 0 })
       const result = await expensesApi.getAll('ev1')
       expect(result.expenses).toEqual([])
       expect(result.eventTotalSum).toBe(0)
     })
 
-    it('throws on server error', async () => {
+    it('выбрасывает ошибку при ошибке сервера', async () => {
       mock.onGet('/api/events/ev1/expenses').reply(500)
       await expect(expensesApi.getAll('ev1')).rejects.toThrow()
     })
   })
 
   describe('approve', () => {
-    it('resolves without error on success', async () => {
+    it('успешно выполняется без ошибок', async () => {
       mock.onPost('/api/events/ev1/expenses/exp-1/approve').reply(200)
       await expect(expensesApi.approve('ev1', 'exp-1')).resolves.toBeUndefined()
     })
 
-    it('throws on 403', async () => {
+    it('выбрасывает ошибку при 403', async () => {
       mock.onPost('/api/events/ev1/expenses/exp-1/approve').reply(403)
       await expect(expensesApi.approve('ev1', 'exp-1')).rejects.toThrow()
     })
   })
 
   describe('reject', () => {
-    it('resolves without error on success', async () => {
+    it('успешно выполняется без ошибок', async () => {
       mock.onPost('/api/events/ev1/expenses/exp-1/reject').reply(200)
       await expect(expensesApi.reject('ev1', 'exp-1')).resolves.toBeUndefined()
     })
 
-    it('throws on 403', async () => {
+    it('выбрасывает ошибку при 403', async () => {
       mock.onPost('/api/events/ev1/expenses/exp-1/reject').reply(403)
       await expect(expensesApi.reject('ev1', 'exp-1')).rejects.toThrow()
     })
   })
 
   describe('remove', () => {
-    it('resolves without error on success', async () => {
+    it('успешно выполняется без ошибок', async () => {
       mock.onDelete('/api/events/ev1/expenses/exp-1').reply(204)
       await expect(expensesApi.remove('ev1', 'exp-1')).resolves.toBeUndefined()
     })
 
-    it('throws on 404 when expense not found', async () => {
+    it('выбрасывает ошибку при 404 когда расход не найден', async () => {
       mock.onDelete('/api/events/ev1/expenses/missing').reply(404)
       await expect(expensesApi.remove('ev1', 'missing')).rejects.toThrow()
     })
   })
 
   describe('update', () => {
-    it('resolves without error on success', async () => {
+    it('успешно выполняется без ошибок', async () => {
       mock.onPatch('/api/events/ev1/expenses/exp-1').reply(200)
       await expect(expensesApi.update('ev1', 'exp-1', createPayload)).resolves.toBeUndefined()
     })
 
-    it('throws on 400', async () => {
+    it('выбрасывает ошибку при 400', async () => {
       mock.onPatch('/api/events/ev1/expenses/exp-1').reply(400)
       await expect(expensesApi.update('ev1', 'exp-1', createPayload)).rejects.toThrow()
     })
   })
 
   describe('getParticipantInbox', () => {
-    it('returns inbox data', async () => {
+    it('возвращает данные входящих расходов', async () => {
       const inbox = {
         pendingConfirmations: [
           {
@@ -139,19 +139,19 @@ describe('expensesApi', () => {
       expect(result.actionRequired).toHaveLength(0)
     })
 
-    it('throws on server error', async () => {
+    it('выбрасывает ошибку при ошибке сервера', async () => {
       mock.onGet('/api/expenses/participant/inbox').reply(500)
       await expect(expensesApi.getParticipantInbox()).rejects.toThrow()
     })
   })
 
   describe('confirmAsParticipant', () => {
-    it('resolves without error on success', async () => {
+    it('успешно выполняется без ошибок', async () => {
       mock.onPost('/api/expenses/participant/exp-1/confirm').reply(200)
       await expect(expensesApi.confirmAsParticipant('exp-1')).resolves.toBeUndefined()
     })
 
-    it('throws on error', async () => {
+    it('выбрасывает ошибку при ошибке запроса', async () => {
       mock.onPost('/api/expenses/participant/exp-1/confirm').reply(404)
       await expect(expensesApi.confirmAsParticipant('exp-1')).rejects.toThrow()
     })

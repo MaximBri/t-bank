@@ -7,7 +7,7 @@ const makeFile = (type: string, size = 1024) => {
 }
 
 describe('createExpenseSchema', () => {
-  it('passes with valid required data', () => {
+  it('проходит валидацию с корректными обязательными данными', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: 500,
@@ -17,7 +17,7 @@ describe('createExpenseSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('passes with all optional fields provided', () => {
+  it('проходит валидацию при заполнении всех необязательных полей', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: 500,
@@ -29,7 +29,7 @@ describe('createExpenseSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('fails when title is empty', () => {
+  it('не проходит валидацию когда title пустой', () => {
     const result = createExpenseSchema.safeParse({
       title: '',
       amount: 500,
@@ -39,7 +39,7 @@ describe('createExpenseSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('fails when amount is zero', () => {
+  it('не проходит валидацию когда amount равен нулю', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: 0,
@@ -53,7 +53,7 @@ describe('createExpenseSchema', () => {
     }
   })
 
-  it('fails when amount is negative', () => {
+  it('не проходит валидацию когда amount отрицательный', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: -100,
@@ -63,7 +63,7 @@ describe('createExpenseSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('fails when amount is non-numeric string', () => {
+  it('не проходит валидацию когда amount — нечисловая строка', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: 'not-a-number',
@@ -77,7 +77,7 @@ describe('createExpenseSchema', () => {
     }
   })
 
-  it('parses numeric string as number', () => {
+  it('преобразует числовую строку в число', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: '250',
@@ -90,7 +90,7 @@ describe('createExpenseSchema', () => {
     }
   })
 
-  it('fails when category is empty', () => {
+  it('не проходит валидацию когда category пустой', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: 500,
@@ -104,7 +104,7 @@ describe('createExpenseSchema', () => {
     }
   })
 
-  it('fails when participants array is empty', () => {
+  it('не проходит валидацию когда массив participants пустой', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: 500,
@@ -118,7 +118,7 @@ describe('createExpenseSchema', () => {
     }
   })
 
-  it('fails when checkImage has invalid mime type', () => {
+  it('не проходит валидацию когда checkImage имеет недопустимый MIME-тип', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: 500,
@@ -133,7 +133,7 @@ describe('createExpenseSchema', () => {
     }
   })
 
-  it('fails when checkImage exceeds 5MB', () => {
+  it('не проходит валидацию когда checkImage превышает 5 МБ', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: 500,
@@ -148,7 +148,7 @@ describe('createExpenseSchema', () => {
     }
   })
 
-  it('passes without checkImage (optional)', () => {
+  it('проходит валидацию без checkImage (необязательное поле)', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: 500,
