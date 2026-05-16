@@ -48,9 +48,7 @@ describe('expenseCategoriesAddSchema', () => {
   })
 
   it('правильно обрабатывает пробельные строки (пространство - это строка)', () => {
-    // requiredString() принимает строки только если они не пусты, пробелы это валидная строка
     const result = expenseCategoriesAddSchema.safeParse(['  ', 'Питание'])
-    // Пробелы будут приняты как валидная строка, так как requiredString() проверяет только на пустоту
     expect(result.success).toBe(true)
   })
 

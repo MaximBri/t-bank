@@ -10,14 +10,12 @@ import { useUserStore } from '@/entities/user/model/useUserStore'
 import { ExpenseResponseStatus } from '@/entities/expense'
 import { EventExpensesWidget } from '@/widgets/event-expenses/ui/EventExpensesWidget'
 
-// SVG icon mocks
 vi.mock('@/shared/assets/icons/add.svg?react', () => ({ default: () => null }))
 vi.mock('@/shared/assets/icons/check.svg?react', () => ({ default: () => null }))
 vi.mock('@/shared/assets/icons/close.svg?react', () => ({ default: () => null }))
 vi.mock('@/shared/assets/icons/edit.svg?react', () => ({ default: () => null }))
 vi.mock('@/shared/assets/icons/trash.svg?react', () => ({ default: () => null }))
 
-// Modal is heavyweight — mock it to a no-op to isolate widget logic
 vi.mock('@/features/CreateExpenseModal', () => ({
   CreateExpenseModal: () => null,
 }))
@@ -111,7 +109,6 @@ describe('EventExpensesWidget', () => {
   })
 
   it('показывает состояние загрузки до получения данных', () => {
-    // Delay the response so we catch the loading state
     mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(() => new Promise(() => {}))
     mock.onGet(`/api/events/${EVENT_ID}`).reply(() => new Promise(() => {}))
     mock.onGet(`/api/events/${EVENT_ID}/participants`).reply(() => new Promise(() => {}))
@@ -147,11 +144,8 @@ describe('EventExpensesWidget', () => {
       expect(screen.getByText('Ужин в ресторане')).toBeInTheDocument()
     })
 
-    // Payer name resolved from participants map
     expect(screen.getByText(/Alice Smith/i)).toBeInTheDocument()
-    // Category badge
     expect(screen.getByText('Питание')).toBeInTheDocument()
-    // Amount formatted
     expect(screen.getByText(/6\s*000/)).toBeInTheDocument()
   })
 
@@ -169,7 +163,6 @@ describe('EventExpensesWidget', () => {
       expect(screen.getByText('Ужин в ресторане')).toBeInTheDocument()
     })
 
-    // Count badge next to header
     expect(screen.getByText('2')).toBeInTheDocument()
   })
 
@@ -219,7 +212,6 @@ describe('EventExpensesWidget', () => {
   })
 
   it('показывает кнопки редактирования и удаления для плательщика', async () => {
-    // currentUserId === expense.payerId === 'user-1'
     mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, {
       expenses: [mockExpense],
       eventTotalSum: 6000,
@@ -236,7 +228,6 @@ describe('EventExpensesWidget', () => {
   })
 
   it('показывает кнопки подтверждения/отклонения для владельца события', async () => {
-    // Set current user as event owner
     useUserStore.setState({
       user: { id: 'user-owner', login: 'owner', firstName: 'Owner', lastName: null, avatarUrl: '' },
       isAuthenticated: true,

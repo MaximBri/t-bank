@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest'
 import { createEventSchema } from './schema'
 
-// Use a fixed "today" to make date-based tests deterministic
 const MOCK_TODAY = '2026-05-16'
 const TOMORROW = '2026-05-17'
 const DAY_AFTER_TOMORROW = '2026-05-18'

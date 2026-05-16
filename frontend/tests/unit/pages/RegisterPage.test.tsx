@@ -55,7 +55,6 @@ describe('RegisterPage', () => {
     mockRegister.mockResolvedValue(undefined)
     renderPage()
 
-    // SignUpForm fields
     const loginInput = document.querySelector('input[name="login"]') as HTMLInputElement
     const passwordInput = document.querySelector('input[name="password"]') as HTMLInputElement
 
@@ -107,7 +106,6 @@ describe('RegisterPage', () => {
   })
 
   it('сообщение об ошибке регистрации соответствует ожидаемому тексту', () => {
-    // Verify the expected error message string matches the page implementation
     const errorMessage = 'Не удалось зарегистрироваться'
     expect(errorMessage).toBe('Не удалось зарегистрироваться')
     expect(errorMessage).not.toBe('Не удалось войти')

@@ -7,7 +7,6 @@ import MockAdapter from 'axios-mock-adapter'
 
 import { CreateExpenseModal } from '@/features/CreateExpenseModal/ui/CreateExpenseModal'
 
-// Mock hooks that depend on route params and external API calls
 vi.mock('@/entities/event/api/hooks/useGetEvent', () => ({
   useGetEvent: () => ({
     data: { categories: ['Еда', 'Транспорт'] },

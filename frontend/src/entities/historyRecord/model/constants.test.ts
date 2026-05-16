@@ -70,7 +70,6 @@ describe('HistoryRecordTypeTranslation', () => {
 
   it('переводы уникальны или могут совпадать (исходя из дизайна)', () => {
     const translations = Object.values(HistoryRecordTypeTranslation)
-    // Просто проверяем, что все переводы существуют и не пусты
     translations.forEach((translation) => {
       expect(translation).toBeTruthy()
     })

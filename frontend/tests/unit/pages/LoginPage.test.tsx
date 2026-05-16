@@ -100,7 +100,6 @@ describe('LoginPage', () => {
   })
 
   it('показывает ошибку 401 — логика определяется статусом ответа', async () => {
-    // Verify that a 401 error gets the correct Russian message (unit-level check on the logic)
     const error401 = { status: 401 }
     const error500 = { status: 500 }
     expect((error401 as { status?: number })?.status === 401 ? 'Неверные логин или пароль' : 'Не удалось войти').toBe('Неверные логин или пароль')

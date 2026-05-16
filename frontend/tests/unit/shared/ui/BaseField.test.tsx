@@ -192,7 +192,6 @@ describe('BaseField', () => {
         />
       </Wrapper>,
     )
-    // No error initially
     expect(screen.queryByTestId('custom-error')).not.toBeInTheDocument()
     rerender(
       <Wrapper>

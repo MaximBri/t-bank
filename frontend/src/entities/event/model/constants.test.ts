@@ -11,7 +11,7 @@ describe('eventStatusMap', () => {
   })
 
   it('каждый статус имеет background и label', () => {
-    Object.entries(eventStatusMap).forEach(([status, config]) => {
+    Object.entries(eventStatusMap).forEach(([, config]) => {
       expect(config).toHaveProperty('background')
       expect(config).toHaveProperty('label')
       expect(typeof config.background).toBe('string')

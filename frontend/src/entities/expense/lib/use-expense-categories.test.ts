@@ -130,7 +130,6 @@ describe('useExpenseCategories', () => {
         result.current.addCategory()
       })
 
-      // still only one entry
       const cats = result.current.getValues('categories')
       expect(cats.filter((c) => c === 'Питание')).toHaveLength(1)
     })

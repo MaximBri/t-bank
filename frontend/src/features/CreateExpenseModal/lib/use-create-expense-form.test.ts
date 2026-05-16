@@ -147,8 +147,6 @@ describe('useCreateExpenseForm', () => {
   it('возвращает пустой список участников когда нет данных', () => {
     const onSuccess = vi.fn()
 
-    // No participants endpoint stub — queries are disabled without eventId
-    // Use a wrapper without a route param to simulate missing eventId
     const qc = new QueryClient({ defaultOptions: { queries: { retry: 0, gcTime: 0 } } })
     function NoParamWrapper({ children }: PropsWithChildren) {
       return createElement(
@@ -207,7 +205,6 @@ describe('useCreateExpenseForm', () => {
       { wrapper: makeWrapper() },
     )
 
-    // Populate required fields
     act(() => {
       result.current.methods.setValue('title', 'Новый расход')
       result.current.methods.setValue('amount', 500)
