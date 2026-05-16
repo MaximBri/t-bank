@@ -16,7 +16,7 @@ Source of truth for this document: `docs/qa/api/openapi.raw`
 
 | Method | Path | Auth | Expected statuses | Purpose |
 |---|---|---|---|---|
-| POST | /events | Yes | 200 | Создание нового события |
+| POST | /events | Yes | 200, 201 | Создание нового события |
 | GET | /events/{eventId} | Yes | 200 | Получение информации о событии |
 | PATCH | /events/{eventId} | Yes | 200 | Редактирование события |
 | GET | /events/user/events | Yes | 200 | Получение списка событий пользователя |
@@ -26,17 +26,17 @@ Source of truth for this document: `docs/qa/api/openapi.raw`
 
 | Method | Path | Auth | Expected statuses | Purpose |
 |---|---|---|---|---|
-| GET | /events/categories | Yes | 200 | Получение дефолтных категорий |
-| GET | /events/{eventId}/categories | Yes | 200 | Получение категорий события |
-| POST | /events/{eventId}/categories | Yes | 200 | Создание категории для события |
-| DELETE | /events/{eventId}/categories/{categoryId} | Yes | 200 | Удаление категории события |
+| GET | /events/categories | Not present in `openapi.raw` | N/A | Получение дефолтных категорий |
+| GET | /events/{eventId}/categories | Not present in `openapi.raw` | N/A | Получение категорий события |
+| POST | /events/{eventId}/categories | Not present in `openapi.raw` | N/A | Создание категории для события |
+| DELETE | /events/{eventId}/categories/{categoryId} | Not present in `openapi.raw` | N/A | Удаление категории события |
 
 ## Expenses
 
 | Method | Path | Auth | Expected statuses | Purpose |
 |---|---|---|---|---|
 | GET | /events/{eventId}/expenses | Yes | 200 | Получение списка расходов события |
-| POST | /events/{eventId}/expenses | Yes | 200 | Добавление нового расхода |
+| POST | /events/{eventId}/expenses | Yes | 200, 201 | Добавление нового расхода |
 | PATCH | /events/{expenseId}/status | Yes | 200 | Изменение статуса подтверждения расхода |
 
 ## Settlements
@@ -84,5 +84,5 @@ Source of truth for this document: `docs/qa/api/openapi.raw`
 | Method | Path | Auth | Expected statuses | Purpose |
 |---|---|---|---|---|
 | GET | /me | Not present in `openapi.raw` | N/A | Получение данных профиля |
-| PATCH | /me | Not present in `openapi.raw` | N/A | Редактирование профиля |
-| POST | /me/password | Not present in `openapi.raw` | N/A | Изменение пароля |
+| PATCH | /me | Yes | 200 | Редактирование профиля |
+| POST | /me/password | Yes | 204, 401 | Изменение пароля |

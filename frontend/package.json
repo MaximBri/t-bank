@@ -21,13 +21,15 @@
     "test:e2e:playwright:open": "playwright show-report ./.artifacts/e2e/playwright-report",
     "test:e2e:allure:generate": "allure generate .artifacts/e2e/allure-results --output .artifacts/e2e/allure-report/awesome",
     "test:e2e:allure:open": "allure generate .artifacts/e2e/allure-results --output .artifacts/e2e/allure-report/awesome --open",
+    "test:e2e:allure:clean": "rm -rf .artifacts/e2e/allure-results .artifacts/e2e/allure-report",
     "test:e2e:allure": "npm run test:e2e; npm run test:e2e:allure:generate",
-    "test:e2e:allure:run": "npm run test:e2e; npm run test:e2e:allure:open",
+    "test:e2e:allure:run": "npm run test:e2e:allure:clean; npm run test:e2e; npm run test:e2e:allure:open",
     "test:api": "playwright test -c playwright.api.config.ts",
     "test:api:allure:generate": "allure generate .artifacts/api/allure-results --output .artifacts/api/allure-report/awesome",
     "test:api:allure:open": "allure generate .artifacts/api/allure-results --output .artifacts/api/allure-report/awesome --open",
+    "test:api:allure:clean": "rm -rf .artifacts/api/allure-results .artifacts/api/allure-report",
     "test:api:allure": "npm run test:api; npm run test:api:allure:generate",
-    "test:api:allure:run": "npm run test:api; npm run test:api:allure:open"
+    "test:api:allure:run": "npm run test:api:allure:clean; npm run test:api; npm run test:api:allure:open"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",

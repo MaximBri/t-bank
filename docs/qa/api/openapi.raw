@@ -6,34 +6,57 @@
   },
   "servers": [
     {
-      "url": "http://127.0.0.1:8081",
+      "url": "http://localhost:8081",
       "description": "Generated server url"
     }
   ],
   "tags": [
     {
-      "name": "Participants",
-      "description": "Управление участниками событий, приглашения и членство"
-    },
-    {
-      "name": "Invitations",
-      "description": "Генерация и управление пригласительными ссылками"
+      "name": "Profile",
+      "description": "Управление профилем пользователя"
     }
   ],
   "paths": {
-    "/user/invitations/{invitationId}/resolve": {
+    "/me/password": {
       "post": {
         "tags": [
-          "Participants"
+          "Profile"
         ],
-        "summary": "Принять или отклонить приглашение",
-        "description": "Ответ на приглашение от владельца группы",
-        "operationId": "resolveInvitation",
+        "summary": "Обновить пароль текущего пользователя",
+        "operationId": "updatePassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChangeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Пароль успешно обновлен"
+          },
+          "401": {
+            "description": "Пользователь не аутентифицирован"
+          },
+          "400": {
+            "description": "Входные данные невалидны"
+          }
+        }
+      }
+    },
+    "/expenses/participant/{expenseId}/leave": {
+      "post": {
+        "tags": [
+          "expense-participant-controller"
+        ],
+        "operationId": "leave",
         "parameters": [
           {
-            "name": "invitationId",
+            "name": "expenseId",
             "in": "path",
-            "description": "ID приглашения",
             "required": true,
             "schema": {
               "type": "string",
@@ -41,62 +64,33 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ResolveInvitationRequest"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
-            "description": "Решение принято"
-          },
-          "403": {
-            "description": "Недостаточно прав"
-          },
-          "404": {
-            "description": "Приглашение не найдено"
-          },
-          "410": {
-            "description": "Приглашение просрочено"
+            "description": "OK"
           }
         }
       }
     },
-    "/groups/join": {
+    "/expenses/participant/{expenseId}/confirm": {
       "post": {
         "tags": [
-          "Participants"
+          "expense-participant-controller"
         ],
-        "summary": "Подать заявку на вступление в группу",
-        "description": "Пользователь может подать заявку на вступление в группу по инвайт-коду. Заявка требует подтверждения от владельца группы.",
-        "operationId": "joinGroup",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/JoinGroupRequest"
-              }
+        "operationId": "confirm",
+        "parameters": [
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
             }
-          },
-          "required": true
-        },
+          }
+        ],
         "responses": {
-          "202": {
-            "description": "Заявка принята и ожидает рассмотрения владельцем"
-          },
-          "404": {
-            "description": "Инвайт-код не найден"
-          },
-          "409": {
-            "description": "Вы уже подали заявку в эту группу"
-          },
-          "410": {
-            "description": "Ссылка просрочена (прошло \u003E 48 часов)"
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -111,7 +105,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateEventRequest"
+                "$ref": "#/components/schemas/EventRequest"
               }
             }
           },
@@ -131,19 +125,16 @@
         }
       }
     },
-    "/events/{eventId}/participants/user/invitations/{invitationId}/resolve": {
+    "/events/{eventId}/payments/{paymentId}/sent": {
       "post": {
         "tags": [
-          "Participants"
+          "settlement-controller"
         ],
-        "summary": "Принять или отклонить приглашение",
-        "description": "Ответ на приглашение от владельца группы",
-        "operationId": "resolveInvitation_1",
+        "operationId": "markAsSent",
         "parameters": [
           {
             "name": "eventId",
             "in": "path",
-            "description": "ID события",
             "required": true,
             "schema": {
               "type": "string",
@@ -151,9 +142,98 @@
             }
           },
           {
-            "name": "invitationId",
+            "name": "paymentId",
             "in": "path",
-            "description": "ID приглашения",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/events/{eventId}/payments/{paymentId}/fail": {
+      "post": {
+        "tags": [
+          "settlement-controller"
+        ],
+        "operationId": "markAsFailed",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "paymentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/events/{eventId}/payments/{paymentId}/complete": {
+      "post": {
+        "tags": [
+          "settlement-controller"
+        ],
+        "operationId": "complete",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "paymentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/events/{eventId}/payments/initiate": {
+      "post": {
+        "tags": [
+          "settlement-controller"
+        ],
+        "operationId": "initiate",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
             "required": true,
             "schema": {
               "type": "string",
@@ -165,7 +245,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ResolveInvitationRequest"
+                "$ref": "#/components/schemas/InitiatePaymentRequest"
               }
             }
           },
@@ -173,149 +253,12 @@
         },
         "responses": {
           "200": {
-            "description": "Решение принято"
-          },
-          "403": {
-            "description": "Недостаточно прав"
-          },
-          "404": {
-            "description": "Приглашение не найдено"
-          },
-          "410": {
-            "description": "Приглашение просрочено"
-          }
-        }
-      }
-    },
-    "/events/{eventId}/participants/leave": {
-      "post": {
-        "tags": [
-          "Participants"
-        ],
-        "summary": "Подтвердить выход из события",
-        "description": "Окончательный выход пользователя из события",
-        "operationId": "leaveEvent",
-        "parameters": [
-          {
-            "name": "eventId",
-            "in": "path",
-            "description": "ID события",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Вы успешно покинули событие"
-          },
-          "403": {
-            "description": "Недостаточно прав"
-          },
-          "404": {
-            "description": "Событие не найдено"
-          },
-          "409": {
-            "description": "Конфликт (появились новые долги во время подтверждения)"
-          }
-        }
-      }
-    },
-    "/events/{eventId}/participants/invite": {
-      "post": {
-        "tags": [
-          "Participants"
-        ],
-        "summary": "Пригласить пользователя в событие",
-        "description": "Создание приглашения для пользователя по login",
-        "operationId": "inviteUser",
-        "parameters": [
-          {
-            "name": "eventId",
-            "in": "path",
-            "description": "ID события",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InviteUserRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Приглашение успешно создано"
-          },
-          "403": {
-            "description": "Недостаточно прав"
-          },
-          "404": {
-            "description": "Пользователь не найден"
-          },
-          "409": {
-            "description": "Пользователь уже приглашен или является участником"
-          }
-        }
-      }
-    },
-    "/events/{eventId}/invite-link/regenerate": {
-      "post": {
-        "tags": [
-          "Invitations"
-        ],
-        "summary": "Перегенерировать пригласительную ссылку",
-        "description": "Создает новую пригласительную ссылку с новым токеном и сроком действия 48 часов",
-        "operationId": "regenerateInviteLink",
-        "parameters": [
-          {
-            "name": "eventId",
-            "in": "path",
-            "description": "ID события",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Новая пригласительная ссылка",
+            "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/InviteLinkDTO"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Недостаточно прав",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/InviteLinkDTO"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Событие не найдено",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/InviteLinkDTO"
+                  "type": "string",
+                  "format": "uuid"
                 }
               }
             }
@@ -326,9 +269,9 @@
     "/events/{eventId}/expenses": {
       "get": {
         "tags": [
-          "expenses-controller"
+          "expense-author-controller"
         ],
-        "operationId": "getExpenses",
+        "operationId": "getEventExpenses",
         "parameters": [
           {
             "name": "eventId",
@@ -346,10 +289,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ExpenseDto"
-                  }
+                  "$ref": "#/components/schemas/EventExpensesResponse"
                 }
               }
             }
@@ -358,9 +298,9 @@
       },
       "post": {
         "tags": [
-          "expenses-controller"
+          "expense-author-controller"
         ],
-        "operationId": "postExpense",
+        "operationId": "create",
         "parameters": [
           {
             "name": "eventId",
@@ -388,7 +328,8 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ExpenseDto"
+                  "type": "string",
+                  "format": "uuid"
                 }
               }
             }
@@ -396,44 +337,12 @@
         }
       }
     },
-    "/events/{eventId}/categories": {
-      "get": {
-        "tags": [
-          "category-controller"
-        ],
-        "operationId": "getCategoriesForEvent",
-        "parameters": [
-          {
-            "name": "eventId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CategoryDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
+    "/events/{eventId}/expenses/{expenseId}/reject": {
       "post": {
         "tags": [
-          "category-controller"
+          "expense-author-controller"
         ],
-        "operationId": "createCategoryForEvent",
+        "operationId": "reject",
         "parameters": [
           {
             "name": "eventId",
@@ -443,28 +352,53 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCategoryRequest"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
-                }
-              }
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/events/{eventId}/expenses/{expenseId}/approve": {
+      "post": {
+        "tags": [
+          "expense-author-controller"
+        ],
+        "operationId": "approve",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
             }
+          },
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -558,40 +492,147 @@
         }
       }
     },
-    "/events/{expenseId}/status": {
+    "/notifications/{id}/read": {
       "patch": {
         "tags": [
-          "expenses-controller"
+          "notification-controller"
         ],
-        "operationId": "approveExpense",
+        "operationId": "markAsRead",
         "parameters": [
           {
-            "name": "expenseId",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
               "format": "uuid"
             }
-          },
-          {
-            "name": "status",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Получить профиль текущего пользователя",
+        "operationId": "getUser",
+        "responses": {
+          "200": {
+            "description": "Профиль успешно получен",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileDto"
+                }
+              }
             }
           },
+          "401": {
+            "description": "Пользователь не аутентифицирован",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Обновить данные текущего пользователя",
+        "operationId": "updateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Данные пользователя успешно обновлены",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Пользователь не аутентифицирован",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Входные данные невалидны",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Данный логин уже занят",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/invitations/{invitationId}/decide": {
+      "patch": {
+        "tags": [
+          "invitation-controller"
+        ],
+        "operationId": "decideInvitation",
+        "parameters": [
           {
-            "name": "reason",
-            "in": "query",
-            "description": "Причина конфликта (обязательна при статусе DISPUTED)",
-            "required": false,
+            "name": "invitationId",
+            "in": "path",
+            "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationDecisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -649,7 +690,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateEventRequest"
+                "$ref": "#/components/schemas/EventRequest"
               }
             }
           },
@@ -669,36 +710,244 @@
         }
       }
     },
-    "/user/invitations/pending": {
-      "get": {
+    "/events/{eventId}/expenses/{expenseId}": {
+      "delete": {
         "tags": [
-          "Participants"
+          "expense-author-controller"
         ],
-        "summary": "Проверить наличие приглашений",
-        "description": "Возвращает список приглашений, ожидающих ответа пользователя",
-        "operationId": "getPendingInvitations",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Список активных приглашений",
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "expense-author-controller"
+        ],
+        "operationId": "update",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "expenseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExpenseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/notifications": {
+      "get": {
+        "tags": [
+          "notification-controller"
+        ],
+        "operationId": "getNotifications",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/unread-count": {
+      "get": {
+        "tags": [
+          "notification-controller"
+        ],
+        "operationId": "getUnreadCount",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/invitations/outbox": {
+      "get": {
+        "tags": [
+          "invitation-controller"
+        ],
+        "operationId": "getMySentInvitations",
+        "responses": {
+          "200": {
+            "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/PendingInvitationResponse"
+                    "$ref": "#/components/schemas/MyInvitationResponse"
                   }
                 }
               }
             }
-          },
-          "403": {
-            "description": "Недостаточно прав",
+          }
+        }
+      }
+    },
+    "/invitations/inbox": {
+      "get": {
+        "tags": [
+          "invitation-controller"
+        ],
+        "operationId": "getIncomingInvitations",
+        "responses": {
+          "200": {
+            "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/PendingInvitationResponse"
+                    "$ref": "#/components/schemas/OwnerInvitationResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/expenses/participant/inbox": {
+      "get": {
+        "tags": [
+          "expense-participant-controller"
+        ],
+        "operationId": "getInbox",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/InboxResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/{eventId}/token": {
+      "get": {
+        "tags": [
+          "event-controller"
+        ],
+        "operationId": "getEventToken",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventTokenResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/{eventId}/settlements": {
+      "get": {
+        "tags": [
+          "settlement-controller"
+        ],
+        "operationId": "getSettlements",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SettlementStep"
                   }
                 }
               }
@@ -710,117 +959,13 @@
     "/events/{eventId}/participants": {
       "get": {
         "tags": [
-          "Participants"
+          "event-controller"
         ],
-        "summary": "Получить список участников события",
-        "description": "Возвращает список всех участников события",
         "operationId": "getParticipants",
         "parameters": [
           {
             "name": "eventId",
             "in": "path",
-            "description": "ID события",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "status",
-            "in": "query",
-            "description": "Фильтр по статусу участия",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Список участников",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetParticipantsResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Недостаточно прав",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetParticipantsResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Событие не найдено",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetParticipantsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/events/{eventId}/participants/user/invitations/pending": {
-      "get": {
-        "tags": [
-          "Participants"
-        ],
-        "summary": "Проверить наличие приглашений",
-        "description": "Возвращает список приглашений, ожидающих ответа пользователя",
-        "operationId": "getPendingInvitations_1",
-        "responses": {
-          "200": {
-            "description": "Список активных приглашений",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PendingInvitationResponse"
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Недостаточно прав",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PendingInvitationResponse"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/events/{eventId}/participants/leave/check": {
-      "get": {
-        "tags": [
-          "Participants"
-        ],
-        "summary": "Проверить возможность выхода из события",
-        "description": "Проверяет наличие долгов и роль пользователя перед выходом",
-        "operationId": "checkLeaveAbility",
-        "parameters": [
-          {
-            "name": "eventId",
-            "in": "path",
-            "description": "ID события",
             "required": true,
             "schema": {
               "type": "string",
@@ -830,85 +975,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Результат проверки",
+            "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/LeaveCheckResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Недостаточно прав",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeaveCheckResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Событие не найдено",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/LeaveCheckResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/events/{eventId}/invite-link": {
-      "get": {
-        "tags": [
-          "Invitations"
-        ],
-        "summary": "Получить текущую пригласительную ссылку и QR-код",
-        "description": "Возвращает действующую пригласительную ссылку и QR-код. Если ссылка отсутствует или просрочена, генерирует новую.",
-        "operationId": "getInviteLink",
-        "parameters": [
-          {
-            "name": "eventId",
-            "in": "path",
-            "description": "ID события",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Пригласительная ссылка",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/InviteLinkDTO"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Недостаточно прав",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/InviteLinkDTO"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Событие не найдено",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/InviteLinkDTO"
+                  "$ref": "#/components/schemas/ParticipantsResponse"
                 }
               }
             }
@@ -924,7 +995,7 @@
         "operationId": "getUserEvents",
         "parameters": [
           {
-            "name": "search",
+            "name": "state",
             "in": "query",
             "required": false,
             "schema": {
@@ -974,33 +1045,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserEventDTO"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/events/categories": {
-      "get": {
-        "tags": [
-          "category-controller"
-        ],
-        "operationId": "getDefaultCategories",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CategoryDto"
-                  }
+                  "$ref": "#/components/schemas/EventsResponse"
                 }
               }
             }
@@ -1027,111 +1072,30 @@
           }
         }
       }
-    },
-    "/events/{eventId}/participants/{userId}": {
-      "delete": {
-        "tags": [
-          "Participants"
-        ],
-        "summary": "Удалить участника или отозвать приглашение",
-        "description": "Удаление участника из события или отзыв приглашения (только для владельца)",
-        "operationId": "removeParticipant",
-        "parameters": [
-          {
-            "name": "eventId",
-            "in": "path",
-            "description": "ID события",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "ID пользователя",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Участник удален / приглашение отозвано"
-          },
-          "403": {
-            "description": "Недостаточно прав"
-          },
-          "404": {
-            "description": "Участник не найден"
-          }
-        }
-      }
-    },
-    "/events/{eventId}/categories/{categoryId}": {
-      "delete": {
-        "tags": [
-          "category-controller"
-        ],
-        "operationId": "deleteCategory",
-        "parameters": [
-          {
-            "name": "eventId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "categoryId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
     }
   },
   "components": {
     "schemas": {
-      "ResolveInvitationRequest": {
+      "PasswordChangeRequest": {
         "type": "object",
         "properties": {
-          "action": {
+          "current_password": {
             "type": "string",
-            "minLength": 1
+            "maxLength": 2147483647,
+            "minLength": 8
+          },
+          "new_password": {
+            "type": "string",
+            "maxLength": 2147483647,
+            "minLength": 8
           }
         },
         "required": [
-          "action"
+          "current_password",
+          "new_password"
         ]
       },
-      "JoinGroupRequest": {
-        "type": "object",
-        "properties": {
-          "inviteCode": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": [
-          "inviteCode"
-        ]
-      },
-      "CreateEventRequest": {
+      "EventRequest": {
         "type": "object",
         "properties": {
           "title": {
@@ -1149,15 +1113,17 @@
             "type": "string",
             "format": "date-time"
           },
-          "category": {
-            "type": "string"
-          },
           "imageKey": {
             "type": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
-          "category",
           "endDate",
           "startDate",
           "title"
@@ -1184,8 +1150,11 @@
             "type": "string",
             "format": "date-time"
           },
-          "category": {
-            "type": "string"
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "status": {
             "type": "string"
@@ -1196,32 +1165,22 @@
           "ownerId": {
             "type": "string",
             "format": "uuid"
+          },
+          "countOfParticipants": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
-      "InviteUserRequest": {
+      "InitiatePaymentRequest": {
         "type": "object",
         "properties": {
-          "username": {
+          "toUserId": {
             "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": [
-          "username"
-        ]
-      },
-      "InviteLinkDTO": {
-        "type": "object",
-        "properties": {
-          "fullUrl": {
-            "type": "string"
+            "format": "uuid"
           },
-          "token": {
-            "type": "string"
-          },
-          "qrCodeBase64": {
-            "type": "string"
+          "amount": {
+            "type": "number"
           }
         }
       },
@@ -1230,120 +1189,34 @@
         "properties": {
           "title": {
             "type": "string",
-            "maxLength": 1000,
-            "minLength": 0
+            "minLength": 1
           },
-          "amount": {
+          "description": {
+            "type": "string"
+          },
+          "totalAmount": {
             "type": "number"
           },
-          "category": {
-            "type": "string",
-            "maxLength": 255,
-            "minLength": 0
+          "imageUrl": {
+            "type": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "participantIds": {
             "type": "array",
             "items": {
               "type": "string",
               "format": "uuid"
-            },
-            "minItems": 1
-          },
-          "imageKey": {
-            "type": "string",
-            "maxLength": 500,
-            "minLength": 0
+            }
           }
         },
         "required": [
-          "amount",
-          "category",
-          "imageKey",
-          "participantIds",
           "title"
         ]
-      },
-      "ExpenseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "title": {
-            "type": "string"
-          },
-          "category": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "PENDING",
-              "CONFIRMED",
-              "DISPUTED"
-            ]
-          },
-          "payerId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "splitBetweenCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "totalAmount": {
-            "type": "number",
-            "format": "double"
-          },
-          "perPersonAmount": {
-            "type": "number",
-            "format": "double"
-          },
-          "disputeInfo": {
-            "type": "string"
-          },
-          "checkUrl": {
-            "type": "string"
-          }
-        }
-      },
-      "CreateCategoryRequest": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "maxLength": 255,
-            "minLength": 0
-          }
-        },
-        "required": [
-          "name"
-        ]
-      },
-      "CategoryDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "eventId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
       },
       "RegisterRequest": {
         "type": "object",
@@ -1364,7 +1237,7 @@
           "secondName": {
             "type": "string"
           },
-          "inviteCode": {
+          "inviteToken": {
             "type": "string"
           }
         },
@@ -1394,6 +1267,9 @@
             "maxLength": 255,
             "minLength": 0
           },
+          "inviteToken": {
+            "type": "string"
+          },
           "password": {
             "type": "string",
             "maxLength": 255,
@@ -1405,42 +1281,159 @@
           "password"
         ]
       },
-      "UpdateEventRequest": {
+      "UpdateProfileRequest": {
         "type": "object",
         "properties": {
-          "title": {
+          "first_name": {
             "type": "string"
           },
-          "description": {
+          "second_name": {
             "type": "string"
           },
-          "startDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "endDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "category": {
-            "type": "string"
-          },
-          "imageKey": {
+          "login": {
             "type": "string"
           }
         }
       },
-      "PendingInvitationResponse": {
+      "UserProfileDto": {
         "type": "object",
         "properties": {
-          "invitationId": {
+          "id": {
             "type": "string",
             "format": "uuid"
           },
-          "groupName": {
+          "login": {
             "type": "string"
           },
-          "ownerName": {
+          "first_name": {
+            "type": "string"
+          },
+          "second_name": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "InvitationDecisionRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "pattern": "ACCEPTED|REJECTED"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "NotificationListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserNotificationResponse"
+            }
+          },
+          "unreadCount": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "UserNotificationResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expenseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "isRead": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "MyInvitationResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "OwnerInvitationResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "login": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AuthorInboxItem": {
+        "type": "object",
+        "properties": {
+          "expenseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string"
+          },
+          "title": {
             "type": "string"
           },
           "status": {
@@ -1448,92 +1441,182 @@
           }
         }
       },
-      "GetParticipantsResponse": {
+      "InboxResponse": {
+        "type": "object",
+        "properties": {
+          "pendingConfirmations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParticipantInboxItem"
+            }
+          },
+          "actionRequired": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthorInboxItem"
+            }
+          }
+        }
+      },
+      "ParticipantInboxItem": {
+        "type": "object",
+        "properties": {
+          "splitId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expenseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string"
+          },
+          "amountToPay": {
+            "type": "number"
+          },
+          "payerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "EventTokenResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "SettlementStep": {
+        "type": "object",
+        "properties": {
+          "fromUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "toUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      },
+      "ParticipantResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "login": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          }
+        }
+      },
+      "ParticipantsResponse": {
         "type": "object",
         "properties": {
           "participants": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ParticipantDTO"
+              "$ref": "#/components/schemas/ParticipantResponse"
+            }
+          }
+        }
+      },
+      "EventExpensesResponse": {
+        "type": "object",
+        "properties": {
+          "expenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExpenseResponse"
             }
           },
-          "totalCount": {
-            "type": "integer",
-            "format": "int32"
+          "eventTotalSum": {
+            "type": "number"
           }
         }
       },
-      "ParticipantDTO": {
+      "ExpenseResponse": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
             "format": "uuid"
           },
-          "fullName": {
+          "description": {
             "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "avatarUrl": {
-            "type": "string"
-          },
-          "initials": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          }
-        }
-      },
-      "LeaveCheckResponse": {
-        "type": "object",
-        "properties": {
-          "canLeave": {
-            "type": "boolean"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "hasDebts": {
-            "type": "boolean"
-          },
-          "owner": {
-            "type": "boolean"
-          }
-        }
-      },
-      "UserEventDTO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
           },
           "title": {
             "type": "string"
           },
-          "startDate": {
-            "type": "string",
-            "format": "date"
+          "totalAmount": {
+            "type": "number"
           },
-          "endDate": {
+          "payerId": {
             "type": "string",
-            "format": "date"
-          },
-          "participantsCount": {
-            "type": "integer",
-            "format": "int32"
+            "format": "uuid"
           },
           "status": {
             "type": "string"
           },
-          "imageUrl": {
-            "type": "string"
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "firstTenParticipants": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "totalParticipantsCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "EventsResponse": {
+        "type": "object",
+        "properties": {
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventResponse"
+            }
           }
         }
       },
