@@ -17,8 +17,17 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "test:e2e:report": "playwright show-report ./.artifacts/e2e/playwright-report",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:playwright:open": "playwright show-report ./.artifacts/e2e/playwright-report",
+    "test:e2e:allure:generate": "allure generate .artifacts/e2e/allure-results --output .artifacts/e2e/allure-report --clean",
+    "test:e2e:allure:open": "allure open .artifacts/e2e/allure-report",
+    "test:e2e:allure": "npm run test:e2e; npm run test:e2e:allure:generate",
+    "test:e2e:allure:run": "npm run test:e2e; npm run test:e2e:allure:generate; npm run test:e2e:allure:open",
+    "test:api": "playwright test -c playwright.api.config.ts",
+    "test:api:allure:generate": "allure generate .artifacts/api/allure-results --output .artifacts/api/allure-report --clean",
+    "test:api:allure:open": "allure open .artifacts/api/allure-report",
+    "test:api:allure": "npm run test:api; npm run test:api:allure:generate",
+    "test:api:allure:run": "npm run test:api; npm run test:api:allure:generate; npm run test:api:allure:open"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
@@ -47,6 +56,8 @@
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^4.1.5",
     "@vitest/ui": "^4.1.5",
+    "allure": "^3.8.1",
+    "allure-playwright": "^3.8.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.2",
