@@ -1,31 +1,22 @@
-import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { buildInviteLink } from './build-invite-link'
 
 describe('buildInviteLink', () => {
-  beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: { origin: 'https://example.com' },
-      writable: true,
-    })
+  beforeEach(() => {
+    vi.stubGlobal('location', { origin: 'https://example.com' })
   })
 
-  it('builds correct invite link', () => {
-    const link = buildInviteLink('event-123', 'token-abc')
-    expect(link).toBe('https://example.com/invite/event-123/token-abc')
+  afterEach(() => {
+    vi.unstubAllGlobals()
   })
 
-  it('includes eventId in the path', () => {
-    const link = buildInviteLink('my-event', 'some-token')
-    expect(link).toContain('/invite/my-event/')
+  it('builds link with eventId and token', () => {
+    const result = buildInviteLink('event-123', 'token-abc')
+    expect(result).toBe('https://example.com/invite/event-123/token-abc')
   })
 
-  it('includes token in the path', () => {
-    const link = buildInviteLink('my-event', 'unique-token-xyz')
-    expect(link).toContain('/unique-token-xyz')
-  })
-
-  it('uses window.location.origin as base', () => {
-    const link = buildInviteLink('e1', 't1')
-    expect(link.startsWith(window.location.origin)).toBe(true)
+  it('includes origin in the link', () => {
+    const result = buildInviteLink('ev1', 'tok1')
+    expect(result).toContain('https://example.com')
   })
 })
