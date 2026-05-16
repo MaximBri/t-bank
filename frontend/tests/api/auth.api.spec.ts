@@ -136,7 +136,7 @@ test.describe('Authentication API', () => {
 
   test('GET /auth/me returns 401 for anonymous session', async ({ playwright }) => {
     const anonymousRequest = await playwright.request.newContext({
-      baseURL: process.env.PLAYWRIGHT_API_BASE_URL ?? 'http://127.0.0.1:8081',
+      baseURL: process.env.PLAYWRIGHT_API_BASE_URL ?? 'http://localhost:8081',
       extraHTTPHeaders: {
         Accept: 'application/json',
       },
@@ -166,7 +166,7 @@ test.describe('Authentication API', () => {
 
   test('POST /auth/refresh returns 401 for invalid refresh token', async ({ playwright }) => {
     const unauthenticatedRequest = await playwright.request.newContext({
-      baseURL: process.env.PLAYWRIGHT_API_BASE_URL ?? 'http://127.0.0.1:8081',
+      baseURL: process.env.PLAYWRIGHT_API_BASE_URL ?? 'http://localhost:8081',
       extraHTTPHeaders: {
         Accept: 'application/json',
         Cookie: `refreshToken=${authTestData.invalidRefreshToken}`,
