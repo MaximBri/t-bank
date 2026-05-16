@@ -6,11 +6,11 @@ Source of truth for this document: `docs/qa/api/openapi.raw`
 
 | Method | Path | Auth | Expected statuses | Purpose |
 |---|---|---|---|---|
-| POST | /auth/register | No | 200 | Регистрация нового пользователя |
+| POST | /auth/register | No | 201 | Регистрация нового пользователя |
 | POST | /auth/login | No | 200 | Вход в систему |
 | GET | /auth/me | Yes | 200 | Проверка текущей сессии |
 | POST | /auth/refresh | Refresh cookie | 200 | Обновление access token |
-| POST | /auth/logout | Yes | 200 | Выход из системы |
+| POST | /auth/logout | No/Yes | 204 | Выход из системы |
 
 ## Events
 
