@@ -12,7 +12,9 @@ export default defineConfig({
     ['allure-playwright', { resultsDir: './.artifacts/api/allure-results' }],
   ],
   use: {
-    baseURL: process.env.PLAYWRIGHT_API_BASE_URL ?? 'http://localhost:8081',
+    baseURL:
+      process.env.PLAYWRIGHT_API_BASE_URL ??
+      (process.env.CI ? 'http://127.0.0.1:8080' : 'http://localhost:8081'),
     extraHTTPHeaders: {
       Accept: 'application/json',
     },

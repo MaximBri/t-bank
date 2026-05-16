@@ -12,7 +12,9 @@ export const authE2eData = {
 } as const
 
 export const authE2eConfig = {
-  apiBaseUrl: process.env.PLAYWRIGHT_API_BASE_URL ?? 'http://localhost:8081',
+  apiBaseUrl:
+    process.env.PLAYWRIGHT_API_BASE_URL ??
+    (process.env.CI ? 'http://127.0.0.1:8080' : 'http://localhost:8081'),
 } as const
 
 export function createUniqueLogin(prefix: string = authE2eData.defaultUserPrefix): string {
