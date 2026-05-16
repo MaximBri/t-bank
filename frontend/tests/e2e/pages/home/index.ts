@@ -20,4 +20,8 @@ export class HomePage {
   async openCreateEventModal(): Promise<void> {
     await this.createEventButton.click()
   }
+
+  async openEvent(title: string): Promise<void> {
+    await this.page.getByRole('link', { name: `Открыть событие ${title}`, exact: true }).click()
+  }
 }

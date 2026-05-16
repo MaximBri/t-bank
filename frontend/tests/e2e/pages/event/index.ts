@@ -6,15 +6,14 @@ export class EventPage {
   constructor(private readonly page: Page) {}
 
   readonly leaveEventButton = this.page.getByRole('button', { name: 'Покинуть событие' })
-  readonly sectionsNav = this.page.getByRole('navigation')
 
   async open(eventId: string): Promise<void> {
-    await this.page.goto(buildEventRoute(eventId))
+    await this.page.goto(buildEventRoute(eventId), { waitUntil: 'domcontentloaded' })
   }
 
-  async expectOpened(): Promise<void> {
-    await expect(this.page).toHaveURL(/\/events\/[^/]+$/)
-    await expect(this.sectionsNav).toBeVisible()
+  async expectOpened(title: string): Promise<void> {
+    await expect(this.page).toHaveURL(/\/events\/[^/?]+(\?section=[^#]+)?$/)
+    await expect(this.page.getByRole('heading', { name: title, exact: true })).toBeVisible()
   }
 
   async openLeaveEventModal(): Promise<void> {
