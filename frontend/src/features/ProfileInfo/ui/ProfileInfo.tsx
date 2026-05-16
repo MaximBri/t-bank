@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
@@ -12,15 +12,17 @@ import { TextField } from '@/shared/ui/form-fields'
 import EditIcon from '@/shared/assets/icons/edit.svg?react'
 import ExitIcon from '@/shared/assets/icons/exit.svg?react'
 
-import { getProfileItems } from '../model/constants'
 import { profileSchema, type ProfileSchemaValues } from '../model/schema'
-import { getProfileFormFields, profileFormDefaultValues } from './constants'
+import { profileFormDefaultValues } from '../model/constants.ts'
 import { userApi } from '@/entities/user'
+import { getProfileItems } from "@/features/ProfileInfo/lib/getProfileItems.ts";
+import { getProfileFormFields } from "@/features/ProfileInfo/lib/getProfileFormFields.ts";
 
 export const ProfileInfo = () => {
   const queryClient = useQueryClient()
   const userStore = useUserStore()
-  
+  const user = userStore.user
+
   const [editMode, setEditMode] = useState<boolean>(false)
   const [profileValues, setProfileValues] = useState<ProfileSchemaValues>(profileFormDefaultValues)
 
@@ -30,13 +32,21 @@ export const ProfileInfo = () => {
     defaultValues: profileValues,
   })
 
-  const profileItems = getProfileItems(profileValues)
   const formFields = getProfileFormFields()
   const fieldByName = Object.fromEntries(formFields.map((field) => [field.name, field]))
 
-  const handleSave = form.handleSubmit((values) => {
-    setProfileValues(values)
-    setEditMode(false)
+  const handleSave = form.handleSubmit(async (values) => {
+    try {
+      await userStore.update(values)
+      setProfileValues(values)
+      toast.success('Данные успешно обновлены')
+    }
+    catch {
+      toast.error("Не удалось изменить учётные данные")
+    }
+    finally {
+      setEditMode(false)
+    }
   })
 
   const handleExit = async () => {
@@ -50,6 +60,17 @@ export const ProfileInfo = () => {
     }
   }
 
+  useEffect(() => {
+    const profileData = {
+      firstName: user ? user.firstName : '',
+      lastName: user ? user.lastName : '',
+      email: profileFormDefaultValues.email,
+    }
+
+    setProfileValues(profileData)
+    form.reset(profileData)
+  }, [user, form])
+
   return (
     <FormProvider {...form}>
       <section className="flex flex-col gap-[10px] bg-secondary border-2 border-primary rounded-md md:rounded-lg p-[10px] md:p-6">
@@ -57,7 +78,7 @@ export const ProfileInfo = () => {
           Персональные данные
         </Text>
         <ul className="flex flex-col gap-[12px]">
-          {profileItems.map((item) => (
+          {getProfileItems(profileValues).map((item) => (
             <li key={item.name} className="flex gap-[15px] pb-3 border-b border-primary">
               <item.icon className="w-6 h-6 text-placeholder shrink-0 mt-1" />
               <div className="flex flex-col gap-[10px] flex-1">
@@ -73,7 +94,11 @@ export const ProfileInfo = () => {
         </ul>
         <nav className="flex flex-col gap-[10px] mt-[10px] max-w-[340px]">
           {!editMode ? (
-            <Button type="button" onClick={() => setEditMode(true)}>
+            <Button type="button" onClick={() => {
+              form.reset(profileValues)
+              setEditMode(true)
+            }}
+            >
               <EditIcon className="w-[18px] h-[16px] md:w-6 md:h-6" />
               Редактировать профиль
             </Button>

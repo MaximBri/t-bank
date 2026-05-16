@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { clearApiCache } from '@/shared/lib/clearApiCache'
-import type { CurrentUserDto, User, UserStore } from './types'
+import type {ChangePasswordDto, CurrentUserDto, User, UserData, UserStore} from './types'
 import { userApi } from '..'
 
 const mapCurrentUser = (payload: CurrentUserDto): User => ({
@@ -10,7 +10,7 @@ const mapCurrentUser = (payload: CurrentUserDto): User => ({
   login: payload.login,
   firstName: payload.first_name,
   lastName: payload.second_name,
-  avatarUrl: payload.avatar_url,
+  avatarUrl: payload.avatar_url ?? undefined,
 })
 
 export const useUserStore = create<UserStore>()(
@@ -41,7 +41,6 @@ export const useUserStore = create<UserStore>()(
     try {
       const response = await userApi.me()
       const user = mapCurrentUser(response)
-
       set({
         user,
         isAuthResolved: true,
@@ -116,6 +115,31 @@ export const useUserStore = create<UserStore>()(
       })
     }
   },
+  update: async (newData: UserData) => {
+    try {
+      await userApi.updateProfile(newData)
+      const response = await userApi.me()
+      const user = mapCurrentUser(response)
+      set({user})
+    } catch (error) {
+      const info = userApi.getErrorInfo(error)
+      const wrapped = new Error(info.message) as Error & { status?: number }
+      wrapped.status = info.status
+      throw wrapped
+    }
+  },
+  changePassword: async (payload: ChangePasswordDto) => {
+    try {
+      await clearApiCache()
+      await userApi.changePassword(payload)
+    }
+    catch (error) {
+      const info = userApi.getErrorInfo(error)
+      const wrapped = new Error(info.message) as Error & { status?: number }
+      wrapped.status = info.status
+      throw wrapped
+    }
+  }
     }),
     {
       name: 'user-store',
