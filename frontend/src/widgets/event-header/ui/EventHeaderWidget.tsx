@@ -35,10 +35,10 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
   const isOwner = !!currentUserId && currentUserId === event.ownerId
 
   return (
-    <section className="rounded-[16px] border-[2px] border-primary bg-secondary p-[10px] sm:p-[20px]">
-      <div className="flex flex-col gap-[10px] sm:flex-row sm:items-start sm:justify-between sm:gap-[12px]">
-        <div className="flex flex-col gap-[20px] sm:flex-row">
-          <div className="flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[12px] bg-primary sm:w-[200px]">
+    <section className="rounded-[16px] border-[2px] border-primary bg-secondary p-[10px] lg:p-[20px]">
+      <div className="relative flex flex-col gap-[10px] lg:flex-row lg:items-start lg:justify-between lg:gap-[12px]">
+        <div className="flex flex-col gap-[20px] lg:flex-row">
+          <div className="flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[12px] bg-primary lg:w-[200px]">
             {event.imageUrl ? (
               <img
                 src={event.imageUrl}
@@ -51,39 +51,39 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
           </div>
 
           <div className="flex flex-1 flex-col gap-[10px]">
-            <Text variant="h2" as="h2" className="truncate font-medium text-primary">
+            <Text as="h2" className="truncate font-medium text-primary text-h3-d sm:text-h2-d">
               {event.title}
             </Text>
             <div className="flex items-center gap-[8px] text-primary">
               <CalendarIcon width={32} height={32} />
-              <Text variant="h2" className="font-normal">
+              <Text variant="h2" className="font-normal text-h3-d sm:text-h2-d">
                 {formatDateRange(event.startDate, event.endDate)}
               </Text>
             </div>
             <Text
               className={clsx(
                 status.background,
-                'w-fit rounded-[48px] px-[10px] py-[5px] text-h3-d font-normal sm:px-[28px] sm:text-h2-d',
+                'w-fit rounded-[48px] px-[10px] py-[5px] text-h3-d font-normal lg:px-[28px] lg:text-h2-d',
               )}
             >
               {status.label}
             </Text>
-            <div className="mt-auto flex w-fit flex-col gap-[10px] self-end sm:flex-row">
+            <div className="w-fit ml-auto mt-auto flex flex-col gap-[10px] lg:flex-row">
               {isOwner && (
                 <>
                   <Button
                     type="button"
-                    className="flex h-[30px] gap-[10px] rounded-[10px] bg-yellow px-[12px] sm:h-[40px] sm:rounded-[16px] sm:px-[30px]"
+                    className="h-[30px] rounded-[10px] bg-yellow px-[12px] lg:h-[40px] lg:rounded-[16px] lg:px-[30px] "
                     onClick={() => setIsEditOpen(true)}
                   >
-                    <EditIcon className="h-[21px] w-[21px] sm:h-[28px] sm:w-[28px]" />
-                    <Text className="font-normal text-body sm:text-h2-d">Редактировать</Text>
+                    <EditIcon className="h-[21px] w-[21px] lg:h-[28px] lg:w-[28px]" />
+                    <Text className="font-normal text-body lg:text-h2-d">Редактировать</Text>
                   </Button>
                   <Button
                     type="button"
-                    className="h-[30px] rounded-[10px] bg-yellow px-[12px] sm:h-[40px] sm:rounded-[16px] sm:px-[30px]"
+                    className="whitespace-nowrap h-[30px] rounded-[10px] bg-yellow px-[12px] lg:h-[40px] lg:rounded-[16px] lg:px-[30px]"
                   >
-                    <Text className="font-normal text-body sm:text-h2-d">Завершить событие</Text>
+                    <Text className="font-normal text-body lg:text-h2-d">Завершить событие</Text>
                   </Button>
                 </>
               )}
@@ -91,29 +91,29 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
                 <Button
                   type="button"
                   variant={ButtonEnum.TertiaryLight}
-                  className="flex h-[30px] gap-[10px] rounded-[10px] px-[12px] sm:h-[40px] sm:rounded-[16px] sm:px-[30px]"
+                  className="flex h-[30px] gap-[10px] rounded-[10px] px-[12px] lg:h-[40px] lg:rounded-[16px] lg:px-[30px]"
                   onClick={onLeaveEventClick}
                 >
-                  <ExitIcon className="h-[18px] w-[18px] sm:h-[22px] sm:w-[22px] text-error" />
-                  <Text className="font-normal text-body sm:text-h2-d">Покинуть событие</Text>
+                  <ExitIcon className="h-[18px] w-[18px] lg:h-[22px] lg:w-[22px] text-error" />
+                  <Text className="font-normal text-body lg:text-h2-d">Покинуть событие</Text>
                 </Button>
               )}
             </div>
           </div>
         </div>
 
-        <div className="flex flex-row items-center gap-[20px] sm:flex-col sm:items-end">
-          <Text className="ml-auto text-right font-normal text-h3-d sm:text-h2-d">
+        <div className="lg:absolute lg:right-0 flex flex-row items-center gap-[20px] lg:flex-col lg:items-end">
+          <Text className="text-left font-normal text-h3-d lg:text-h2-d">
             {formatParticipantsCount(event.countOfParticipants)}
           </Text>
-          <div className="ml-auto flex -space-x-[10px] font-medium sm:-space-x-[35px]">
+          <div className="ml-auto flex -space-x-[10px] font-medium lg:-space-x-[35px]">
             {visibleParticipants.map((participant, index) => (
               <div
                 key={participant.userId}
-                className="relative flex h-[40px] w-[40px] items-center justify-center rounded-full border-[2px] border-secondary bg-yellow text-small font-medium text-primary sm:h-[60px] sm:w-[60px] sm:text-h3-d"
+                className="relative flex h-[40px] w-[40px] items-center justify-center rounded-full border-[2px] border-secondary bg-yellow text-small font-medium text-primary lg:h-[60px] lg:w-[60px] lg:text-h3-d"
                 style={{ zIndex: visibleParticipants.length - index }}
               >
-                <Text className="font-normal text-small sm:text-h3-d">
+                <Text className="font-normal text-small lg:text-h3-d">
                   {getUserInitials(participant.firstName, participant.lastName, participant.login)}
                 </Text>
               </div>
