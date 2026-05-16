@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test'
 
-import { buildInviteRoute } from '../shared/routes'
+import { buildInviteRoute } from '../../shared/routes/index'
 
 export class InvitePage {
   constructor(private readonly page: Page) {}

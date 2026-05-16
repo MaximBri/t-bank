@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test'
 
-import { APP_ROUTES } from '../shared/routes'
+import { APP_ROUTES } from '../../shared/routes/index'
 
 export class LoginPage {
   constructor(private readonly page: Page) {}

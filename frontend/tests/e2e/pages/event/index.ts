@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test'
 
-import { buildEventRoute } from '../shared/routes'
+import { buildEventRoute } from '../../shared/routes/index'
 
 export class EventPage {
   constructor(private readonly page: Page) {}

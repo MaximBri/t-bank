@@ -7,7 +7,9 @@ export class LeaveEventModal {
 
   async expectOpened(): Promise<void> {
     await expect(
-      this.page.getByRole('heading', { name: /вы уверены что хотите покинуть событие|пока нельзя выйти/i }),
+      this.page.getByRole('heading', {
+        name: /вы уверены что хотите покинуть событие|пока нельзя выйти/i,
+      }),
     ).toBeVisible()
     await expect(this.closeButton).toBeVisible()
   }

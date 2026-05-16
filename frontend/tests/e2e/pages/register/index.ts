@@ -1,13 +1,16 @@
 import { expect, type Page } from '@playwright/test'
+import { APP_ROUTES } from '../../shared/routes/index'
 
-import { APP_ROUTES } from '../shared/routes'
 
 export class RegisterPage {
   constructor(private readonly page: Page) {}
 
   readonly loginInput = this.page.getByLabel('Логин')
   readonly passwordInput = this.page.getByRole('textbox', { name: 'Пароль *', exact: true })
-  readonly passwordRepeatInput = this.page.getByRole('textbox', { name: 'Повторите пароль *', exact: true })
+  readonly passwordRepeatInput = this.page.getByRole('textbox', {
+    name: 'Повторите пароль *',
+    exact: true,
+  })
   readonly submitButton = this.page.getByRole('button', { name: 'Зарегистрироваться' })
 
   async open(): Promise<void> {
