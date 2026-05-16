@@ -19,3 +19,9 @@ export type Settlement = {
   amount: number
   status: SettlementStatus
 }
+
+export type SettlementStepDto = {
+  fromUserId: string
+  toUserId: string
+  amount: number
+}

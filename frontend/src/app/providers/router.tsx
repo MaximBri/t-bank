@@ -4,6 +4,7 @@ import { HomePage } from '@/pages/home'
 import { LoginPage } from '@/pages/login'
 import { RegisterPage } from '@/pages/register'
 import { EventPage } from '@/pages/event'
+import { InvitePage } from '@/pages/invite'
 import { NotFoundPage } from '@/pages/not-found'
 import { APP_ROUTES } from '@/shared/routes'
 import { AppLayout } from '@/shared/ui/layout/AppLayout'
@@ -24,6 +25,7 @@ export const AppRouter = () => (
       </Route>
       <Route element={<PublicOnlyRoute />}>
         <Route path={APP_ROUTES.LOGIN} element={<LoginPage />} />
+        <Route path={APP_ROUTES.INVITE} element={<InvitePage />} />
         <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
       </Route>
     </Routes>

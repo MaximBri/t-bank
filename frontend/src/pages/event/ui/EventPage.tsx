@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-import { mockSettlements } from '@/entities/settlement/model/mock.ts'
+import { useGetEventSettlements } from '@/entities/settlement'
 import { LeaveEventModal } from '@/features/LeaveEventModal'
 import { renderActiveWidget } from '@/pages/event/lib/renderActiveWidget.tsx'
 import { useSectionChange } from '@/shared/lib/page-sections/use-section-change.ts'
@@ -12,11 +13,13 @@ import {
 } from '@/widgets/event-sections-nav/model/contstants.ts'
 
 export const EventPage = () => {
+  const { eventId } = useParams<{ eventId: string }>()
   const { activeSection, handleSectionChange } = useSectionChange<EventSection>({
     sections: eventSections,
     defaultSection: eventDefaultSection,
   })
   const [isLeaveEventModalOpen, setLeaveEventModalOpen] = useState(false)
+  const { data: settlements = [] } = useGetEventSettlements(eventId)
 
   return (
     <>
@@ -32,7 +35,7 @@ export const EventPage = () => {
       </main>
 
       <LeaveEventModal
-        hasSettlements={mockSettlements.length > 0}
+        hasSettlements={settlements.length > 0}
         isOpen={isLeaveEventModalOpen}
         onClose={() => setLeaveEventModalOpen(false)}
         onNavigateToSettlements={() => handleSectionChange(EventSection.settlements)}

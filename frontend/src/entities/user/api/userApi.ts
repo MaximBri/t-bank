@@ -1,6 +1,10 @@
-import { api } from '@/shared/api/api'
-import type { AuthCredentials, CurrentUserDto, RegisterResponseDto } from './types'
-import { getErrorInfo } from './helpers'
+import { api } from '@/shared/api/api.ts'
+import { getErrorInfo } from '@/shared/api/helpers.ts'
+import {
+  AuthCredentials,
+  CurrentUserDto,
+  RegisterResponseDto,
+} from '../model/types.ts'
 
 export const userApi = {
   async login(payload: AuthCredentials) {
@@ -21,9 +25,8 @@ export const userApi = {
     const { data } = await api.get<CurrentUserDto>('/auth/me')
     return data
   },
-  
-  async logout() {
 
+  async logout() {
     await api.post('/auth/logout', undefined, {
       _skipAuthRefresh: true,
     })

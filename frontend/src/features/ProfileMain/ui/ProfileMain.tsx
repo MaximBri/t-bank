@@ -11,8 +11,9 @@ export const ProfileMain = () => {
   return (
     <section className="p-[10px] md:p-6 flex flex-1 flex-col items-center gap-4 md:flex-row md:gap-6 bg-secondary border-2 border-primary rounded-md md:rounded-lg">
       <UserAvatar
-        firstName={'a'}
-        lastName={'b'}
+        firstName={user?.firstName}
+        lastName={user?.lastName}
+        login={user?.login}
         variant={isMobile ? UserAvatarSizes.M : UserAvatarSizes.Xl}
       />
       <div className="text-center md:text-left">
@@ -20,7 +21,7 @@ export const ProfileMain = () => {
           Иван Иваныч
         </Text>
         <Text as="h3" variant="h3" className="text-placeholder">
-          {user?.username}
+          {user?.login}
         </Text>
         <Text as="h3" variant="h3" className="text-placeholder">
           Ivanich@mail.ru
