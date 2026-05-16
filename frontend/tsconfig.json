@@ -18,8 +18,8 @@
     "noUncheckedSideEffectImports": true,
     "types": ["vite/client", "vitest/globals", "node"],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"],
+    },
   },
-  "include": ["src", "playwright.config.ts", "vite.config.ts", "tests"]
+  "include": ["src", "playwright.config.ts", "vite.config.ts", "tests", "playwright.api.config.ts"],
 }
