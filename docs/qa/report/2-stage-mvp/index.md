@@ -81,7 +81,7 @@
 **Артефакты:**
 - [`ui-testing-report.md`](./ui-testing-report.md)
 - [`ui-checklist.md`](../../checklist/ui-checklist.md)
-- [`test-cases-ui.md`](../../test-case/test-cases-ui.md)
+- [`index.md`](../../test-case/index.md)
 - [`BUG-008`](../../bug-report/bug-008.md)
 
 
