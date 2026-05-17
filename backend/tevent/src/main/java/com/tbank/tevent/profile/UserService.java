@@ -5,6 +5,7 @@ import com.tbank.tevent.repo.entity.User;
 import com.tbank.tevent.profile.dto.PasswordChangeRequest;
 import com.tbank.tevent.profile.dto.UpdateProfileRequest;
 import com.tbank.tevent.profile.dto.UserProfileDto;
+import com.tbank.tevent.s3.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3Service s3Service;
 
     @Transactional
     public void updateUserPassword(PasswordChangeRequest request) {
@@ -86,6 +88,10 @@ public class UserService {
                     currentUser.getSecondName(), request.secondName(), currentUser.getId());
             currentUser.setSecondName(request.secondName());
         }
+        if (request.avatarUrl() != null && !request.avatarUrl().isBlank()) {
+            s3Service.useKey(currentUser.getId(), request.avatarUrl());
+            currentUser.setAvatarUrl(request.avatarUrl());
+        }
 
         currentUser.setUpdatedAt(LocalDateTime.now());
         userRepository.save(currentUser);
@@ -122,6 +128,7 @@ public class UserService {
                 user.getLogin(),
                 user.getFirstName(),
                 user.getSecondName(),
+                user.getAvatarUrl(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );

@@ -1,9 +1,5 @@
 package com.tbank.tevent.event;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +12,7 @@ public record EventResponse (
     LocalDateTime endDate,
     List<String> categories,
     String status,
-    String imageUrl,
+    String imageKey,
     UUID ownerId,
     Long countOfParticipants
 ){}

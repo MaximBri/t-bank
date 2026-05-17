@@ -21,7 +21,7 @@ public class EventMapper {
                 event.getEndDate(),
                 eventCategoryNames,
                 EventStatusCalculator.calculate(event.getStartDate(), event.getEndDate()),
-                null,
+                event.getImageKey(),
                 event.getOwnerId(),
                 count
         );
