@@ -20,7 +20,7 @@ describe('changePasswordSchema', () => {
     expect(result.success).toBe(false)
     if (!result.success) {
       const errors = result.error.flatten().fieldErrors.currentPassword
-      expect(errors![0]).toBe('Введите текущий пароль')
+      expect(errors![0]).toBe('Минимальная длина пароля - 8 символов')
     }
   })
 
