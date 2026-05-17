@@ -26,15 +26,17 @@ describe('useCreateEvent', () => {
   })
 
   it('мутация отправляет POST /events и возвращает данные', async () => {
-    const createdEvent = { id: 'new-event', ...payload }
-    mock.onPost('/api/events').reply(201, createdEvent)
+    const serverEvent = { id: 'new-event', ...payload }
+    mock.onPost('/api/events').reply(201, serverEvent)
 
     const { result } = renderHook(() => useCreateEvent(), { wrapper })
 
     act(() => { result.current.mutate(payload) })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(result.current.data).toEqual({ ...createdEvent, imageUrl: '' })
+    // eventsApi.create прогоняет ответ через withResolvedImage:
+    // без image_key маппер добавляет imageUrl: ''
+    expect(result.current.data).toEqual({ ...serverEvent, imageUrl: '' })
   })
 
   it('isError=true при ошибке сервера', async () => {

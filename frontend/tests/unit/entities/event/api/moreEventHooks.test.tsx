@@ -47,6 +47,7 @@ describe('useGetEvents', () => {
   })
 
   it('передаёт параметры фильтрации в запрос', async () => {
+    // eventsApi.getAll маппит фильтр status -> query-параметр state
     mock
       .onGet('/api/events/user/events', { params: { state: EventStatus.Planned } })
       .reply(200, { events: [] })

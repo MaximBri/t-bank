@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>T-Ивент — презентация продукта</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css" />
+    <style>
+      :root {
+        --accent: #ffdd2d;
+        --accent-dim: #b9a01a;
+      }
+      .reveal {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 30px;
+      }
+      .reveal h1,
+      .reveal h2,
+      .reveal h3 {
+        color: var(--accent);
+        text-transform: none;
+        letter-spacing: -0.5px;
+      }
+      .reveal h1 { font-size: 2.4em; }
+      .reveal h2 { font-size: 1.5em; margin-bottom: 0.4em; }
+      .reveal section { text-align: left; }
+      .reveal .center { text-align: center; }
+      .reveal .subtitle { color: #aaa; font-size: 0.9em; }
+      .reveal ul { display: block; }
+      .reveal li { margin-bottom: 0.35em; line-height: 1.35; }
+      .reveal .tag {
+        display: inline-block;
+        background: rgba(255, 221, 45, 0.14);
+        color: var(--accent);
+        border: 1px solid var(--accent-dim);
+        border-radius: 999px;
+        padding: 4px 14px;
+        margin: 4px 6px 4px 0;
+        font-size: 0.62em;
+        white-space: nowrap;
+      }
+      .reveal .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6em 1.6em;
+      }
+      .reveal .card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 0.7em 0.9em;
+        font-size: 0.78em;
+      }
+      .reveal .card h3 { font-size: 1em; margin: 0 0 0.3em; }
+      .reveal .ok { color: #6fcf97; }
+      .reveal .warn { color: #f2c94c; }
+      .reveal .no { color: #eb5757; }
+      .reveal table { font-size: 0.62em; width: 100%; }
+      .reveal table th { color: var(--accent); }
+      .reveal .small { font-size: 0.62em; color: #999; }
+      .reveal .big-num { font-size: 2.6em; color: var(--accent); font-weight: 700; line-height: 1; }
+      .reveal .footer-note {
+        position: absolute; bottom: 12px; left: 0; right: 0;
+        text-align: center; font-size: 0.45em; color: #555;
+      }
+      .reveal pre { width: 100%; font-size: 0.5em; box-shadow: none; }
+      .reveal section img { border: none; box-shadow: none; }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+
+        <!-- 1. Титул -->
+        <section data-background-gradient="linear-gradient(135deg, #1a1a1a 0%, #2a2410 100%)">
+          <div class="center">
+            <h1>T&#8209;Ивент</h1>
+            <p style="font-size: 1.1em; margin-top: 0.2em">
+              Совместное управление бюджетом события или поездки
+            </p>
+            <p class="subtitle" style="margin-top: 1.2em">
+              Веб-приложение · командный проект (5 человек)
+            </p>
+            <p style="margin-top: 1.5em">
+              <span class="tag">Frontend</span>
+              <span class="tag">Backend</span>
+              <span class="tag">QA</span>
+              <span class="tag">CI/CD</span>
+            </p>
+          </div>
+        </section>
+
+        <!-- 2. Проблема и решение -->
+        <section>
+          <h2>Проблема</h2>
+          <p>
+            Поездка или общее мероприятие — десятки трат, разные плательщики.
+            Кто за кого платил и кто кому должен — считается вручную, с ошибками
+            и спорами.
+          </p>
+          <h2 style="margin-top: 0.8em">Решение — T&#8209;Ивент</h2>
+          <ul>
+            <li>Фиксируем расходы в одном месте: кто платил, за кого, сколько</li>
+            <li>Система <strong>сама делит поровну</strong> и считает взаиморасчёты</li>
+            <li>Прозрачно: «кто кому сколько должен» — без ручных подсчётов</li>
+          </ul>
+        </section>
+
+        <!-- 3. Что это умеет -->
+        <section>
+          <h2>Ключевые возможности</h2>
+          <div class="grid2">
+            <div class="card"><h3>Регистрация / вход</h3>JWT + refresh, защищённые маршруты</div>
+            <div class="card"><h3>События</h3>Название, даты, описание, обложка</div>
+            <div class="card"><h3>Роли</h3>Владелец и участник, разграничение доступа</div>
+            <div class="card"><h3>Приглашения</h3>Ссылка + QR, подтверждение участия</div>
+            <div class="card"><h3>Расходы</h3>Плательщик, участники, категория, сумма, чек</div>
+            <div class="card"><h3>Взаиморасчёты</h3>Авторасчёт долей, кто кому должен</div>
+          </div>
+        </section>
+
+        <!-- FRONTEND раздел -->
+        <section data-background-gradient="linear-gradient(135deg, #1a1a2a 0%, #15151f 100%)">
+          <div class="center">
+            <h1 style="font-size: 1.8em">Frontend</h1>
+            <p class="subtitle">PWA на React, типобезопасность, FSD-структура</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Frontend — стек</h2>
+          <p>
+            <span class="tag">TypeScript 5.7</span>
+            <span class="tag">React 19</span>
+            <span class="tag">Vite</span>
+            <span class="tag">Tailwind CSS</span>
+            <span class="tag">React Query</span>
+            <span class="tag">react-hook-form</span>
+            <span class="tag">Zod</span>
+            <span class="tag">Zustand</span>
+            <span class="tag">Собственный UI-kit</span>
+            <span class="tag">Vitest</span>
+            <span class="tag">Playwright</span>
+          </p>
+          <h2 style="margin-top: 0.7em">Особенности</h2>
+          <ul>
+            <li><strong>Собственный UI-kit</strong>: переиспользуемые компоненты (формы, модалки, кнопки) — единый визуальный язык</li>
+            <li><strong>Feature-Sliced Design</strong>: entities / features / widgets / pages — масштабируемая структура</li>
+            <li>Валидация форм <strong>Zod + react-hook-form</strong> — единый источник правды по схеме</li>
+            <li><strong>React Query</strong>: кэш, инвалидация, авто-рефетч после мутаций</li>
+            <li>Авто-refresh JWT в axios-интерсепторе (прозрачно для пользователя)</li>
+          </ul>
+        </section>
+
+        <!-- 6. BACKEND раздел -->
+        <section data-background-gradient="linear-gradient(135deg, #1a2a1f 0%, #15151f 100%)">
+          <div class="center">
+            <h1 style="font-size: 1.8em">Backend</h1>
+            <p class="subtitle">Spring Boot, модульная архитектура, транзакции</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Backend — стек</h2>
+          <p>
+            <span class="tag">Java 25</span>
+            <span class="tag">Spring Boot 4</span>
+            <span class="tag">Spring Modulith</span>
+            <span class="tag">Maven</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">Redis</span>
+            <span class="tag">Liquibase</span>
+            <span class="tag">OpenAPI / springdoc</span>
+            <span class="tag">jjwt 0.12</span>
+          </p>
+          <h2 style="margin-top: 0.7em">Особенности</h2>
+          <ul>
+            <li><strong>Разграничение доступа</strong>: операции владельца проверяются на сервере (AccessDenied)</li>
+            <li><strong>Транзакции БД</strong> при пересчёте балансов — защита от рассинхрона</li>
+            <li>Liquibase-миграции, версионируемая схема</li>
+            <li>Redis — кэш / служебные данные (в т.ч. контроль orphan-загрузок S3)</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Расчёт долгов и взаиморасчётов</h2>
+          <ul>
+            <li>Расход делится <strong>поровну</strong> между плательщиком и выбранными участниками (<code>HALF_UP</code>, 2 знака)</li>
+            <li>Пересчёт сальдо <strong>автоматически</strong> при создании и изменении расхода</li>
+            <li>
+              Взаиморасчёты — алгоритм <strong>минимизации числа переводов</strong>
+              (min-cash-flow): не «все платят всем», а минимум транзакций
+            </li>
+          </ul>
+          <p class="small" style="margin-top: 0.6em">
+            Пример: расход 3000 ₽ на 3 человек → доля каждого 1000 ₽, баланс
+            пересчитывается без ручного вмешательства.
+          </p>
+        </section>
+
+        <!-- 7. QA раздел -->
+        <section data-background-gradient="linear-gradient(135deg, #2a1a1f 0%, #15151f 100%)">
+          <div class="center">
+            <h1 style="font-size: 1.8em">QA</h1>
+            <p class="subtitle">Документация, автотесты, артефакты по стадиям</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>QA — подход и инструменты</h2>
+          <p>
+            <span class="tag">Playwright (e2e + API)</span>
+            <span class="tag">Vitest</span>
+            <span class="tag">Postman-коллекция</span>
+            <span class="tag">OpenAPI-спека</span>
+          </p>
+          <h2 style="margin-top: 0.7em">Артефакты</h2>
+          <ul>
+            <li>Тест-кейсы по доменам: auth, events, expenses, settlements, participants, profile, invitations</li>
+            <li>Чек-листы: <strong>smoke</strong>, <strong>regression</strong>, <strong>UI</strong></li>
+            <li>Отчёты по стадиям: prep → MVP → release; баг-репорты</li>
+            <li>e2e: smoke-сценарии (login, register, события, профиль) + API-тесты</li>
+          </ul>
+        </section>
+
+        <!-- 8. Общие фишки проекта -->
+        <section data-background-gradient="linear-gradient(135deg, #2a2410 0%, #15151f 100%)">
+          <div class="center">
+            <h1 style="font-size: 1.7em">Инфраструктурные фишки</h1>
+          </div>
+        </section>
+
+        <section>
+          <h2>CI/CD на GitHub Actions</h2>
+          <p style="font-size: 0.8em; margin-bottom: 0.5em">
+            Отдельные workflow-файлы, запускаются автоматически на push / PR:
+          </p>
+          <div class="grid2">
+            <div class="card"><h3>check</h3>Сборка и проверка прод-кода → Docker build, push в GHCR</div>
+            <div class="card"><h3>e2e</h3>Подъём backend + frontend → Playwright e2e</div>
+            <div class="card"><h3>api</h3>Подъём backend → API-тесты</div>
+            <div class="card"><h3>deploy</h3>Доставка собранного образа на стенд</div>
+          </div>
+          <p class="small" style="margin-top: 0.7em">
+            Деплой собирает приложение; e2e/api/unit — отдельные проверки, не блокируют сборку образа.
+          </p>
+        </section>
+
+        <section>
+          <h2>S3-хранилище изображений</h2>
+          <ul>
+            <li><strong>MinIO</strong> (S3-совместимое) в Docker, отдельный контейнер + авто-создание бакета</li>
+            <li>
+              <strong>Presigned URL</strong>: файл грузится <em>напрямую</em> в хранилище,
+              не через backend — масштабируемо, не нагружает приложение
+            </li>
+            <li>Изоляция по пользователю: ключ <code>receipts/{userId}/...</code>, проверка владения</li>
+            <li>Лимит размера файла, очистка «осиротевших» загрузок через Redis</li>
+            <li>Применяется для: аватар профиля, обложка события, чек расхода</li>
+          </ul>
+        </section>
+
+        <!-- Итог -->
+        <section data-background-gradient="linear-gradient(135deg, #1a1a1a 0%, #2a2410 100%)">
+          <h2>Итог</h2>
+          <p><span class="ok">Готово и работает:</span></p>
+          <ul>
+            <li>Полный core-флоу: события, роли, приглашения, расходы, авто-деление, взаиморасчёты</li>
+            <li>Безопасность (аутентификация, разграничение доступа), транзакции БД</li>
+            <li>S3-хранилище изображений, CI/CD пайплайн</li>
+            <li>QA-артефакты: OpenAPI, Postman, тест-кейсы, чек-листы, e2e</li>
+          </ul>
+        </section>
+
+        <section data-background-gradient="linear-gradient(135deg, #1a1a1a 0%, #2a2410 100%)">
+          <div class="center">
+            <h1>Спасибо</h1>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        transition: 'slide',
+        plugins: [RevealHighlight, RevealNotes],
+      });
+    </script>
+  </body>
+</html>
