@@ -12,7 +12,6 @@ import com.tbank.tevent.repo.InviteTokenRepository;
 import com.tbank.tevent.repo.entity.Event;
 import com.tbank.tevent.repo.entity.EventUser;
 import com.tbank.tevent.repo.entity.InviteToken;
-import com.tbank.tevent.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,6 @@ public class EventService {
     private final CategoryService categoryService;
     private final InviteTokenRepository inviteTokenRepository;
     private final EventMapper eventMapper;
-    private final S3Service s3Service;
 
     @Transactional
     public EventResponse createEvent(EventRequest request) {
@@ -49,7 +47,6 @@ public class EventService {
                 .createdAt(now)
                 .build();
         inviteToken = inviteTokenRepository.save(inviteToken);
-        s3Service.useKey(currentUserId, request.imageKey());
 
         Event event = new Event();
         event.setTitle(request.title());
@@ -98,10 +95,7 @@ public class EventService {
         if (request.description() != null) event.setDescription(request.description());
         if (request.startDate() != null) event.setStartDate(request.startDate());
         if (request.endDate() != null) event.setEndDate(request.endDate());
-        if (request.imageKey() != null) {
-            s3Service.useKey(currentUserId, request.imageKey());
-            event.setImageKey(request.imageKey());
-        }
+        if (request.imageKey() != null) event.setImageKey(request.imageKey());
 
         eventRepository.saveAndFlush(event);
 

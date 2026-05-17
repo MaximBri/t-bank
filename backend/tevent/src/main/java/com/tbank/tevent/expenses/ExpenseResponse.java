@@ -7,12 +7,11 @@ import java.util.UUID;
 
 public record ExpenseResponse(
         UUID id,
-        String title,
         String description,
+        String title,
         BigDecimal totalAmount,
         UUID payerId,
         String status,
-        String imageKey,
         List<String> categories,
         List<UUID> firstTenParticipants,
         int totalParticipantsCount,
