@@ -30,6 +30,8 @@ import { InviteParticipantsModal } from '@/features/InviteParticipantsModal/ui/I
 
 import { useDecideInvitation } from '@/entities/invitation/api/hooks/useDecideInvitation.ts'
 import { InvitationStatus } from '@/entities/invitation'
+import { useGetEvent } from '@/entities/event/api/hooks/useGetEvent.ts'
+import { useUserStore } from '@/entities/user'
 
 export const EventParticipantsWidget = () => {
   const { eventId } = useParams<{ eventId: string }>()
@@ -43,6 +45,10 @@ export const EventParticipantsWidget = () => {
     searchQuery,
   })
   const { mutate: decideInvitation, isPending: isDeciding } = useDecideInvitation()
+
+  const { data: event } = useGetEvent(eventId)
+  const currentUserId = useUserStore((state) => state.user?.id)
+  const isOwner = !!currentUserId && currentUserId === event?.ownerId
 
   return (
     <>
@@ -92,16 +98,18 @@ export const EventParticipantsWidget = () => {
                 Всего участников: {participantsCount}
               </Text>
 
-              <Button
-                variant={ButtonEnum.Primary}
-                className="ml-auto w-fit"
-                onClick={() => setIsInviteModalOpen(true)}
-              >
-                <UserPlusIcon className="h-[20px] w-[20px] sm:h-[24px] sm:w-[24px]" />
-                <Text variant="h3" className="font-normal">
-                  Пригласить участников
-                </Text>
-              </Button>
+              {isOwner ? (
+                <Button
+                  variant={ButtonEnum.Primary}
+                  className="ml-auto w-fit"
+                  onClick={() => setIsInviteModalOpen(true)}
+                >
+                  <UserPlusIcon className="h-[20px] w-[20px] sm:h-[24px] sm:w-[24px]" />
+                  <Text variant="h3" className="font-normal">
+                    Пригласить участников
+                  </Text>
+                </Button>
+              ) : null}
             </div>
           </div>
 

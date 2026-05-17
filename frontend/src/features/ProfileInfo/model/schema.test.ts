@@ -6,61 +6,41 @@ describe('profileSchema', () => {
     const result = profileSchema.safeParse({
       firstName: 'Иван',
       lastName: 'Иванов',
-      email: 'ivan@example.com',
     })
     expect(result.success).toBe(true)
   })
 
-  it('не проходит валидацию когда firstName пустой', () => {
+  it('допускает null в firstName и lastName', () => {
     const result = profileSchema.safeParse({
-      firstName: '',
-      lastName: 'Иванов',
-      email: 'ivan@example.com',
+      firstName: null,
+      lastName: null,
     })
-    expect(result.success).toBe(false)
-    if (!result.success) {
-      const errors = result.error.flatten().fieldErrors.firstName
-      expect(errors![0]).toBe('Введите имя')
-    }
+    expect(result.success).toBe(true)
   })
 
-  it('не проходит валидацию когда lastName пустой', () => {
-    const result = profileSchema.safeParse({
-      firstName: 'Иван',
-      lastName: '',
-      email: 'ivan@example.com',
-    })
-    expect(result.success).toBe(false)
-    if (!result.success) {
-      const errors = result.error.flatten().fieldErrors.lastName
-      expect(errors![0]).toBe('Введите фамилию')
-    }
-  })
-
-  it('не проходит валидацию с некорректным email', () => {
+  it('avatar — необязательное поле', () => {
     const result = profileSchema.safeParse({
       firstName: 'Иван',
       lastName: 'Иванов',
-      email: 'not-an-email',
     })
-    expect(result.success).toBe(false)
-    if (!result.success) {
-      const errors = result.error.flatten().fieldErrors.email
-      expect(errors![0]).toBe('Введите корректный email')
-    }
+    expect(result.success).toBe(true)
   })
 
-  it('не проходит валидацию когда email пустой', () => {
+  it('принимает File в поле avatar', () => {
+    const file = new File(['data'], 'avatar.png', { type: 'image/png' })
     const result = profileSchema.safeParse({
       firstName: 'Иван',
       lastName: 'Иванов',
-      email: '',
+      avatar: file,
     })
-    expect(result.success).toBe(false)
+    expect(result.success).toBe(true)
   })
 
-  it('не проходит валидацию когда отсутствуют обязательные поля', () => {
-    const result = profileSchema.safeParse({})
+  it('не проходит валидацию когда firstName не строка и не null', () => {
+    const result = profileSchema.safeParse({
+      firstName: 123,
+      lastName: 'Иванов',
+    })
     expect(result.success).toBe(false)
   })
 })

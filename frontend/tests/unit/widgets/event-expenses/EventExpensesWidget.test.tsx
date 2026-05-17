@@ -211,7 +211,7 @@ describe('EventExpensesWidget', () => {
     })
   })
 
-  it('показывает кнопки редактирования и удаления для плательщика', async () => {
+  it('показывает кнопку просмотра расхода и скрывает редактирование/удаление', async () => {
     mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, {
       expenses: [mockExpense],
       eventTotalSum: 6000,
@@ -222,9 +222,10 @@ describe('EventExpensesWidget', () => {
     render(<EventExpensesWidget />, { wrapper })
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /редактировать расход/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /удалить расход/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /посмотреть расход/i })).toBeInTheDocument()
     })
+    expect(screen.queryByRole('button', { name: /редактировать расход/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /удалить расход/i })).not.toBeInTheDocument()
   })
 
   it('показывает кнопки подтверждения/отклонения для владельца события', async () => {
