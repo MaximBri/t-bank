@@ -38,6 +38,7 @@ app:
     presign-ttl-minutes: 15
     pending-ttl-hours: 1
     cleanup-batch-size: 100
+    cleanup-fixed-delay-ms: 900000
     max-file-size-bytes: 3145728
   security:
     jwt:
