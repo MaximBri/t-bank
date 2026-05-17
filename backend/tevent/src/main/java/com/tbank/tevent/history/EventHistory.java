@@ -2,7 +2,10 @@ package com.tbank.tevent.history;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OptimisticLocking;
+import org.hibernate.annotations.OptimisticLockType;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
@@ -15,9 +18,10 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@OptimisticLocking(type = OptimisticLockType.NONE)
+@DynamicUpdate
 public class EventHistory {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID id;
 

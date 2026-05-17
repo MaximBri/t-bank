@@ -23,7 +23,6 @@ public class EventMemberService {
     private final EventUserRepository eventUserRepository;
     private final EventRepository eventRepository;
     private final ExpenseRepository expenseRepository;
-    private final ExpenseSplitRepository expenseSplitRepository;
 
     @Transactional(readOnly = true)
     public List<ParticipantResponse> getParticipants(UUID eventId) {

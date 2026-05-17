@@ -1,6 +1,7 @@
 package com.tbank.tevent.settlements;
 
 import com.tbank.tevent.EventBalanceRepository;
+import com.tbank.tevent.repo.ExpenseRepository;
 import com.tbank.tevent.repo.PaymentRepository;
 import com.tbank.tevent.repo.UserRepository;
 import com.tbank.tevent.repo.entity.Payment;
@@ -9,6 +10,7 @@ import com.tbank.tevent.settlements.dto.EventSettlementsResponse;
 import com.tbank.tevent.settlements.dto.SettlementItemDTO;
 import com.tbank.tevent.settlements.dto.SettlementStep;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,25 +19,46 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SettlementQueryService {
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final EventBalanceRepository redisRepository;
     private final DebtCalculator debtCalculator;
+    private final ExpenseRepository expenseRepository;
 
     public EventSettlementsResponse getEventSettlements(UUID eventId, UUID currentUserId) {
+        log.debug("Getting settlements for event: {}, current user: {}", eventId, currentUserId);
+        
         EventSettlementsResponse cached = redisRepository.getCachedSettlements(eventId);
         if (cached != null) {
+            log.debug("Returning cached settlements for event: {}", eventId);
             return updateCurrentUserFlags(cached, currentUserId);
+        }
+
+        // Проверяем наличие подтвержденных расходов
+        List<com.tbank.tevent.repo.entity.Expense> confirmedExpenses =
+            expenseRepository.findAllByEventIdAndStatus(eventId, "ACTIVE");
+        log.debug("Found {} confirmed expenses for event: {}", confirmedExpenses.size(), eventId);
+        
+        if (confirmedExpenses.isEmpty()) {
+            log.info("No confirmed expenses found for event: {}. Returning empty settlements.", eventId);
+            EventSettlementsResponse emptyResponse = new EventSettlementsResponse(
+                eventId, BigDecimal.ZERO, List.of());
+            // Не кэшируем пустой результат
+            return updateCurrentUserFlags(emptyResponse, currentUserId);
         }
 
         List<Payment> livePayments = paymentRepository.findAllByEventIdAndStatusIn(
                 eventId, List.of(PaymentStatus.ACTIVE, PaymentStatus.SENT)
         );
-
+        log.debug("Found {} live payments (ACTIVE/SENT) for event: {}", livePayments.size(), eventId);
 
         if (livePayments.isEmpty()) {
+            log.debug("No live payments found, calculating optimal debts for event: {}", eventId);
             List<SettlementStep> steps = debtCalculator.calculateOptimalDebts(eventId);
+            log.debug("Debt calculator returned {} settlement steps", steps.size());
+            
             for (SettlementStep step : steps) {
                 Payment newPayment = Payment.builder()
                         .eventId(eventId)
@@ -44,12 +67,16 @@ public class SettlementQueryService {
                         .amount(step.amount())
                         .status(PaymentStatus.ACTIVE)
                         .createdAt(LocalDateTime.now())
+                        .expiresAt(LocalDateTime.now().plusDays(30)) // Устанавливаем срок действия 30 дней
                         .build();
                 paymentRepository.save(newPayment);
+                log.debug("Created new payment: {} -> {} : {} (expires at: {})",
+                        step.fromUserId(), step.toUserId(), step.amount(), newPayment.getExpiresAt());
             }
         }
 
         List<Payment> allPayments = paymentRepository.findAllByEventId(eventId);
+        log.debug("Total payments for event {}: {}", eventId, allPayments.size());
 
         Set<UUID> requiredUserIds = new HashSet<>();
         for (Payment p : allPayments) {
@@ -70,7 +97,10 @@ public class SettlementQueryService {
         List<SettlementItemDTO> settlements = new ArrayList<>();
 
         for (Payment p : allPayments) {
-            if (p.getStatus() == PaymentStatus.COMPLETED) continue;
+            if (p.getStatus() == PaymentStatus.COMPLETED) {
+                log.debug("Skipping completed payment: {}", p.getId());
+                continue;
+            }
 
             if (p.getStatus() != PaymentStatus.FAILED) {
                 totalOutstanding = totalOutstanding.add(p.getAmount());
@@ -87,11 +117,21 @@ public class SettlementQueryService {
                     p.getStatus().name(),
                     false
             ));
+            log.debug("Added settlement item: {} -> {} : {} ({})",
+                    p.getFromUserId(), p.getToUserId(), p.getAmount(), p.getStatus());
         }
 
         EventSettlementsResponse finalResponse = new EventSettlementsResponse(eventId, totalOutstanding, settlements);
+        log.debug("Final response: {} settlements, total outstanding: {}",
+                settlements.size(), totalOutstanding);
 
-        redisRepository.cacheSettlements(eventId, finalResponse);
+        // Не кэшируем пустые результаты, чтобы избежать проблем с кэшированием
+        if (!settlements.isEmpty()) {
+            redisRepository.cacheSettlements(eventId, finalResponse);
+            log.debug("Cached settlements for event: {} ({} items)", eventId, settlements.size());
+        } else {
+            log.info("Not caching empty settlements for event: {}", eventId);
+        }
 
         return updateCurrentUserFlags(finalResponse, currentUserId);
     }
