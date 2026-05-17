@@ -24,12 +24,12 @@ const validBase = {
 
 describe('createEventSchema', () => {
   it('проходит валидацию с минимально необходимыми данными', () => {
-    const result = createEventSchema.safeParse(validBase)
+    const result = createEventSchema().safeParse(validBase)
     expect(result.success).toBe(true)
   })
 
   it('проходит валидацию с заполненными необязательными полями', () => {
-    const result = createEventSchema.safeParse({
+    const result = createEventSchema().safeParse({
       ...validBase,
       description: 'Описание поездки',
     })
@@ -37,12 +37,12 @@ describe('createEventSchema', () => {
   })
 
   it('не проходит валидацию когда title пустой', () => {
-    const result = createEventSchema.safeParse({ ...validBase, title: '' })
+    const result = createEventSchema().safeParse({ ...validBase, title: '' })
     expect(result.success).toBe(false)
   })
 
   it('не проходит валидацию когда startDate — сегодня (не завтра)', () => {
-    const result = createEventSchema.safeParse({ ...validBase, startDate: MOCK_TODAY })
+    const result = createEventSchema().safeParse({ ...validBase, startDate: MOCK_TODAY })
     expect(result.success).toBe(false)
     if (!result.success) {
       const errors = result.error.flatten().fieldErrors.startDate
@@ -51,7 +51,7 @@ describe('createEventSchema', () => {
   })
 
   it('не проходит валидацию когда startDate в прошлом', () => {
-    const result = createEventSchema.safeParse({ ...validBase, startDate: YESTERDAY })
+    const result = createEventSchema().safeParse({ ...validBase, startDate: YESTERDAY })
     expect(result.success).toBe(false)
     if (!result.success) {
       const errors = result.error.flatten().fieldErrors.startDate
@@ -60,12 +60,12 @@ describe('createEventSchema', () => {
   })
 
   it('не проходит валидацию когда startDate пустой', () => {
-    const result = createEventSchema.safeParse({ ...validBase, startDate: '' })
+    const result = createEventSchema().safeParse({ ...validBase, startDate: '' })
     expect(result.success).toBe(false)
   })
 
   it('не проходит валидацию когда endDate раньше startDate', () => {
-    const result = createEventSchema.safeParse({
+    const result = createEventSchema().safeParse({
       ...validBase,
       startDate: DAY_AFTER_TOMORROW,
       endDate: TOMORROW,
@@ -78,7 +78,7 @@ describe('createEventSchema', () => {
   })
 
   it('проходит валидацию когда endDate равен startDate', () => {
-    const result = createEventSchema.safeParse({
+    const result = createEventSchema().safeParse({
       ...validBase,
       startDate: TOMORROW,
       endDate: TOMORROW,
@@ -87,12 +87,12 @@ describe('createEventSchema', () => {
   })
 
   it('не проходит валидацию когда массив categories пустой', () => {
-    const result = createEventSchema.safeParse({ ...validBase, categories: [] })
+    const result = createEventSchema().safeParse({ ...validBase, categories: [] })
     expect(result.success).toBe(false)
   })
 
   it('не проходит валидацию когда categories содержат дубликаты', () => {
-    const result = createEventSchema.safeParse({
+    const result = createEventSchema().safeParse({
       ...validBase,
       categories: ['Транспорт', 'Транспорт'],
     })
@@ -105,7 +105,7 @@ describe('createEventSchema', () => {
 
   it('не проходит валидацию когда avatar не является изображением', () => {
     const pdfFile = new File([new ArrayBuffer(100)], 'doc.pdf', { type: 'application/pdf' })
-    const result = createEventSchema.safeParse({ ...validBase, avatar: pdfFile })
+    const result = createEventSchema().safeParse({ ...validBase, avatar: pdfFile })
     expect(result.success).toBe(false)
     if (!result.success) {
       const errors = result.error.flatten().fieldErrors.avatar
@@ -115,17 +115,17 @@ describe('createEventSchema', () => {
 
   it('проходит валидацию когда avatar является файлом изображения', () => {
     const imageFile = new File([new ArrayBuffer(100)], 'photo.jpg', { type: 'image/jpeg' })
-    const result = createEventSchema.safeParse({ ...validBase, avatar: imageFile })
+    const result = createEventSchema().safeParse({ ...validBase, avatar: imageFile })
     expect(result.success).toBe(true)
   })
 
   it('проходит валидацию когда avatar не задан (необязательное поле)', () => {
-    const result = createEventSchema.safeParse({ ...validBase, avatar: undefined })
+    const result = createEventSchema().safeParse({ ...validBase, avatar: undefined })
     expect(result.success).toBe(true)
   })
 
   it('не проходит валидацию когда отсутствуют обязательные поля', () => {
-    const result = createEventSchema.safeParse({})
+    const result = createEventSchema().safeParse({})
     expect(result.success).toBe(false)
   })
 })
