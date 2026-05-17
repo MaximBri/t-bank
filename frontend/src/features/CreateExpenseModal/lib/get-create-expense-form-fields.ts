@@ -74,6 +74,7 @@ export const getCreateExpenseFormFields = ({
     fieldClassName: `${createExpenseFieldInputClassName} h-[150px] resize-none`,
     label: 'Комментарий',
     placeholder: 'Дополнительная информация о расходе...',
+    withoutClearButton: true,
   })
 
   const checkImageField = createImageField<CreateExpenseFormValues>({

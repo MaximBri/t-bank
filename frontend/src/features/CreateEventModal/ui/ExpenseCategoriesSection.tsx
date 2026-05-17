@@ -40,11 +40,11 @@ export const ExpenseCategoriesSection = ({
           {categories.map((category) => (
             <span
               key={category}
-              className="bg-yellow flex flex-row items-center justify-center gap-[15px] px-[10px] py-[1px] text-h3 sm:px-[17px] sm:py-[5px] h-[37px] rounded-[24px]"
+              className="bg-yellow flex max-w-full min-w-0 flex-row items-center gap-[15px] px-[10px] py-[5px] text-h3 sm:px-[17px] rounded-[24px]"
               onClick={() => onRemoveCategory(category)}
             >
-              {category}
-              <CloseIcon width={14} height={14} />
+              <span className="min-w-0 break-words">{category}</span>
+              <CloseIcon width={14} height={14} className="flex-shrink-0" />
             </span>
           ))}
         </div>

@@ -31,8 +31,9 @@ const toRequestBody = (eventData: CreateEventDto | UpdateEventDto) => {
 
 export const eventsApi = {
   getAll: async (params: GetEventsParams) => {
+    const { status, ...rest } = params
     const { data } = await api.get<UserEventDto>('/events/user/events', {
-      params: params,
+      params: { ...rest, state: status },
     })
     return Promise.all(data.events.map(withResolvedImage))
   },

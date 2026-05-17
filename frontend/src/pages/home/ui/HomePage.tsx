@@ -16,7 +16,7 @@ import { useGetEvents } from "@/entities/event/api/hooks/useGetEvents.ts";
 import {useEventFiltersStore} from "@/widgets/event-filters/model/useEventFiltersStore.ts";
 import {parseNumberValue} from "@/shared/lib/number/parseNumber.ts";
 import {EventFilterStatus} from "@/widgets/event-filters/model/types.ts";
-import {EventStatus} from "@/entities/event";
+import {filterStatusToEventStatus} from "@/widgets/event-filters/model/constants.ts";
 import {useDebouncedValue} from "@/shared/lib/debounce/useDebouncedValue.ts";
 
 export const HomePage = () => {
@@ -31,7 +31,7 @@ export const HomePage = () => {
 
   const { data: events, isLoading } = useGetEvents({
     search: debouncedSearch === '' ? undefined : debouncedSearch,
-    status: status === EventFilterStatus.All ? undefined : (status as unknown as EventStatus),
+    status: status === EventFilterStatus.All ? undefined : filterStatusToEventStatus[status],
     startDate: startDate === '' ? undefined : startDate,
     endDate: endDate === '' ? undefined : endDate,
     minParticipants: parseNumberValue(debouncedMinParticipants),

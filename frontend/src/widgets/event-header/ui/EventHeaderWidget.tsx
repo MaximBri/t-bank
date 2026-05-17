@@ -40,7 +40,7 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
         <div className="flex flex-col gap-[20px] lg:flex-row">
           <div
             className={clsx(
-              'flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[12px] lg:w-[200px]',
+              'flex h-[200px] w-full shrink-0 items-center justify-center overflow-hidden rounded-[12px] lg:w-[200px]',
               event.imageUrl ? '' : 'bg-primary',
             )}
           >
@@ -55,10 +55,15 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
             )}
           </div>
 
-          <div className="flex flex-1 flex-col gap-[10px]">
-            <Text as="h2" className="truncate font-medium text-primary text-h3-d sm:text-h2-d">
-              {event.title}
-            </Text>
+          <div className="flex min-w-0 flex-1 flex-col gap-[10px]">
+            <div className="min-w-0 max-w-full" title={event.title}>
+              <Text
+                as="h2"
+                className="truncate font-medium text-primary text-h3-d sm:text-h2-d"
+              >
+                {event.title}
+              </Text>
+            </div>
             <div className="flex items-center gap-[8px] text-primary">
               <CalendarIcon width={32} height={32} />
               <Text variant="h2" className="font-normal text-h3-d sm:text-h2-d">
