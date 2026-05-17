@@ -2,7 +2,7 @@ import z from 'zod'
 
 export const changePasswordSchema = z
   .object({
-    currentPassword: z.string().min(1, 'Введите текущий пароль'),
+    currentPassword: z.string().min(8, 'Минимальная длина пароля - 8 символов'),
     newPassword: z.string().min(8, 'Пароль должен содержать минимум 8 символов'),
     confirmPassword: z.string().min(1, 'Подтвердите новый пароль'),
   })

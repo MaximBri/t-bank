@@ -7,25 +7,21 @@ import { useMediaQuery } from 'react-responsive'
 export const ProfileMain = () => {
   const user = useUserStore((state) => state.user)
   const isMobile = useMediaQuery({ maxWidth: 768 })
-
   return (
     <section className="p-[10px] md:p-6 flex flex-1 flex-col items-center gap-4 md:flex-row md:gap-6 bg-secondary border-2 border-primary rounded-md md:rounded-lg">
       <UserAvatar
         firstName={user?.firstName}
         lastName={user?.lastName}
         login={user?.login}
-        avatarUrl={user?.avatarPreviewUrl}
+        avatarUrl={user?.avatarUrl}
         variant={isMobile ? UserAvatarSizes.M : UserAvatarSizes.Xl}
       />
       <div className="text-center md:text-left">
         <Text as="h2" variant={'h2'}>
-          Иван Иваныч
+           {user?.firstName} {user?.lastName}
         </Text>
         <Text as="h3" variant="h3" className="text-placeholder">
           {user?.login}
-        </Text>
-        <Text as="h3" variant="h3" className="text-placeholder">
-          Ivanich@mail.ru
         </Text>
       </div>
     </section>

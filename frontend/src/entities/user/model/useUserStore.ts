@@ -4,9 +4,10 @@ import { persist } from 'zustand/middleware'
 import { clearApiCache } from '@/shared/lib/clearApiCache'
 import { s3Api } from '@/shared/api/s3Api'
 import type {
+  ChangePasswordDto,
   CurrentUserDto,
+  UpdateProfilePayload,
   User,
-  UserProfileDto,
   UserStore,
 } from './types'
 import { userApi } from '..'
@@ -16,17 +17,7 @@ const mapCurrentUser = (payload: CurrentUserDto): User => ({
   login: payload.login,
   firstName: payload.first_name,
   lastName: payload.second_name,
-  avatarUrl: payload.avatar_url,
-  avatarPreviewUrl: null,
-})
-
-const mapUserProfile = (payload: UserProfileDto): User => ({
-  id: payload.id,
-  login: payload.login,
-  firstName: payload.first_name,
-  lastName: payload.second_name,
-  avatarUrl: payload.avatar_url,
-  avatarPreviewUrl: null,
+  avatarUrl: payload.avatar_url ?? undefined,
 })
 
 const withResolvedAvatar = async (user: User): Promise<User> => {
@@ -35,10 +26,10 @@ const withResolvedAvatar = async (user: User): Promise<User> => {
   }
 
   try {
-    const avatarPreviewUrl = await s3Api.getDownloadUrl(user.avatarUrl)
-    return { ...user, avatarPreviewUrl }
+    const avatarUrl = await s3Api.getDownloadUrl(user.avatarUrl)
+    return { ...user, avatarUrl }
   } catch {
-    return user
+    return { ...user, avatarUrl: undefined }
   }
 }
 
@@ -70,7 +61,6 @@ export const useUserStore = create<UserStore>()(
     try {
       const response = await userApi.me()
       const user = await withResolvedAvatar(mapCurrentUser(response))
-
       set({
         user,
         isAuthResolved: true,
@@ -145,40 +135,40 @@ export const useUserStore = create<UserStore>()(
       })
     }
   },
-  updateProfile: async ({ firstName, lastName, login, avatar }) => {
-    set({ isLoading: true })
-
+  update: async (newData: UpdateProfilePayload) => {
     try {
-      let avatarKey: string | undefined
-      if (avatar) {
-        avatarKey = await s3Api.uploadFile(avatar)
+      let avatarUrl: string | undefined
+      if (newData.avatar) {
+        avatarUrl = await s3Api.uploadFile(newData.avatar)
       }
 
-      const response = await userApi.updateUser({
-        first_name: firstName,
-        second_name: lastName,
-        login,
-        avatar_url: avatarKey,
+      await userApi.updateProfile({
+        firstName: newData.firstName,
+        lastName: newData.lastName,
+        avatarUrl,
       })
-
-      const user = await withResolvedAvatar(mapUserProfile(response))
-
-      set({
-        user,
-        isAuthResolved: true,
-        isAuthenticated: true,
-        isLoading: false,
-      })
-
-      return user
+      const response = await userApi.me()
+      const user = await withResolvedAvatar(mapCurrentUser(response))
+      set({ user })
     } catch (error) {
-      set({ isLoading: false })
       const info = userApi.getErrorInfo(error)
       const wrapped = new Error(info.message) as Error & { status?: number }
       wrapped.status = info.status
       throw wrapped
     }
   },
+  changePassword: async (payload: ChangePasswordDto) => {
+    try {
+      await clearApiCache()
+      await userApi.changePassword(payload)
+    }
+    catch (error) {
+      const info = userApi.getErrorInfo(error)
+      const wrapped = new Error(info.message) as Error & { status?: number }
+      wrapped.status = info.status
+      throw wrapped
+    }
+  }
     }),
     {
       name: 'user-store',

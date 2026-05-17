@@ -25,7 +25,6 @@ export const UserAvatar: FC<UserAvatarProps> = ({
       : (login?.[0] ?? '')
   ).toUpperCase()
 
-  // Fall back to initials if the resolved image fails to load (e.g. expired URL).
   const [imageFailed, setImageFailed] = useState(false)
   useEffect(() => {
     setImageFailed(false)

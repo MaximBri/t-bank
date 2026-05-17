@@ -1,11 +1,9 @@
 import { api } from '@/shared/api/api.ts'
 import { getErrorInfo } from '@/shared/api/helpers.ts'
 import {
-  AuthCredentials,
+  AuthCredentials, ChangePasswordDto,
   CurrentUserDto,
-  RegisterResponseDto,
-  UpdateProfileDto,
-  UserProfileDto,
+  RegisterResponseDto, UserData,
 } from '../model/types.ts'
 
 export const userApi = {
@@ -34,9 +32,23 @@ export const userApi = {
     })
   },
 
-  async updateUser(payload: UpdateProfileDto) {
-    const { data } = await api.patch<UserProfileDto>('/me', payload)
-    return data
+  async updateProfile(newData: UserData) {
+    const mappedData: {
+      first_name: string | null
+      second_name: string | null
+      avatar_url?: string
+    } = {
+      first_name: newData.firstName,
+      second_name: newData.lastName,
+    }
+    if (newData.avatarUrl) {
+      mappedData.avatar_url = newData.avatarUrl
+    }
+    await api.patch('/me', mappedData)
+  },
+
+  async changePassword(payload: ChangePasswordDto) {
+    await api.post('/me/password', payload)
   },
 
   getErrorInfo,

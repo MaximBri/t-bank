@@ -14,10 +14,11 @@ import { UserAvatarSizes } from '@/shared/ui/userAvatar/constants'
 import EditIcon from '@/shared/assets/icons/edit.svg?react'
 import ExitIcon from '@/shared/assets/icons/exit.svg?react'
 
-import { getProfileItems } from '../model/constants'
 import { profileSchema, type ProfileSchemaValues } from '../model/schema'
-import { getProfileFormFields, profileFormDefaultValues } from './constants'
+import { profileFormDefaultValues } from '../model/constants.ts'
 import { userApi } from '@/entities/user'
+import { getProfileItems } from '@/features/ProfileInfo/lib/getProfileItems.ts'
+import { getProfileFormFields } from '@/features/ProfileInfo/lib/getProfileFormFields.ts'
 
 export const ProfileInfo = () => {
   const queryClient = useQueryClient()
@@ -25,46 +26,27 @@ export const ProfileInfo = () => {
   const user = userStore.user
 
   const [editMode, setEditMode] = useState<boolean>(false)
+  const [profileValues, setProfileValues] = useState<ProfileSchemaValues>(profileFormDefaultValues)
 
   const form = useForm<ProfileSchemaValues>({
     resolver: zodResolver(profileSchema),
     mode: 'onTouched',
-    defaultValues: {
-      firstName: user?.firstName ?? profileFormDefaultValues.firstName,
-      lastName: user?.lastName ?? profileFormDefaultValues.lastName,
-    },
+    defaultValues: profileValues,
   })
 
-  // Keep the form in sync once the user is loaded/refreshed in the store.
-  useEffect(() => {
-    if (!user) {
-      return
-    }
-
-    form.reset({
-      firstName: user.firstName ?? profileFormDefaultValues.firstName,
-      lastName: user.lastName ?? profileFormDefaultValues.lastName,
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, user?.firstName, user?.lastName])
-
-  const profileItems = getProfileItems(form.getValues())
   const formFields = getProfileFormFields()
   const fieldByName = Object.fromEntries(formFields.map((field) => [field.name, field]))
 
   const handleSave = form.handleSubmit(async (values) => {
     try {
-      await userStore.updateProfile({
-        firstName: values.firstName,
-        lastName: values.lastName,
-        avatar: values.avatar ?? null,
-      })
+      await userStore.update(values)
+      setProfileValues(values)
       form.setValue('avatar', undefined)
+      toast.success('Данные успешно обновлены')
+    } catch {
+      toast.error('Не удалось изменить учётные данные')
+    } finally {
       setEditMode(false)
-      toast.success('Профиль обновлён')
-    } catch (error) {
-      const info = userApi.getErrorInfo(error)
-      toast.error(info.message || 'Не удалось обновить профиль')
     }
   })
 
@@ -78,6 +60,16 @@ export const ProfileInfo = () => {
       toast.error('Не удалось выйти из аккаунта')
     }
   }
+
+  useEffect(() => {
+    const profileData: ProfileSchemaValues = {
+      firstName: user ? user.firstName : '',
+      lastName: user ? user.lastName : '',
+    }
+
+    setProfileValues(profileData)
+    form.reset(profileData)
+  }, [user, form])
 
   return (
     <FormProvider {...form}>
@@ -103,7 +95,7 @@ export const ProfileInfo = () => {
               firstName={user?.firstName}
               lastName={user?.lastName}
               login={user?.login}
-              avatarUrl={user?.avatarPreviewUrl}
+              avatarUrl={user?.avatarUrl}
               variant={UserAvatarSizes.L}
             />
           )}
@@ -113,7 +105,7 @@ export const ProfileInfo = () => {
         </div>
 
         <ul className="flex flex-col gap-[12px]">
-          {profileItems.map((item) => (
+          {getProfileItems(profileValues).map((item) => (
             <li key={item.name} className="flex gap-[15px] pb-3 border-b border-primary">
               <item.icon className="w-6 h-6 text-placeholder shrink-0 mt-1" />
               <div className="flex flex-col gap-[10px] flex-1">
@@ -129,7 +121,11 @@ export const ProfileInfo = () => {
         </ul>
         <nav className="flex flex-col gap-[10px] mt-[10px] max-w-[340px]">
           {!editMode ? (
-            <Button type="button" onClick={() => setEditMode(true)}>
+            <Button type="button" onClick={() => {
+              form.reset(profileValues)
+              setEditMode(true)
+            }}
+            >
               <EditIcon className="w-[18px] h-[16px] md:w-6 md:h-6" />
               Редактировать профиль
             </Button>
