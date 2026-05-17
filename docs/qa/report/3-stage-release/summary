@@ -1,3 +1,11 @@
+Артефакты третьего дедлайна
+
+Итоговый отчет:
+
+PR https://github.com/MaximBri/t-bank/pull/127
+
+Прямые ссылки на артефакты:
+
 1. Проведено регрессионное тестирование
 regress-testing-report.md
 
@@ -13,12 +21,16 @@ index.md
 5. Презентация
  presentation.md
 
-6. Доп. документация по тестированию
+6. Доп. артефакты и документация по тестированию
 - Матрица трассировки требований
 matrix.md
 
 - Документация по запуску автотестов для команды
 autotest-team-readme.md
+  - API test scripts лежат в root/frontend/tests/api/
+  - E2E test scripts лежат в root/frontend/tests/e2e/
 
-- Тест-план
-index.md
+- CI/CD workflows для интеграции автотестов на github
+  - api.yml
+  - check.yml
+  - e2e.yml
