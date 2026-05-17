@@ -82,6 +82,11 @@ jobs:
       BACKEND_PORT: ${{ secrets.BACKEND_PORT }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       JWT_COOKIE_SECURE: ${{ secrets.JWT_COOKIE_SECURE }}
+      MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
+      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+      SPRING_CLOUD_AWS_S3_ENDPOINT: ${{ secrets.SPRING_CLOUD_AWS_S3_ENDPOINT }}
+      SPRING_CLOUD_AWS_S3_BUCKET_NAME: ${{ secrets.SPRING_CLOUD_AWS_S3_BUCKET_NAME }}
+      SPRING_CLOUD_AWS_REGION_STATIC: ${{ secrets.SPRING_CLOUD_AWS_REGION_STATIC }}
 
     steps:
       - name: Checkout repository
@@ -99,6 +104,9 @@ jobs:
           test -n "$SPRING_DATASOURCE_USERNAME"
           test -n "$SPRING_DATASOURCE_PASSWORD"
           test -n "$JWT_SECRET"
+          test -n "$MINIO_ROOT_USER"
+          test -n "$MINIO_ROOT_PASSWORD"
+          test -n "$SPRING_CLOUD_AWS_S3_ENDPOINT"
 
       - name: Prepare SSH key
         run: |
@@ -138,6 +146,11 @@ jobs:
               echo 'BACKEND_PORT=${BACKEND_PORT:-8080}'; \
               echo 'JWT_SECRET=${JWT_SECRET}'; \
               echo 'JWT_COOKIE_SECURE=${JWT_COOKIE_SECURE:-true}'; \
+              echo 'MINIO_ROOT_USER=${MINIO_ROOT_USER}'; \
+              echo 'MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}'; \
+              echo 'SPRING_CLOUD_AWS_S3_ENDPOINT=${SPRING_CLOUD_AWS_S3_ENDPOINT}'; \
+              echo 'SPRING_CLOUD_AWS_S3_BUCKET_NAME=${SPRING_CLOUD_AWS_S3_BUCKET_NAME:-tbank-receipts}'; \
+              echo 'SPRING_CLOUD_AWS_REGION_STATIC=${SPRING_CLOUD_AWS_REGION_STATIC:-us-east-1}'; \
               echo 'SPRINGDOC_SWAGGER_UI_URL=/api/v3/api-docs'; \
               echo 'SPRINGDOC_SWAGGER_UI_CONFIG_URL=/api/v3/api-docs/swagger-config'; \
               echo 'POSTGRES_DB=tbank'; \
