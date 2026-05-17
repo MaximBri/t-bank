@@ -2,7 +2,14 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { clearApiCache } from '@/shared/lib/clearApiCache'
-import type { CurrentUserDto, User, UserStore } from './types'
+import { s3Api } from '@/shared/api/s3Api'
+import type {
+  ChangePasswordDto,
+  CurrentUserDto,
+  UpdateProfilePayload,
+  User,
+  UserStore,
+} from './types'
 import { userApi } from '..'
 
 const mapCurrentUser = (payload: CurrentUserDto): User => ({
@@ -10,8 +17,21 @@ const mapCurrentUser = (payload: CurrentUserDto): User => ({
   login: payload.login,
   firstName: payload.first_name,
   lastName: payload.second_name,
-  avatarUrl: payload.avatar_url,
+  avatarUrl: payload.avatar_url ?? undefined,
 })
+
+const withResolvedAvatar = async (user: User): Promise<User> => {
+  if (!user.avatarUrl) {
+    return user
+  }
+
+  try {
+    const avatarUrl = await s3Api.getDownloadUrl(user.avatarUrl)
+    return { ...user, avatarUrl }
+  } catch {
+    return { ...user, avatarUrl: undefined }
+  }
+}
 
 export const useUserStore = create<UserStore>()(
   persist(
@@ -40,8 +60,7 @@ export const useUserStore = create<UserStore>()(
 
     try {
       const response = await userApi.me()
-      const user = mapCurrentUser(response)
-
+      const user = await withResolvedAvatar(mapCurrentUser(response))
       set({
         user,
         isAuthResolved: true,
@@ -62,7 +81,7 @@ export const useUserStore = create<UserStore>()(
       await clearApiCache()
       await userApi.login(payload)
       const response = await userApi.me()
-      const user = mapCurrentUser(response)
+      const user = await withResolvedAvatar(mapCurrentUser(response))
 
       set({
         user,
@@ -85,7 +104,7 @@ export const useUserStore = create<UserStore>()(
       await clearApiCache()
       await userApi.register(payload)
       const response = await userApi.me()
-      const user = mapCurrentUser(response)
+      const user = await withResolvedAvatar(mapCurrentUser(response))
 
       set({
         user,
@@ -116,6 +135,40 @@ export const useUserStore = create<UserStore>()(
       })
     }
   },
+  update: async (newData: UpdateProfilePayload) => {
+    try {
+      let avatarUrl: string | undefined
+      if (newData.avatar) {
+        avatarUrl = await s3Api.uploadFile(newData.avatar)
+      }
+
+      await userApi.updateProfile({
+        firstName: newData.firstName,
+        lastName: newData.lastName,
+        avatarUrl,
+      })
+      const response = await userApi.me()
+      const user = await withResolvedAvatar(mapCurrentUser(response))
+      set({ user })
+    } catch (error) {
+      const info = userApi.getErrorInfo(error)
+      const wrapped = new Error(info.message) as Error & { status?: number }
+      wrapped.status = info.status
+      throw wrapped
+    }
+  },
+  changePassword: async (payload: ChangePasswordDto) => {
+    try {
+      await clearApiCache()
+      await userApi.changePassword(payload)
+    }
+    catch (error) {
+      const info = userApi.getErrorInfo(error)
+      const wrapped = new Error(info.message) as Error & { status?: number }
+      wrapped.status = info.status
+      throw wrapped
+    }
+  }
     }),
     {
       name: 'user-store',

@@ -26,7 +26,12 @@ public class S3Controller {
             Authentication authentication
     ) {
         UUID userId = authenticatedUserId(authentication);
-        S3Service.PresignedUpload upload = s3Service.generateUploadUrl(userId, request.fileName(), request.contentType());
+        S3Service.PresignedUpload upload = s3Service.generateUploadUrl(
+                userId,
+                request.fileName(),
+                request.contentType(),
+                request.fileSizeBytes()
+        );
         return ResponseEntity.ok(new UploadUrlResponse(upload.imageKey(), upload.uploadUrl(), upload.expiresInSeconds()));
     }
 

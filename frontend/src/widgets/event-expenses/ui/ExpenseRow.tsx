@@ -1,9 +1,11 @@
 import clsx from 'clsx'
+import { useState } from 'react'
 
 import CheckIcon from '@/shared/assets/icons/check.svg?react'
 import CloseIcon from '@/shared/assets/icons/close.svg?react'
-import EditIcon from '@/shared/assets/icons/edit.svg?react'
-import TrashIcon from '@/shared/assets/icons/trash.svg?react'
+import EyeIcon from '@/shared/assets/icons/eye.svg?react'
+
+import { ExpensePreviewModal } from './ExpensePreviewModal.tsx'
 
 import { Button } from '@/shared/ui/button/Button'
 import { ButtonEnum } from '@/shared/ui/button/constants.ts'
@@ -37,19 +39,18 @@ export const ExpenseRow = ({
   expense,
   payerName,
   isOwner,
-  isPayer,
   isMutating,
   onApprove,
   onReject,
-  onEdit,
-  onDelete,
 }: ExpenseRowProps) => {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const category = expense.categories[0]
   const totalPeople = expense.totalParticipantsCount + 1
   const perPerson = totalPeople > 0 ? expense.totalAmount / totalPeople : 0
   const canDecide = isOwner && expense.status === ExpenseResponseStatus.Pending
 
   return (
+    <>
     <div className="border-b-[2px] border-secondary py-[10px] px-[10px] sm:pl-[32px] sm:py-[20px] sm:pr-[35px] last:border-b-0">
       <div className="flex gap-[10px] flex-col sm:flex-row items-start justify-between">
         <div className="min-w-0 flex-1">
@@ -93,28 +94,14 @@ export const ExpenseRow = ({
 
         <div className="flex h-[90px] sm:h-auto shrink-0 flex-row gap-[24px] sm:items-center">
           <div className="flex gap-[8px] mt-auto sm:mt-0">
-            {isPayer ? (
-              <>
-                <Button
-                  variant={ButtonEnum.Secondary}
-                  className={actionButtonClassName}
-                  disabled={isMutating}
-                  onClick={onEdit}
-                  aria-label="Редактировать расход"
-                >
-                  <EditIcon className={actionButtonIconClassName} />
-                </Button>
-                <Button
-                  variant={ButtonEnum.Secondary}
-                  className={actionButtonClassName}
-                  disabled={isMutating}
-                  onClick={onDelete}
-                  aria-label="Удалить расход"
-                >
-                  <TrashIcon className={actionButtonIconClassName} />
-                </Button>
-              </>
-            ) : null}
+            <Button
+              variant={ButtonEnum.Secondary}
+              className={actionButtonClassName}
+              onClick={() => setIsPreviewOpen(true)}
+              aria-label="Посмотреть расход"
+            >
+              <EyeIcon className={actionButtonIconClassName} />
+            </Button>
             {canDecide ? (
               <>
                 <button
@@ -127,7 +114,11 @@ export const ExpenseRow = ({
                   )}
                   aria-label="Отклонить расход"
                 >
-                  <CloseIcon className={actionButtonIconClassName} />
+                  <CloseIcon className={clsx(
+                      actionButtonIconClassName,
+                      "text-error"
+                  )
+                  } />
                 </button>
                 <button
                   type="button"
@@ -153,5 +144,12 @@ export const ExpenseRow = ({
         </div>
       </div>
     </div>
+    <ExpensePreviewModal
+      isOpen={isPreviewOpen}
+      onClose={() => setIsPreviewOpen(false)}
+      expense={expense}
+      payerName={payerName}
+    />
+    </>
   )
 }

@@ -104,6 +104,7 @@ export type ImageFieldConfig<
   accept?: string
   emptyState?: ReactNode
   previewClassName?: string
+  hidePreviewFrame?: boolean
 }
 
 export type FormFieldConfig<TFieldValues extends FieldValues = FieldValues> =

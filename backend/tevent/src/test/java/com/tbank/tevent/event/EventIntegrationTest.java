@@ -61,6 +61,7 @@ class EventIntegrationTest {
                 "description", "Best party ever",
                 "startDate", LocalDateTime.now().plusDays(1).toString(),
                 "endDate", LocalDateTime.now().plusDays(2).toString(),
+                "image_key", "custom-image-key",
                 "categories", List.of("Music", "Food")
         );
 
@@ -71,7 +72,9 @@ class EventIntegrationTest {
                 .expectStatus().isCreated()
                 .expectBody(String.class).returnResult().getResponseBody();
 
-        UUID eventId = UUID.fromString(objectMapper.readTree(eventRespStr).get("id").asText());
+        JsonNode createdEvent = objectMapper.readTree(eventRespStr);
+        UUID eventId = UUID.fromString(createdEvent.get("id").asText());
+        assertThat(createdEvent.get("image_key").asText()).isEqualTo("custom-image-key");
 
         // --- 3. Алиса получает токен инвайта ---
         String tokenRespStr = webTestClient.get().uri("/events/" + eventId + "/token")

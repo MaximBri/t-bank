@@ -30,6 +30,7 @@ export const ImageField = <
   rules,
   accept = 'image/*',
   previewClassName,
+  hidePreviewFrame,
 }: ImageFieldProps<TFieldValues, TName>) => {
   const generatedId = useId()
   const id = `field-${generatedId}`
@@ -126,8 +127,13 @@ export const ImageField = <
                 onClick={() => inputRef.current?.click()}
                 className={clsx(
                   fieldClassName,
-                  'bg-input-primary flex border-2 rounded-md w-full items-center justify-center overflow-hidden',
-                  errorMessage ? 'border-error' : 'border-secondary',
+                  'flex rounded-md w-full items-center justify-center overflow-hidden',
+                  hidePreviewFrame && previewUrl ? '' : 'bg-input-primary border-2',
+                  errorMessage
+                    ? 'border-2 border-error'
+                    : hidePreviewFrame && previewUrl
+                      ? ''
+                      : 'border-secondary',
                 )}
               >
                 {previewUrl ? (
