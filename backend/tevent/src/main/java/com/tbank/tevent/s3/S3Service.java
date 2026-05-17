@@ -55,13 +55,17 @@ public class S3Service {
         }
 
         String normalizedContentType = normalizeContentType(contentType);
-        String normalizedFileName = normalizeFileName(fileName);
+        // fileName is still validated to reject malformed requests early, even though it is
+        // no longer embedded into the presigned PUT signature (see note below).
+        normalizeFileName(fileName);
         String extension = ALLOWED_CONTENT_TYPES.get(normalizedContentType);
         String key = String.format("receipts/%s/%s.%s", userId, UUID.randomUUID(), extension);
 
+        // Only content-type is signed. Signing content-disposition would force every client
+        // to replay that exact header on the PUT, which browsers/uploaders cannot reliably do
+        // and which MinIO rejects with AccessDenied ("headers present which were not signed").
         ObjectMetadata objectMetadata = ObjectMetadata.builder()
                 .contentType(normalizedContentType)
-                .contentDisposition("inline; filename=\"" + normalizedFileName + "\"")
                 .build();
 
         URL url = s3Template.createSignedPutURL(

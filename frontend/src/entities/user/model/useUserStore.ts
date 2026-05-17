@@ -2,7 +2,13 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { clearApiCache } from '@/shared/lib/clearApiCache'
-import type { CurrentUserDto, User, UserStore } from './types'
+import { s3Api } from '@/shared/api/s3Api'
+import type {
+  CurrentUserDto,
+  User,
+  UserProfileDto,
+  UserStore,
+} from './types'
 import { userApi } from '..'
 
 const mapCurrentUser = (payload: CurrentUserDto): User => ({
@@ -11,7 +17,30 @@ const mapCurrentUser = (payload: CurrentUserDto): User => ({
   firstName: payload.first_name,
   lastName: payload.second_name,
   avatarUrl: payload.avatar_url,
+  avatarPreviewUrl: null,
 })
+
+const mapUserProfile = (payload: UserProfileDto): User => ({
+  id: payload.id,
+  login: payload.login,
+  firstName: payload.first_name,
+  lastName: payload.second_name,
+  avatarUrl: payload.avatar_url,
+  avatarPreviewUrl: null,
+})
+
+const withResolvedAvatar = async (user: User): Promise<User> => {
+  if (!user.avatarUrl) {
+    return user
+  }
+
+  try {
+    const avatarPreviewUrl = await s3Api.getDownloadUrl(user.avatarUrl)
+    return { ...user, avatarPreviewUrl }
+  } catch {
+    return user
+  }
+}
 
 export const useUserStore = create<UserStore>()(
   persist(
@@ -40,7 +69,7 @@ export const useUserStore = create<UserStore>()(
 
     try {
       const response = await userApi.me()
-      const user = mapCurrentUser(response)
+      const user = await withResolvedAvatar(mapCurrentUser(response))
 
       set({
         user,
@@ -62,7 +91,7 @@ export const useUserStore = create<UserStore>()(
       await clearApiCache()
       await userApi.login(payload)
       const response = await userApi.me()
-      const user = mapCurrentUser(response)
+      const user = await withResolvedAvatar(mapCurrentUser(response))
 
       set({
         user,
@@ -85,7 +114,7 @@ export const useUserStore = create<UserStore>()(
       await clearApiCache()
       await userApi.register(payload)
       const response = await userApi.me()
-      const user = mapCurrentUser(response)
+      const user = await withResolvedAvatar(mapCurrentUser(response))
 
       set({
         user,
@@ -114,6 +143,40 @@ export const useUserStore = create<UserStore>()(
         isAuthenticated: false,
         isLoading: false,
       })
+    }
+  },
+  updateProfile: async ({ firstName, lastName, login, avatar }) => {
+    set({ isLoading: true })
+
+    try {
+      let avatarKey: string | undefined
+      if (avatar) {
+        avatarKey = await s3Api.uploadFile(avatar)
+      }
+
+      const response = await userApi.updateUser({
+        first_name: firstName,
+        second_name: lastName,
+        login,
+        avatar_url: avatarKey,
+      })
+
+      const user = await withResolvedAvatar(mapUserProfile(response))
+
+      set({
+        user,
+        isAuthResolved: true,
+        isAuthenticated: true,
+        isLoading: false,
+      })
+
+      return user
+    } catch (error) {
+      set({ isLoading: false })
+      const info = userApi.getErrorInfo(error)
+      const wrapped = new Error(info.message) as Error & { status?: number }
+      wrapped.status = info.status
+      throw wrapped
     }
   },
     }),

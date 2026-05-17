@@ -40,6 +40,7 @@ export const AppLayout = () => {
               firstName={user?.firstName}
               lastName={user?.lastName}
               login={user?.login}
+              avatarUrl={user?.avatarPreviewUrl}
             />
           </Link>
         </div>

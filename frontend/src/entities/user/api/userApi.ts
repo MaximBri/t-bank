@@ -4,6 +4,8 @@ import {
   AuthCredentials,
   CurrentUserDto,
   RegisterResponseDto,
+  UpdateProfileDto,
+  UserProfileDto,
 } from '../model/types.ts'
 
 export const userApi = {
@@ -31,5 +33,11 @@ export const userApi = {
       _skipAuthRefresh: true,
     })
   },
+
+  async updateUser(payload: UpdateProfileDto) {
+    const { data } = await api.patch<UserProfileDto>('/me', payload)
+    return data
+  },
+
   getErrorInfo,
 }

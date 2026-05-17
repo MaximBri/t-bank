@@ -14,6 +14,7 @@ export const ProfileMain = () => {
         firstName={user?.firstName}
         lastName={user?.lastName}
         login={user?.login}
+        avatarUrl={user?.avatarPreviewUrl}
         variant={isMobile ? UserAvatarSizes.M : UserAvatarSizes.Xl}
       />
       <div className="text-center md:text-left">

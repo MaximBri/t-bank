@@ -6,7 +6,6 @@ import type { ProfileSchemaValues } from '../model/schema'
 export const profileFormDefaultValues: ProfileSchemaValues = {
   firstName: 'Иван',
   lastName: 'Иванов',
-  email: 'ivanov@example.com',
 }
 
 export const getProfileFormFields = (): TextFieldConfig<ProfileSchemaValues>[] => [
@@ -26,16 +25,6 @@ export const getProfileFormFields = (): TextFieldConfig<ProfileSchemaValues>[] =
     label: '',
     labelClassName: 'hidden',
     placeholder: 'Фамилия',
-    required: true,
-    variant: FormFieldVariant.Filled,
-    withoutClearButton: true,
-  }),
-  createTextField<ProfileSchemaValues>({
-    name: 'email',
-    type: 'email',
-    label: '',
-    labelClassName: 'hidden',
-    placeholder: 'Email',
     required: true,
     variant: FormFieldVariant.Filled,
     withoutClearButton: true,

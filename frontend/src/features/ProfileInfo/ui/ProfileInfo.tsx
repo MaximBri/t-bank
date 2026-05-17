@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
@@ -8,7 +8,9 @@ import { useUserStore } from '@/entities/user'
 import { Text } from '@/shared/ui/text/Text'
 import { Button } from '@/shared/ui/button/Button'
 import { ButtonEnum } from '@/shared/ui/button/constants'
-import { TextField } from '@/shared/ui/form-fields'
+import { ImageField, TextField } from '@/shared/ui/form-fields'
+import { UserAvatar } from '@/shared/ui/userAvatar/UserAvatar'
+import { UserAvatarSizes } from '@/shared/ui/userAvatar/constants'
 import EditIcon from '@/shared/assets/icons/edit.svg?react'
 import ExitIcon from '@/shared/assets/icons/exit.svg?react'
 
@@ -20,23 +22,50 @@ import { userApi } from '@/entities/user'
 export const ProfileInfo = () => {
   const queryClient = useQueryClient()
   const userStore = useUserStore()
-  
+  const user = userStore.user
+
   const [editMode, setEditMode] = useState<boolean>(false)
-  const [profileValues, setProfileValues] = useState<ProfileSchemaValues>(profileFormDefaultValues)
 
   const form = useForm<ProfileSchemaValues>({
     resolver: zodResolver(profileSchema),
     mode: 'onTouched',
-    defaultValues: profileValues,
+    defaultValues: {
+      firstName: user?.firstName ?? profileFormDefaultValues.firstName,
+      lastName: user?.lastName ?? profileFormDefaultValues.lastName,
+    },
   })
 
-  const profileItems = getProfileItems(profileValues)
+  // Keep the form in sync once the user is loaded/refreshed in the store.
+  useEffect(() => {
+    if (!user) {
+      return
+    }
+
+    form.reset({
+      firstName: user.firstName ?? profileFormDefaultValues.firstName,
+      lastName: user.lastName ?? profileFormDefaultValues.lastName,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, user?.firstName, user?.lastName])
+
+  const profileItems = getProfileItems(form.getValues())
   const formFields = getProfileFormFields()
   const fieldByName = Object.fromEntries(formFields.map((field) => [field.name, field]))
 
-  const handleSave = form.handleSubmit((values) => {
-    setProfileValues(values)
-    setEditMode(false)
+  const handleSave = form.handleSubmit(async (values) => {
+    try {
+      await userStore.updateProfile({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        avatar: values.avatar ?? null,
+      })
+      form.setValue('avatar', undefined)
+      setEditMode(false)
+      toast.success('Профиль обновлён')
+    } catch (error) {
+      const info = userApi.getErrorInfo(error)
+      toast.error(info.message || 'Не удалось обновить профиль')
+    }
   })
 
   const handleExit = async () => {
@@ -56,6 +85,33 @@ export const ProfileInfo = () => {
         <Text as="h2" variant="h2" className="text-h3-d">
           Персональные данные
         </Text>
+
+        <div className="flex items-center gap-4">
+          {editMode ? (
+            <div className="w-[100px]">
+              <ImageField<ProfileSchemaValues>
+                name="avatar"
+                label=""
+                labelClassName="hidden"
+                accept="image/jpeg,image/png,image/webp"
+                fieldClassName="h-[100px] w-[100px] rounded-full"
+                previewClassName="rounded-full"
+              />
+            </div>
+          ) : (
+            <UserAvatar
+              firstName={user?.firstName}
+              lastName={user?.lastName}
+              login={user?.login}
+              avatarUrl={user?.avatarPreviewUrl}
+              variant={UserAvatarSizes.L}
+            />
+          )}
+          <Text variant="h3" className="text-placeholder">
+            {editMode ? 'Загрузите новое фото' : 'Фото профиля'}
+          </Text>
+        </div>
+
         <ul className="flex flex-col gap-[12px]">
           {profileItems.map((item) => (
             <li key={item.name} className="flex gap-[15px] pb-3 border-b border-primary">
@@ -78,7 +134,7 @@ export const ProfileInfo = () => {
               Редактировать профиль
             </Button>
           ) : (
-            <Button type="button" onClick={handleSave} isLoading={form.formState.isSubmitting}>
+            <Button type="button" onClick={handleSave} isLoading={userStore.isLoading}>
               Сохранить
             </Button>
           )}
