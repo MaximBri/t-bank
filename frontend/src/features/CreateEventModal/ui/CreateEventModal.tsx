@@ -9,6 +9,7 @@ import CloseIcon from '@/shared/assets/icons/close.svg?react'
 import { Button } from '@/shared/ui/button/Button.tsx'
 import { renderFormField } from '@/shared/ui/form'
 import { Modal } from '@/shared/ui/modal'
+import { s3Api } from '@/shared/api/s3Api.ts'
 
 import { getCreateEventFormFields } from '../lib/get-create-event-form-fields.tsx'
 import { eventToFormValues } from '../lib/event-to-form-values.ts'
@@ -73,29 +74,43 @@ export const CreateEventModal = ({ isOpen, onClose, event }: CreateEventModalPro
     onClose()
   }
 
-  const submitForm = handleSubmit((values) => {
+  const submitForm = handleSubmit(async (values) => {
+    let imageKey = ''
+    if (values.avatar) {
+      try {
+        imageKey = await s3Api.uploadFile(values.avatar)
+      } catch {
+        toast.error('Не удалось загрузить изображение')
+        return
+      }
+    }
+
     const data: CreateEventDto = {
       title: values.title,
       description: values.description,
       startDate: new Date(values.startDate).toISOString(),
       endDate: new Date(values.endDate).toISOString(),
-      imageKey: values.avatar ? values.avatar.name : '',
+      imageKey,
       categories: values.categories,
     }
 
     if (isEdit) {
       updateEvent(data, {
-        onSuccess: () => toast.success('Событие обновлено'),
+        onSuccess: () => {
+          toast.success('Событие обновлено')
+          handleClose()
+        },
         onError: () => toast.error('Не удалось обновить событие'),
       })
     } else {
       createEvent(data, {
-        onSuccess: () => toast.success('Событие создано'),
+        onSuccess: () => {
+          toast.success('Событие создано')
+          handleClose()
+        },
         onError: () => toast.error('Не удалось создать событие'),
       })
     }
-
-    handleClose()
   })
 
   return (

@@ -38,7 +38,12 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
     <section className="rounded-[16px] border-[2px] border-primary bg-secondary p-[10px] lg:p-[20px]">
       <div className="relative flex flex-col gap-[10px] lg:flex-row lg:items-start lg:justify-between lg:gap-[12px]">
         <div className="flex flex-col gap-[20px] lg:flex-row">
-          <div className="flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[12px] bg-primary lg:w-[200px]">
+          <div
+            className={clsx(
+              'flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[12px] lg:w-[200px]',
+              event.imageUrl ? '' : 'bg-primary',
+            )}
+          >
             {event.imageUrl ? (
               <img
                 src={event.imageUrl}

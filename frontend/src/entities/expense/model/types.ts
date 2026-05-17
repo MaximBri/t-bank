@@ -38,7 +38,7 @@ export type CreateExpenseDto = {
   title: string
   description?: string
   totalAmount: number
-  imageUrl?: string
+  imageKey?: string
   categories: string[]
   participantIds: string[]
 }
@@ -56,6 +56,8 @@ export type ExpenseResponseDto = {
   totalAmount: number
   payerId: string
   status: ExpenseResponseStatus
+  image_key: string | null
+  imageUrl: string
   categories: string[]
   firstTenParticipants: string[]
   totalParticipantsCount: number

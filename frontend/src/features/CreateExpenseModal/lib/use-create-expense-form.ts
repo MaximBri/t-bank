@@ -3,7 +3,9 @@ import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
 
+import { s3Api } from '@/shared/api/s3Api.ts'
 import { useCreateExpense, useUpdateExpense, type ExpenseResponseDto } from '@/entities/expense'
 import { useGetEvent } from '@/entities/event/api/hooks/useGetEvent.ts'
 import { useGetEventParticipants } from '@/entities/event/api/hooks/useGetEventParticipants.ts'
@@ -63,11 +65,22 @@ export const useCreateExpenseForm = ({
   const submitForm = handleSubmit(async (values) => {
     if (!eventId) return
 
+    let imageKey: string | undefined
+    if (values.checkImage) {
+      try {
+        imageKey = await s3Api.uploadFile(values.checkImage)
+      } catch {
+        toast.error('Не удалось загрузить чек')
+        return
+      }
+    }
+
     const participantIds = values.participants.filter((id) => id !== currentUserId)
     const payload = {
       title: values.title,
       description: values.comment || undefined,
       totalAmount: values.amount,
+      imageKey,
       categories: values.category ? [values.category] : [],
       participantIds,
     }

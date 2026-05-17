@@ -15,6 +15,7 @@ const requestUploadUrl = async (file: File) => {
   const { data } = await api.post<UploadUrlDto>('/s3/upload', {
     file_name: file.name,
     content_type: file.type,
+    file_size_bytes: file.size,
   })
   return data
 }
