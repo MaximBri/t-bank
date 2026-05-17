@@ -8,10 +8,6 @@ export class ProfilePage {
   readonly headerProfileLink = this.page.getByRole('link', { name: 'Перейти в профиль' })
   readonly profileNav = this.page.getByRole('navigation')
   readonly profileNavButton = this.profileNav.getByRole('button', { name: 'Профиль', exact: true })
-  readonly notificationsNavButton = this.profileNav.getByRole('button', {
-    name: 'Уведомления',
-    exact: true,
-  })
   readonly securityNavButton = this.profileNav.getByRole('button', {
     name: 'Безопасность',
     exact: true,
@@ -30,7 +26,6 @@ export class ProfilePage {
   async expectOpened(): Promise<void> {
     await expect(this.page).toHaveURL(/\/profile(\?section=profile)?$/)
     await expect(this.profileNavButton).toBeVisible()
-    await expect(this.notificationsNavButton).toBeVisible()
     await expect(this.securityNavButton).toBeVisible()
     await expect(this.editProfileButton).toBeVisible()
     await expect(this.logoutButton).toBeVisible()
