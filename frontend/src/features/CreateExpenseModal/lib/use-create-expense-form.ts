@@ -85,16 +85,24 @@ export const useCreateExpenseForm = ({
       participantIds,
     }
 
-    if (isEdit && expense) {
-      await updateExpense.mutateAsync({
-        eventId,
-        expenseId: expense.id,
-        payload,
-      })
-    } else {
-      await createExpense.mutateAsync({ eventId, payload })
+    try {
+      if (isEdit && expense) {
+        await updateExpense.mutateAsync({
+          eventId,
+          expenseId: expense.id,
+          payload,
+        })
+        toast.success('Расход обновлён')
+      } else {
+        await createExpense.mutateAsync({ eventId, payload })
+        toast.success('Расход добавлен')
+      }
+      onSuccess()
+    } catch {
+      toast.error(
+        isEdit ? 'Не удалось обновить расход' : 'Не удалось добавить расход',
+      )
     }
-    onSuccess()
   })
 
   const resetForm = () => reset(createExpenseFormDefaultValues)
