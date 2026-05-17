@@ -107,7 +107,7 @@ class ExpenseIntegrationTest {
                 "title", "Restaurant Bill",
                 "description", "Dinner for two",
                 "totalAmount", 100.0,
-                "imageUrl", "http://example.com/bill.jpg",
+                "image_key", "custom-expense-image-key",
                 "categories", List.of(),
                 "participantIds", List.of(bobSession.userId().toString()) // Боб - участник
         );
@@ -130,6 +130,7 @@ class ExpenseIntegrationTest {
 
         JsonNode expenses = objectMapper.readTree(expensesStr).get("expenses");
         assertThat(expenses.get(0).get("status").asText()).isEqualTo("PENDING");
+        assertThat(expenses.get(0).get("image_key").asText()).isEqualTo("custom-expense-image-key");
 
         // --- 7. Проверка: Боб видит расход в своем inbox ---
         String participantInboxStr = webTestClient.get().uri("/expenses/participant/inbox")
@@ -139,8 +140,8 @@ class ExpenseIntegrationTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode participantInbox = objectMapper.readTree(participantInboxStr);
-        assertThat(participantInbox.get("pending").size()).isEqualTo(1);
-        assertThat(participantInbox.get("pending").get(0).get("title").asText()).isEqualTo("Restaurant Bill");
+        assertThat(participantInbox.get("pendingConfirmations").size()).isEqualTo(1);
+        assertThat(participantInbox.get("pendingConfirmations").get(0).get("description").asText()).isEqualTo("Restaurant Bill");
 
         // --- 8. Боб подтверждает свою долю ---
         webTestClient.post().uri("/expenses/participant/" + expenseId + "/confirm")
@@ -166,7 +167,7 @@ class ExpenseIntegrationTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode updatedParticipantInbox = objectMapper.readTree(updatedParticipantInboxStr);
-        assertThat(updatedParticipantInbox.get("pending").size()).isEqualTo(0);
+        assertThat(updatedParticipantInbox.get("pendingConfirmations").size()).isEqualTo(0);
     }
 
     private TestSession registerUser(String login, String email, String password, String token) throws Exception {
