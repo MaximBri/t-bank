@@ -19,14 +19,14 @@ spring:
   cloud:
     aws:
       s3:
-        endpoint: http://localhost:9000
-        bucket-name: tbank-receipts
+        endpoint: ${SPRING_CLOUD_AWS_S3_ENDPOINT:http://localhost:9000}
+        bucket-name: ${SPRING_CLOUD_AWS_S3_BUCKET_NAME:tbank-receipts}
         path-style-access-enabled: true
       credentials:
-        access-key: minioadmin
-        secret-key: minioadmin123
+        access-key: ${SPRING_CLOUD_AWS_CREDENTIALS_ACCESS_KEY:minioadmin}
+        secret-key: ${SPRING_CLOUD_AWS_CREDENTIALS_SECRET_KEY:minioadmin123}
       region:
-        static: us-east-1
+        static: ${SPRING_CLOUD_AWS_REGION_STATIC:us-east-1}
 
 springdoc:
   swagger-ui:
