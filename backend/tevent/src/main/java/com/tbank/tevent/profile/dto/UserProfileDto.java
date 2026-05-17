@@ -10,6 +10,7 @@ public record UserProfileDto(
         String login,
         @JsonProperty("first_name") String firstName,
         @JsonProperty("second_name") String secondName,
+        @JsonProperty("avatar_url") String avatarUrl,
         @JsonProperty("created_at") LocalDateTime createdAt,
         @JsonProperty("updated_at") LocalDateTime updatedAt
 ) {}
