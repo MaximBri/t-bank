@@ -2,7 +2,6 @@ import QRCode from 'react-qr-code'
 import { toast } from 'sonner'
 import CloseIcon from '@/shared/assets/icons/close.svg?react'
 import CopyIcon from '@/shared/assets/icons/copy.svg?react'
-import RefreshIcon from '@/shared/assets/icons/refresh.svg?react'
 
 import { useGetEventInviteToken } from '@/entities/event/api/hooks/useGetEventInviteToken.ts'
 import { buildInviteLink } from '@/features/InviteParticipantsModal/lib/build-invite-link.ts'
@@ -23,12 +22,8 @@ export const InviteParticipantsModal = ({
   isOpen,
   onClose,
 }: InviteParticipantsModalProps) => {
-  const { data, refetch, isFetching } = useGetEventInviteToken(eventId, isOpen)
+  const { data } = useGetEventInviteToken(eventId, isOpen)
   const inviteLink = data?.token && eventId ? buildInviteLink(eventId, data.token) : ''
-
-  const handleRegenerate = () => {
-    refetch()
-  }
 
   const handleCopy = async () => {
     if (!inviteLink) return
@@ -83,23 +78,6 @@ export const InviteParticipantsModal = ({
           </Button>
         </div>
 
-        <div className="w-full border-t border-primary pt-[10px]">
-          <button
-            type="button"
-            onClick={handleRegenerate}
-            disabled={isFetching}
-            className="flex w-full items-center justify-center gap-[10px] sm:py-[6px] rounded-[18px] border-[2px] border-primary disabled:opacity-60"
-          >
-            <RefreshIcon className="w-[16px] h-[16px] sm:w-[20px] sw:h-[20px]" />
-            <Text variant="h3" className="font-normal sm:text-h2-d">
-              Перегенерировать ссылку
-            </Text>
-          </button>
-        </div>
-
-        <Text className="font-medium text-center text-muted">
-          Старая ссылка станет недействительной
-        </Text>
       </div>
     </Modal>
   )
