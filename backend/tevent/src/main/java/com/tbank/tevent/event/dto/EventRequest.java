@@ -1,5 +1,7 @@
 package com.tbank.tevent.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,6 +16,7 @@ public record EventRequest(
     LocalDateTime startDate,
     @NotNull
     LocalDateTime endDate,
-    String imageKey,
+    @JsonProperty("image_key") @JsonAlias({"imageUrl", "image_url"}) String imageKey,
+    @JsonProperty("category") @JsonAlias("categories")
     List<String> categories
 ){}
