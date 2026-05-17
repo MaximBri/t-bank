@@ -1,18 +1,12 @@
 spring:
   application:
     name: tevent
+
   datasource:
     url: jdbc:postgresql://localhost:5432/tbank
     username: tbank
     password: tbank
     driver-class-name: org.postgresql.Driver
-#  jpa:
-#    hibernate:
-#      ddl-auto: validate
-#  logging:
-#    level:
-#      org.hibernate.orm.model.naming: DEBUG
-#      org.hibernate.orm.results: DEBUG
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
@@ -22,15 +16,37 @@ spring:
     compose:
       enabled: false
 
+  cloud:
+    aws:
+      s3:
+        endpoint: http://localhost:9000
+        bucket-name: tbank-receipts
+        path-style-access-enabled: true
+      credentials:
+        access-key: minioadmin
+        secret-key: minioadmin123
+      region:
+        static: us-east-1
+
 springdoc:
   swagger-ui:
     url: ${SPRINGDOC_SWAGGER_UI_URL:/v3/api-docs}
     config-url: ${SPRINGDOC_SWAGGER_UI_CONFIG_URL:/v3/api-docs/swagger-config}
 
 app:
+  s3:
+    presign-ttl-minutes: 15
+    pending-ttl-hours: 1
+    cleanup-batch-size: 100
   security:
     jwt:
       secret: ${JWT_SECRET}
       access-token-expiration-minutes: 15
       refresh-token-expiration-days: ${JWT_REFRESH_TOKEN_EXPIRATION_DAYS:30}
       cookie-secure: ${JWT_COOKIE_SECURE:false}
+
+receipt:
+  image:
+    max-width: 1920
+    quality: 0.75
+    format: webp
