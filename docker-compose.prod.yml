@@ -54,6 +54,10 @@ services:
   minio:
     image: minio/minio:latest
     restart: unless-stopped
+    ports:
+      # Bound to host loopback only: the host nginx terminates TLS for
+      # s3.t-event.front-craft.ru and proxies here. Not exposed publicly.
+      - "127.0.0.1:9000:9000"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
