@@ -27,14 +27,12 @@ export const ProfileSecurity = () => {
     }
     try {
       await changePassword(formData)
-      toast.error('Пароль успешно изменён')
+      toast.success('Пароль успешно изменён')
+      form.reset(changePasswordDefaultValues)
     }
     catch (error) {
-      // @ts-ignore
-      toast.error('Ошибка при измении пароля: ' + error.message)
-    }
-    finally {
-      form.reset(changePasswordDefaultValues)
+      const message = error instanceof Error ? error.message : 'Неизвестная ошибка'
+      toast.error('Ошибка при изменении пароля: ' + message)
     }
   })
 

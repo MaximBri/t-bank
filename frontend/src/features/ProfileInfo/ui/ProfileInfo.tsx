@@ -88,6 +88,7 @@ export const ProfileInfo = () => {
                 accept="image/jpeg,image/png,image/webp"
                 fieldClassName="h-[100px] w-[100px] rounded-full"
                 previewClassName="rounded-full"
+                hidePreviewFrame
               />
             </div>
           ) : (
