@@ -9,7 +9,10 @@ export const createEventSchema = createFormSchema({
     .refine((file) => file.type.startsWith('image/'), 'Допустимы только изображения')
     .optional(),
   categories: expenseCategoriesAddSchema,
-  description: z.string().optional(),
+  description: z
+    .string()
+    .max(1000, 'Описание не может быть длиннее 1000 символов')
+    .optional(),
   startDate: requiredString().refine(
       (inputDate) => {
         const minDate = new Date().toISOString().split('T')[0]
@@ -18,7 +21,7 @@ export const createEventSchema = createFormSchema({
       'Минимальная дата начала - завтрашний день'
   ),
   endDate: requiredString(),
-  title: requiredString(),
+  title: requiredString().max(255, 'Название не может быть длиннее 255 символов'),
 }).refine(
   (values) => {
     return !values.endDate || values.endDate >= values.startDate
