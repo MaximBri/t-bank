@@ -15,11 +15,14 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   outputDir: './.artifacts/e2e/test-results',
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html', { outputFolder: './.artifacts/e2e/playwright-report' }]],
+  reporter: [
+    ['html', { outputFolder: './.artifacts/e2e/playwright-report' }],
+    ['allure-playwright', { resultsDir: './.artifacts/e2e/allure-results' }],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL ?? 'http://127.0.0.1:5173',
+    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL ?? 'http://localhost:5173',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -43,14 +46,14 @@ export default defineConfig({
     },
 
     /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
+    {
+      name: 'Mobile Chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'Mobile Safari',
+      use: { ...devices['iPhone 12'] },
+    },
 
     /* Test against branded browsers. */
     // {
@@ -65,8 +68,8 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'npm run dev -- --host 127.0.0.1 --port 5173',
-    url: 'http://127.0.0.1:5173',
+    command: 'npm run dev -- --port 5173',
+    url: 'http://localhost:5173',
     reuseExistingServer: true,
     timeout: 120_000,
   },

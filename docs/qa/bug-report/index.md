@@ -8,3 +8,8 @@
 - [`BUG-006`](./bug-006.md) `POST /auth/login` и `POST /auth/register` возвращают `500 Internal Server Error` при пустом request body вместо `400 Bad Request`
 - [`BUG-007`](./bug-007.md) `POST /auth/login` и `POST /auth/register` возвращают `500 Internal Server Error` при malformed JSON body вместо `400 Bad Request`
 - [`BUG-008`](./bug-008.md) CORS-ошибка при регистрации через frontend
+- [`BUG-009`](./bug-009.md) Кнопки управления событием некорректно отображаются при ширине viewport `1409px` и ниже
+- [`BUG-010`](./bug-010.md) Для frontend окружения не зафиксированы package manager, его версия и project-level парметры для npm
+- [`BUG-011`](./bug-011.md) После успешного добавления события его изображение не отображается в карточке события
+- [`BUG-012`](./bug-012.md) Редактирование расхода возвращает `500 Internal Server Error`
+- [`BUG-013`](./bug-013.md) Редактирование события возвращает `500 Internal Server Error`
