@@ -39,6 +39,13 @@ export const useExpenseCategories = <TFormValues extends ExpenseCategoriesFormVa
       return
     }
 
+    if (trimmedValue.length > 32) {
+      setError(categoriesFieldName, {
+        message: 'Название категории не может быть длиннее 32 символов',
+      })
+      return
+    }
+
     if (currentCategories.includes(trimmedValue)) {
       setError(categoriesFieldName, {
         message: 'Категории не должны повторяться',

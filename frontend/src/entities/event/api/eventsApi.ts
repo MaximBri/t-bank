@@ -11,8 +11,9 @@ import {
 
 export const eventsApi = {
   getAll: async (params: GetEventsParams) => {
+    const { status, ...rest } = params
     const { data } = await api.get<UserEventDto>('/events/user/events', {
-      params: params,
+      params: { ...rest, state: status },
     })
     return data.events
   },

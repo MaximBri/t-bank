@@ -23,9 +23,9 @@ export const AppRouter = () => (
           <Route path={APP_ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
+      <Route path={APP_ROUTES.INVITE} element={<InvitePage />} />
       <Route element={<PublicOnlyRoute />}>
         <Route path={APP_ROUTES.LOGIN} element={<LoginPage />} />
-        <Route path={APP_ROUTES.INVITE} element={<InvitePage />} />
         <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
       </Route>
     </Routes>

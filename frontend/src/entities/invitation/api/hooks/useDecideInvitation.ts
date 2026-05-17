@@ -16,6 +16,7 @@ export const useDecideInvitation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invitations'] })
       queryClient.invalidateQueries({ queryKey: ['event', 'participants'] })
+      queryClient.invalidateQueries({ queryKey: ['event', 'detail'] })
     },
   })
 }

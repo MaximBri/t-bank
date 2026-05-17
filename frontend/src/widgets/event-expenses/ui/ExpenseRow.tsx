@@ -52,9 +52,11 @@ export const ExpenseRow = ({
   return (
     <div className="border-b-[2px] border-secondary py-[10px] px-[10px] sm:pl-[32px] sm:py-[20px] sm:pr-[35px] last:border-b-0">
       <div className="flex gap-[10px] flex-col sm:flex-row items-start justify-between">
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center gap-[10px] sm:gap-[20px]">
-            <Text className="text-h3-d sm:text-h2-d">{expense.title}</Text>
+            <div className="min-w-0 max-w-full" title={expense.title}>
+              <Text className="truncate text-h3-d sm:text-h2-d">{expense.title}</Text>
+            </div>
             <div className="flex gap-[10px] sm:gap-[20px]">
               {category ? (
                 <div className="w-fit flex rounded-[48px] h-[30px] sm:h-[42px] px-[16px] sm:px-[30px] items-center justify-center bg-yellow">
@@ -89,7 +91,7 @@ export const ExpenseRow = ({
           </div>
         </div>
 
-        <div className="flex h-[90px] sm:h-auto flex-row gap-[24px] sm:items-center">
+        <div className="flex h-[90px] sm:h-auto shrink-0 flex-row gap-[24px] sm:items-center">
           <div className="flex gap-[8px] mt-auto sm:mt-0">
             {isPayer ? (
               <>
