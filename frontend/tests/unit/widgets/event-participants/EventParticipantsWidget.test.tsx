@@ -33,6 +33,19 @@ vi.mock('@/entities/invitation/api/hooks/useDecideInvitation', () => ({
   useDecideInvitation: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
 }))
 
+vi.mock('@/entities/event/api/hooks/useGetEvent.ts', () => ({
+  useGetEvent: vi.fn(() => ({ data: { ownerId: 'current-user' } })),
+}))
+
+vi.mock('@/entities/user', async () => {
+  const actual = await vi.importActual('@/entities/user')
+  return {
+    ...actual,
+    useUserStore: (selector: (state: { user: { id: string } }) => unknown) =>
+      selector({ user: { id: 'current-user' } }),
+  }
+})
+
 const mockUseEventParticipantsRows = vi.mocked(useEventParticipantsRows)
 const mockUseDecideInvitation = vi.mocked(useDecideInvitation)
 

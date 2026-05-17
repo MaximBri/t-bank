@@ -211,7 +211,11 @@ describe('EventExpensesWidget', () => {
     })
   })
 
-  it('показывает кнопку просмотра расхода и скрывает редактирование/удаление', async () => {
+  it('не показывает кнопки редактирования/удаления и кнопки владельца плательщику (не владельцу)', async () => {
+    // user-1 (alice) — плательщик расхода, но НЕ владелец события (ownerId = user-owner).
+    // Актуальное поведение виджета: строка расхода больше не содержит кнопок
+    // редактирования/удаления, а кнопки подтверждения/отклонения доступны только владельцу.
+    // Плательщику-не-владельцу доступна только кнопка просмотра расхода.
     mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, {
       expenses: [mockExpense],
       eventTotalSum: 6000,
@@ -224,8 +228,11 @@ describe('EventExpensesWidget', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /посмотреть расход/i })).toBeInTheDocument()
     })
+
     expect(screen.queryByRole('button', { name: /редактировать расход/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /удалить расход/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /подтвердить расход/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /отклонить расход/i })).not.toBeInTheDocument()
   })
 
   it('показывает кнопки подтверждения/отклонения для владельца события', async () => {
