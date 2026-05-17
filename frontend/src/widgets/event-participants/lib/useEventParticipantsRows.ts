@@ -39,8 +39,8 @@ export const useEventParticipantsRows = ({
       key: `participant-${participant.userId}`,
       userId: participant.userId,
       login: participant.login,
-      firstName: participant.firstName,
-      lastName: participant.lastName,
+      first_name: participant.firstName,
+      last_name: participant.lastName,
       status:
         !!ownerId && participant.userId === ownerId
           ? EventParticipantStatus.owner

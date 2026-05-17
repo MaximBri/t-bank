@@ -125,7 +125,11 @@ export const ExpenseRow = ({
                   )}
                   aria-label="Отклонить расход"
                 >
-                  <CloseIcon className={actionButtonIconClassName} />
+                  <CloseIcon className={clsx(
+                      actionButtonIconClassName,
+                      "text-error"
+                  )
+                  } />
                 </button>
                 <button
                   type="button"
