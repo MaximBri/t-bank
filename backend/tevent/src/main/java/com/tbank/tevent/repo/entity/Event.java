@@ -54,6 +54,10 @@ public class Event {
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID inviteTokenId;
 
+    @Column(name = "is_completed")
+    @Builder.Default
+    private Boolean isCompleted = false;
+
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) {

@@ -1,5 +1,6 @@
 package com.tbank.tevent.event;
 
+import com.tbank.tevent.event.dto.CreatorInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,6 @@ public record EventResponse (
     String status,
     String imageUrl,
     UUID ownerId,
-    Long countOfParticipants
+    Long countOfParticipants,
+    CreatorInfo creatorInfo
 ){}

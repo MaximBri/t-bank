@@ -14,6 +14,15 @@ CREATE TABLE user_data (
 );
 
 
+CREATE TABLE event_history (
+   id UUID PRIMARY KEY,
+   event_id UUID NOT NULL,
+   user_id UUID NOT NULL,
+   action_type VARCHAR(50) NOT NULL,
+   message VARCHAR(500) NOT NULL,
+   created_at TIMESTAMP NOT NULL
+);
+
 CREATE TABLE category (
       id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name        VARCHAR(255) NOT NULL,
@@ -119,7 +128,6 @@ CREATE TABLE payment (
      to_user_id UUID NOT NULL REFERENCES user_data(id),
      amount DECIMAL(19, 2) NOT NULL,
      status VARCHAR(30) NOT NULL, -- INITIATED, SENT, FAILED, COMPLETED
-     expires_at TIMESTAMP NOT NULL, -- Для TTL логики
      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
      confirmed_at TIMESTAMP
 );

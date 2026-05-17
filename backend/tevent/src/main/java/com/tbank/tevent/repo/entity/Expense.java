@@ -64,4 +64,14 @@ public class Expense {
     @Column(name = "updated_at", nullable = false)
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    public void activate() {
+        this.status = "ACTIVE";
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void reject() {
+        this.status = "REJECTED";
+        this.updatedAt = LocalDateTime.now();
+    }
 }

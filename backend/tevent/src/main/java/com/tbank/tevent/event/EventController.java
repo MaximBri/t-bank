@@ -1,5 +1,6 @@
 package com.tbank.tevent.event;
 
+import com.tbank.tevent.event.dto.EventPreviewResponse;
 import com.tbank.tevent.event.dto.EventRequest;
 import com.tbank.tevent.invite_token.EventTokenResponse;
 import com.tbank.tevent.invite_token.InviteTokenService;
@@ -35,6 +36,18 @@ public class EventController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/preview/{token}")
+    public ResponseEntity<EventPreviewResponse> getEventPreview(@PathVariable String token) {
+        EventPreviewResponse response = eventService.getEventPreviewByToken(token);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{token}/apply")
+    public ResponseEntity<Void> applyToEvent(@PathVariable String token) {
+        eventService.applyToEvent(token);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/{eventId}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable UUID eventId,
                                                      @RequestBody EventRequest request) {
@@ -58,6 +71,24 @@ public class EventController {
     @GetMapping("/{eventId}/participants")
     public ResponseEntity<ParticipantsResponse> getParticipants(@PathVariable UUID eventId) {
         return ResponseEntity.ok(new ParticipantsResponse(eventMemberService.getParticipants(eventId)));
+    }
+    
+    @DeleteMapping("/{eventId}/participants/{userId}")
+    public ResponseEntity<Void> removeParticipant(@PathVariable UUID eventId, @PathVariable UUID userId) {
+        eventMemberService.removeParticipant(eventId, userId);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @DeleteMapping("/{eventId}/exit")
+    public ResponseEntity<Void> leaveEvent(@PathVariable UUID eventId) {
+        eventMemberService.leaveEvent(eventId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{eventId}/complete")
+    public ResponseEntity<EventResponse> completeEvent(@PathVariable UUID eventId) {
+        EventResponse response = eventService.completeEvent(eventId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{eventId}/token")

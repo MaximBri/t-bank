@@ -33,6 +33,11 @@ public class InvitationService {
     public List<OwnerInvitationResponse> getOwnerInbox(UUID ownerId) {
         return invitationRepository.findOwnerInbox(ownerId);
     }
+    
+    @Transactional(readOnly = true)
+    public List<OwnerInvitationResponse> getOwnerInboxByEventId(UUID ownerId, UUID eventId) {
+        return invitationRepository.findOwnerInboxByEventId(ownerId, eventId);
+    }
 
     @Transactional(readOnly = true)
     public List<MyInvitationResponse> getUserOutbox(UUID userId) {

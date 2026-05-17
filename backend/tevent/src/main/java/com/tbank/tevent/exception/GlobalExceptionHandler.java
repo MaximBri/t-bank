@@ -84,6 +84,7 @@ public class GlobalExceptionHandler {
             org.springframework.http.converter.HttpMessageNotReadableException.class
     })
     public ResponseEntity<ApiError> handleBadRequest(Exception ex) {
+        System.out.println(ex.getMessage());
         return buildError(HttpStatus.BAD_REQUEST, "Invalid request structure or parameters");
     }
 
