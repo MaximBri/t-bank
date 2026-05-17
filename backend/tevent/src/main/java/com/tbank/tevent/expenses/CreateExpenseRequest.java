@@ -11,7 +11,7 @@ public record CreateExpenseRequest(
         String title,
         String description,
         BigDecimal totalAmount,
-        @JsonAlias("imageUrl") String imageKey,
+        @JsonAlias({"imageUrl", "image_url"}) String imageKey,
         List<String> categories,
         List<UUID> participantIds
 ) {}

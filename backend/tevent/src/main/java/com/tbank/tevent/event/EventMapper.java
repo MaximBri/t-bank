@@ -10,7 +10,7 @@ import java.util.List;
 public class EventMapper {
     public EventResponse mapToResponse(Event event, List<CategoryResponse> categories, Long count) {
         List<String> eventCategoryNames = categories.stream()
-                .filter(c -> c.eventId().equals(event.getId()))
+                .filter(c -> event.getId().equals(c.eventId()))
                 .map(CategoryResponse::name)
                 .toList();
         return new EventResponse(

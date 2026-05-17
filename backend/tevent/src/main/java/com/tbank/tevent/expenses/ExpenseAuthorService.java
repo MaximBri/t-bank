@@ -136,7 +136,7 @@ public class ExpenseAuthorService {
     }
 
     private void processSplits(UUID expenseId, BigDecimal total, List<UUID> participants) {
-        if (participants.isEmpty()) return;
+        if (participants == null || participants.isEmpty()) return;
 
         int totalPeople = participants.size() + 1;
         BigDecimal share = total.divide(BigDecimal.valueOf(totalPeople), 2, RoundingMode.HALF_UP);

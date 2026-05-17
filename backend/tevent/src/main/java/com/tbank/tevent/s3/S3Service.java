@@ -109,6 +109,11 @@ public class S3Service {
             return;
         }
 
+        // Backward compatibility: old clients may still pass direct external URLs.
+        if (!s3Key.startsWith("receipts/")) {
+            return;
+        }
+
         validateOwnership(userId, s3Key);
 
         try {
