@@ -21,6 +21,7 @@ spring:
       s3:
         endpoint: http://localhost:9000
         bucket-name: tbank-receipts
+        path-style-access-enabled: true
       credentials:
         access-key: minioadmin
         secret-key: minioadmin123
@@ -33,6 +34,10 @@ springdoc:
     config-url: ${SPRINGDOC_SWAGGER_UI_CONFIG_URL:/v3/api-docs/swagger-config}
 
 app:
+  s3:
+    presign-ttl-minutes: 15
+    pending-ttl-hours: 1
+    cleanup-batch-size: 100
   security:
     jwt:
       secret: ${JWT_SECRET}
