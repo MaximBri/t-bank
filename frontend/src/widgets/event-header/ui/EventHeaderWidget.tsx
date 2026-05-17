@@ -38,7 +38,7 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
     <section className="rounded-[16px] border-[2px] border-primary bg-secondary p-[10px] sm:p-[20px]">
       <div className="flex flex-col gap-[10px] sm:flex-row sm:items-start sm:justify-between sm:gap-[12px]">
         <div className="flex flex-col gap-[20px] sm:flex-row">
-          <div className="flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[12px] bg-primary sm:w-[200px]">
+          <div className="flex h-[200px] w-full shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-primary sm:w-[200px]">
             {event.imageUrl ? (
               <img
                 src={event.imageUrl}
@@ -50,10 +50,12 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
             )}
           </div>
 
-          <div className="flex flex-1 flex-col gap-[10px]">
-            <Text variant="h2" as="h2" className="truncate font-medium text-primary">
-              {event.title}
-            </Text>
+          <div className="flex min-w-0 flex-1 flex-col gap-[10px]">
+            <div className="min-w-0 max-w-full" title={event.title}>
+              <Text variant="h2" as="h2" className="truncate font-medium text-primary">
+                {event.title}
+              </Text>
+            </div>
             <div className="flex items-center gap-[8px] text-primary">
               <CalendarIcon width={32} height={32} />
               <Text variant="h2" className="font-normal">
