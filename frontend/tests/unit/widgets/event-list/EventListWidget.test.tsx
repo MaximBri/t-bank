@@ -19,6 +19,7 @@ const mockEvents: EventResponse[] = [
     categories: [],
     status: EventStatus.Active,
     imageUrl: '',
+    image_key: null,
     ownerId: 'user-1',
   },
   {
@@ -31,6 +32,7 @@ const mockEvents: EventResponse[] = [
     categories: [],
     status: EventStatus.Planned,
     imageUrl: '',
+    image_key: null,
     ownerId: 'user-1',
   },
 ]
