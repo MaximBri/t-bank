@@ -15,6 +15,7 @@ export type EventResponse = {
   countOfParticipants: number
   categories: ExpenseCategoryList
   status: EventStatus
+  image_key: string | null
   imageUrl: string
   ownerId: string
 }

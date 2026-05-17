@@ -8,6 +8,8 @@ import EditIcon from '@/shared/assets/icons/edit.svg?react'
 
 import { changePasswordSchema, type ChangePasswordValues } from '../model/schema'
 import { changePasswordDefaultValues, getChangePasswordFields } from './constants'
+import {useUserStore} from "@/entities/user";
+import {toast} from "sonner";
 
 export const ProfileSecurity = () => {
   const form = useForm<ChangePasswordValues>({
@@ -15,11 +17,23 @@ export const ProfileSecurity = () => {
     mode: 'onTouched',
     defaultValues: changePasswordDefaultValues,
   })
-
+  const changePassword = useUserStore(state => state.changePassword)
   const fields = getChangePasswordFields()
 
-  const handleSave = form.handleSubmit(() => {
-    form.reset(changePasswordDefaultValues)
+  const handleSave = form.handleSubmit(async (data) => {
+    const formData = {
+      current_password: data.currentPassword,
+      new_password: data.newPassword,
+    }
+    try {
+      await changePassword(formData)
+      toast.success('Пароль успешно изменён')
+      form.reset(changePasswordDefaultValues)
+    }
+    catch (error) {
+      const message = error instanceof Error ? error.message : 'Неизвестная ошибка'
+      toast.error('Ошибка при изменении пароля: ' + message)
+    }
   })
 
   return (

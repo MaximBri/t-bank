@@ -4,6 +4,7 @@ import com.tbank.tevent.SecurityUtils;
 import com.tbank.tevent.category.CategoryRepository;
 import com.tbank.tevent.repo.*;
 import com.tbank.tevent.repo.entity.*;
+import com.tbank.tevent.s3.S3Service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -26,6 +27,7 @@ public class ExpenseAuthorService {
     private final ExpenseSplitRepository splitRepository;
     private final ExpenseCategoryRepository expenseCategoryRepository;
     private final CategoryRepository categoryRepository;
+    private final S3Service s3Service;
 
     private static final List<String> VISIBLE_STATUSES = List.of("PENDING", "CONFIRMED", "REJECTED");
 
@@ -39,6 +41,7 @@ public class ExpenseAuthorService {
         if (request.participantIds() != null && request.participantIds().contains(currentUserId)) {
             throw new IllegalArgumentException("Вы не можете добавить себя в список должников.");
         }
+        s3Service.useKey(currentUserId, request.imageKey());
 
         Expense expense = Expense.builder()
                 .eventId(eventId)
@@ -46,7 +49,7 @@ public class ExpenseAuthorService {
                 .title(request.title())
                 .description(request.description())
                 .amount(request.totalAmount())
-                .imageUrl(request.imageUrl())
+                .imageUrl(request.imageKey())
                 .status("PENDING")
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -59,7 +62,6 @@ public class ExpenseAuthorService {
 
     @Transactional(readOnly = true)
     public EventExpensesResponse getEventExpenses(UUID eventId) {
-        // Показываем только те, что прошли стадию планирования или уже подтверждены
         List<Expense> expenses = expenseRepository.findAllByEventIdAndStatusInOrderByCreatedAtDesc(eventId, VISIBLE_STATUSES);
 
         if (expenses.isEmpty()) return new EventExpensesResponse(List.of(), BigDecimal.ZERO);
@@ -78,6 +80,7 @@ public class ExpenseAuthorService {
                     e.getAmount(),
                     e.getPayerId(),
                     e.getStatus(),
+                    e.getImageUrl(),
                     catMap.getOrDefault(e.getId(), List.of()),
                     debtors.stream().limit(10).toList(),
                     debtors.size(),
@@ -100,10 +103,11 @@ public class ExpenseAuthorService {
         if (!expense.getPayerId().equals(currentUserId)) {
             throw new AccessDeniedException("Только плательщик может редактировать расход.");
         }
+        s3Service.useKey(currentUserId, request.imageKey());
 
         expense.setDescription(request.description());
         expense.setAmount(request.totalAmount());
-        expense.setImageUrl(request.imageUrl());
+        expense.setImageUrl(request.imageKey());
         expense.setStatus("PLANNED");
         expenseRepository.save(expense);
 
@@ -120,7 +124,6 @@ public class ExpenseAuthorService {
         Expense expense = expenseRepository.findById(expenseId)
                 .orElseThrow(() -> new EntityNotFoundException("Expense not found"));
 
-        // 1. Проверка прав: Удалить может только плательщик
         if (!expense.getPayerId().equals(currentUserId)) {
             throw new AccessDeniedException("Только плательщик может удалить расход");
         }
@@ -131,7 +134,7 @@ public class ExpenseAuthorService {
     }
 
     private void processSplits(UUID expenseId, BigDecimal total, List<UUID> participants) {
-        if (participants.isEmpty()) return;
+        if (participants == null || participants.isEmpty()) return;
 
         int totalPeople = participants.size() + 1;
         BigDecimal share = total.divide(BigDecimal.valueOf(totalPeople), 2, RoundingMode.HALF_UP);

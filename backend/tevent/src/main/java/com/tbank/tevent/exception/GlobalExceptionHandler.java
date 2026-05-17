@@ -7,6 +7,10 @@ import com.tbank.tevent.category.exception.CategoryAlreadyExistsException;
 import com.tbank.tevent.category.exception.CategoryNotFoundException;
 import com.tbank.tevent.event.EventNotFoundException;
 import com.tbank.tevent.event.ValidationException;
+import com.tbank.tevent.s3.exception.ImageAccessDeniedException;
+import com.tbank.tevent.s3.exception.ImageNotFoundException;
+import com.tbank.tevent.s3.exception.ImageUnauthorizedException;
+import com.tbank.tevent.s3.exception.InvalidImageRequestException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -31,6 +35,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             InvalidCredentialsException.class,
             MissingRefreshTokenException.class,
+            ImageUnauthorizedException.class,
             org.springframework.security.core.AuthenticationException.class
     })
     public ResponseEntity<ApiError> handleUnauthorized(Exception ex) {
@@ -51,10 +56,17 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.FORBIDDEN, "You don't have permission to access this resource");
     }
 
+    @ExceptionHandler(ImageAccessDeniedException.class)
+    public ResponseEntity<ApiError> handleImageAccessDenied(ImageAccessDeniedException ex) {
+        return buildError(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
 
     @ExceptionHandler({
             EventNotFoundException.class,
+            com.tbank.tevent.category.exception.EventNotFoundException.class,
             CategoryNotFoundException.class,
+            ImageNotFoundException.class,
             EntityNotFoundException.class
     })
     public ResponseEntity<ApiError> handleNotFound(RuntimeException ex) {
@@ -89,6 +101,7 @@ public class GlobalExceptionHandler {
             ConstraintViolationException.class,
             IllegalArgumentException.class,
             ValidationException.class,
+            InvalidImageRequestException.class,
             org.springframework.http.converter.HttpMessageNotReadableException.class
     })
     public ResponseEntity<ApiError> handleBadRequest(Exception ex) {

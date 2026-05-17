@@ -1,5 +1,7 @@
 package com.tbank.tevent.expenses;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.util.List;
@@ -9,8 +11,8 @@ public record CreateExpenseRequest(
         @NotBlank
         String title,
         String description,
-        BigDecimal totalAmount,
-        String imageUrl,
-        List<String> categories,
+        @JsonAlias({"amount", "total_amount"}) BigDecimal totalAmount,
+        @JsonProperty("image_key") @JsonAlias({"imageUrl", "image_url"}) String imageKey,
+        @JsonProperty("categories") @JsonAlias("category") List<String> categories,
         List<UUID> participantIds
 ) {}
