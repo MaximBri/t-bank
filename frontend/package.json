@@ -66,6 +66,7 @@
     "allure": "^3.8.1",
     "allure-playwright": "^3.8.0",
     "autoprefixer": "^10.4.21",
+    "axios-mock-adapter": "^2.1.0",
     "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-react": "^7.37.4",
