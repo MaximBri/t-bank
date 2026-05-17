@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public record CreateImageUploadUrlRequest(
         @NotBlank @Size(max = 255) @JsonProperty("file_name") String fileName,
-        @NotBlank @Size(max = 100) @JsonProperty("content_type") String contentType
+        @NotBlank @Size(max = 100) @JsonProperty("content_type") String contentType,
+        @JsonProperty("file_size_bytes") Long fileSizeBytes
 ) {
 }
