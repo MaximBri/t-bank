@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -32,8 +32,10 @@ type CreateEventModalProps = {
 export const CreateEventModal = ({ isOpen, onClose, event }: CreateEventModalProps) => {
   const isEdit = !!event
 
+  const schema = useMemo(() => createEventSchema(isEdit), [isEdit])
+
   const methods = useForm<CreateEventFormValues>({
-    resolver: zodResolver(createEventSchema),
+    resolver: zodResolver(schema),
     mode: 'onTouched',
     defaultValues: createEventFormDefaultValues,
   })
