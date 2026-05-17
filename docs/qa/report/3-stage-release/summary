@@ -1,36 +1,48 @@
-Артефакты третьего дедлайна
+Aртефакты третьего дедлайна
 
-Итоговый отчет:
+Итоговый отчет: https://github.com/MaximBri/t-bank/blob/3846647db42b88a1f5a51b5789660685f4fddcaf/docs/qa/report/3-stage-release/index.md
 
 PR https://github.com/MaximBri/t-bank/pull/127
 
 Прямые ссылки на артефакты:
 
 1. Проведено регрессионное тестирование
+https://github.com/MaximBri/t-bank/blob/3846647db42b88a1f5a51b5789660685f4fddcaf/docs/qa/report/3-stage-release/regress-testing-report.md
 regress-testing-report.md
 
 2. Kритические и major баги
+https://github.com/MaximBri/t-bank/blob/3846647db42b88a1f5a51b5789660685f4fddcaf/docs/qa/report/3-stage-release/major-bug-report.md
 major-bug-report.md
 
 3. Итоговый отчёт о тестировании
+https://github.com/MaximBri/t-bank/blob/3846647db42b88a1f5a51b5789660685f4fddcaf/docs/qa/report/3-stage-release/index.md
 index.md
 
 4. Актуальные тест-кейсы
 index.md
+https://github.com/MaximBri/t-bank/blob/3846647db42b88a1f5a51b5789660685f4fddcaf/docs/qa/test-case/index.md
 
 5. Презентация
- presentation.md
+https://www.figma.com/deck/99rdp5h0TfhNp3yGyag2Ku/QA-%7C-T-Event-%7C-T-Bank--2026-?node-id=1-32&t=GmJPmC2RH0GObLSL-0&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1
 
-6. Доп. артефакты и документация по тестированию
+6. Доп. документация по тестированию
 - Матрица трассировки требований
+https://github.com/MaximBri/t-bank/blob/3846647db42b88a1f5a51b5789660685f4fddcaf/docs/qa/report/3-stage-release/matrix.md
 matrix.md
 
+7. Автотесты, CI и документация по запуску
 - Документация по запуску автотестов для команды
 autotest-team-readme.md
-  - API test scripts лежат в root/frontend/tests/api/
-  - E2E test scripts лежат в root/frontend/tests/e2e/
+  https://github.com/MaximBri/t-bank/blob/3846647db42b88a1f5a51b5789660685f4fddcaf/docs/qa/report/3-stage-release/autotest-team-readme.md
+
+- API test scripts лежат в root/frontend/tests/api/
+  https://github.com/MaximBri/t-bank/tree/3846647db42b88a1f5a51b5789660685f4fddcaf/frontend/tests/api
+
+- E2E test scripts лежат в root/frontend/tests/e2e/
+  https://github.com/MaximBri/t-bank/tree/3846647db42b88a1f5a51b5789660685f4fddcaf/frontend/tests/e2e
 
 - CI/CD workflows для интеграции автотестов на github
+https://github.com/MaximBri/t-bank/tree/3846647db42b88a1f5a51b5789660685f4fddcaf/.github/workflows
   - api.yml
   - check.yml
   - e2e.yml
