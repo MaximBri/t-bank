@@ -53,6 +53,7 @@ export const getCreateEventFormFields = (): CreateEventFormFields => {
     fieldClassName: `${createEventFieldInputClassName} h-[146px] sm:h-[150px] resize-none`,
     placeholder: 'Опишите детали события...',
     rows: 4,
+    withoutClearButton: true,
   })
 
   const avatarField = createImageField<CreateEventFormValues>({
