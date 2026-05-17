@@ -33,7 +33,7 @@ const mockParticipants = [
 const mockSettlements = [{ fromUserId: 'user-1', toUserId: 'user-2', amount: 1500 }]
 
 beforeEach(() => {
-  useUserStore.setState({ user: { id: 'user-1' }, isAuthenticated: true })
+  useUserStore.setState({ user: { id: 'user-1', login: 'user-1', firstName: 'Test', lastName: 'User' }, isAuthenticated: true })
   vi.mocked(useGetEventParticipants).mockReturnValue({
     data: mockParticipants,
     isLoading: false,
@@ -106,7 +106,7 @@ describe('EventSettlementsWidget', () => {
   })
 
   it('НЕ отображает "Оплатить" когда isMyDebt=false (fromUserId !== currentUserId)', () => {
-    useUserStore.setState({ user: { id: 'user-3' }, isAuthenticated: true })
+    useUserStore.setState({ user: { id: 'user-3', login: 'user-3', firstName: 'Test', lastName: 'User' }, isAuthenticated: true })
     vi.mocked(useGetEventSettlements).mockReturnValue({
       data: mockSettlements,
       isLoading: false,

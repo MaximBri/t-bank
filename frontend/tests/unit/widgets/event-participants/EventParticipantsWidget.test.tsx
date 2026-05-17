@@ -4,6 +4,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { renderWithProviders } from '../../utils/renderWithProviders'
 import { InvitationStatus } from '@/entities/invitation'
 import { EventParticipantsWidget } from '@/widgets/event-participants/ui/EventParticipantsWidget'
+import type { ParticipantRow } from '@/widgets/event-participants/model/types'
 import { ParticipantRowKind, EventParticipantStatus } from '@/widgets/event-participants/model/types'
 import { useEventParticipantsRows } from '@/widgets/event-participants/lib/useEventParticipantsRows'
 import { useDecideInvitation } from '@/entities/invitation/api/hooks/useDecideInvitation'
@@ -35,7 +36,7 @@ vi.mock('@/entities/invitation/api/hooks/useDecideInvitation', () => ({
 const mockUseEventParticipantsRows = vi.mocked(useEventParticipantsRows)
 const mockUseDecideInvitation = vi.mocked(useDecideInvitation)
 
-const participantRow = {
+const participantRow: ParticipantRow = {
   kind: ParticipantRowKind.Participant,
   key: 'participant-user-1',
   userId: 'user-1',
@@ -45,7 +46,7 @@ const participantRow = {
   status: EventParticipantStatus.participant,
 }
 
-const ownerRow = {
+const ownerRow: ParticipantRow = {
   kind: ParticipantRowKind.Participant,
   key: 'participant-owner-1',
   userId: 'owner-1',
@@ -55,7 +56,7 @@ const ownerRow = {
   status: EventParticipantStatus.owner,
 }
 
-const pendingRow = {
+const pendingRow: ParticipantRow = {
   kind: ParticipantRowKind.Pending,
   key: 'pending-req-1',
   invitationId: 'req-1',

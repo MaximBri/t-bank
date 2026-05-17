@@ -24,7 +24,7 @@ describe('TextField', () => {
   it('рендерит label', () => {
     render(
       <Wrapper>
-        <TextField name="username" label="Имя пользователя" />
+        <TextField name="username" label="Имя пользователя" type="text" />
       </Wrapper>,
     )
     expect(screen.getByText('Имя пользователя')).toBeInTheDocument()
@@ -33,7 +33,7 @@ describe('TextField', () => {
   it('рендерит input элемент', () => {
     render(
       <Wrapper>
-        <TextField name="email" label="Email" />
+        <TextField name="email" label="Email" type="text" />
       </Wrapper>,
     )
     expect(screen.getByRole('textbox')).toBeInTheDocument()
@@ -42,7 +42,7 @@ describe('TextField', () => {
   it('label связан с input через htmlFor/id', () => {
     render(
       <Wrapper>
-        <TextField name="email" label="Email" />
+        <TextField name="email" label="Email" type="text" />
       </Wrapper>,
     )
     const input = screen.getByRole('textbox')
@@ -53,7 +53,7 @@ describe('TextField', () => {
   it('отображает placeholder', () => {
     render(
       <Wrapper>
-        <TextField name="username" label="Имя" placeholder="Введите имя" />
+        <TextField name="username" label="Имя" placeholder="Введите имя" type="text" />
       </Wrapper>,
     )
     expect(screen.getByPlaceholderText('Введите имя')).toBeInTheDocument()
@@ -62,7 +62,7 @@ describe('TextField', () => {
   it('поле disabled когда передан disabled=true', () => {
     render(
       <Wrapper>
-        <TextField name="username" label="Имя" disabled />
+        <TextField name="username" label="Имя" disabled type="text" />
       </Wrapper>,
     )
     expect(screen.getByRole('textbox')).toBeDisabled()
@@ -71,7 +71,7 @@ describe('TextField', () => {
   it('показывает звёздочку когда required=true', () => {
     render(
       <Wrapper>
-        <TextField name="username" label="Имя" required />
+        <TextField name="username" label="Имя" required type="text" />
       </Wrapper>,
     )
     expect(screen.getByText('*')).toBeInTheDocument()
@@ -80,7 +80,7 @@ describe('TextField', () => {
   it('не показывает звёздочку когда required не задан', () => {
     render(
       <Wrapper>
-        <TextField name="username" label="Имя" />
+        <TextField name="username" label="Имя" type="text" />
       </Wrapper>,
     )
     expect(screen.queryByText('*')).not.toBeInTheDocument()
@@ -89,7 +89,7 @@ describe('TextField', () => {
   it('принимает ввод пользователя', () => {
     render(
       <Wrapper>
-        <TextField name="username" label="Имя" />
+        <TextField name="username" label="Имя" type="text" />
       </Wrapper>,
     )
     const input = screen.getByRole('textbox') as HTMLInputElement
@@ -100,7 +100,7 @@ describe('TextField', () => {
   it('устанавливает aria-invalid="false" без ошибки', () => {
     render(
       <Wrapper>
-        <TextField name="username" label="Имя" />
+        <TextField name="username" label="Имя" type="text" />
       </Wrapper>,
     )
     expect(screen.getByRole('textbox')).toHaveAttribute('aria-invalid', 'false')
@@ -144,7 +144,7 @@ describe('TextField', () => {
   it('показывает кнопку очистки при наличии значения', () => {
     render(
       <WrapperWithValues defaultValues={{ search: 'тест' }}>
-        <TextField name="search" label="Поиск" />
+        <TextField name="search" label="Поиск" type="text" />
       </WrapperWithValues>,
     )
     expect(screen.getByRole('button', { name: 'Clear field' })).toBeInTheDocument()
@@ -153,7 +153,7 @@ describe('TextField', () => {
   it('не показывает кнопку очистки когда withoutClearButton=true', () => {
     render(
       <WrapperWithValues defaultValues={{ search: 'тест' }}>
-        <TextField name="search" label="Поиск" withoutClearButton />
+        <TextField name="search" label="Поиск" withoutClearButton type="text" />
       </WrapperWithValues>,
     )
     expect(screen.queryByRole('button', { name: 'Clear field' })).not.toBeInTheDocument()
