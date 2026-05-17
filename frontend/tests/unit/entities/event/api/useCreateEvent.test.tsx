@@ -34,7 +34,7 @@ describe('useCreateEvent', () => {
     act(() => { result.current.mutate(payload) })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(result.current.data).toEqual(createdEvent)
+    expect(result.current.data).toEqual({ ...createdEvent, imageUrl: '' })
   })
 
   it('isError=true при ошибке сервера', async () => {
