@@ -1,5 +1,6 @@
 package com.tbank.tevent.history;
 
+import com.tbank.tevent.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,8 @@ public class EventHistoryController {
 
     @GetMapping
     public ResponseEntity<List<EventHistoryResponse>> getEventHistory(@PathVariable UUID eventId) {
-        List<EventHistoryResponse> history = eventHistoryService.getEventHistory(eventId);
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        List<EventHistoryResponse> history = eventHistoryService.getEventHistory(eventId, currentUserId);
         return ResponseEntity.ok(history);
     }
 }

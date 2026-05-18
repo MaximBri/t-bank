@@ -15,6 +15,7 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     boolean existsByFromUserIdAndToUserIdAndStatusIn(
            UUID fromUserId, UUID toUserId, List<String> statuses);
     List<Payment> findAllByEventIdAndStatusIn(UUID eventId, List<PaymentStatus> statuses);
+    List<Payment> findAllByStatusInAndExpiresAtBefore(List<PaymentStatus> statuses, LocalDateTime expiresAt);
     List<Payment> findAllByEventId(UUID eventId);
     void deleteAllByEventIdAndStatus(UUID eventId, PaymentStatus status);
 }

@@ -1,6 +1,7 @@
 package com.tbank.tevent.settlements;
 
 import com.tbank.tevent.EventBalanceRepository;
+import com.tbank.tevent.event.EventAccessGuard;
 import com.tbank.tevent.repo.ExpenseRepository;
 import com.tbank.tevent.repo.PaymentRepository;
 import com.tbank.tevent.repo.UserRepository;
@@ -12,6 +13,7 @@ import com.tbank.tevent.settlements.dto.SettlementStep;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,10 +28,16 @@ public class SettlementQueryService {
     private final EventBalanceRepository redisRepository;
     private final DebtCalculator debtCalculator;
     private final ExpenseRepository expenseRepository;
+    private final EventAccessGuard eventAccessGuard;
 
+    // @Transactional: метод лениво создаёт ACTIVE-платежи (debtCalculator →
+    // paymentRepository.save). Без транзакции два параллельных GET создавали
+    // дубли. Транзакция + проверка livePayments внутри неё устраняет гонку.
+    @Transactional
     public EventSettlementsResponse getEventSettlements(UUID eventId, UUID currentUserId) {
+        eventAccessGuard.requireMember(eventId, currentUserId);
         log.debug("Getting settlements for event: {}, current user: {}", eventId, currentUserId);
-        
+
         EventSettlementsResponse cached = redisRepository.getCachedSettlements(eventId);
         if (cached != null) {
             log.debug("Returning cached settlements for event: {}", eventId);

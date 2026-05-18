@@ -4,7 +4,6 @@ import com.tbank.tevent.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,7 +20,7 @@ public class PaymentController {
             @PathVariable UUID eventId,
             @PathVariable UUID paymentId) {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
-        paymentCommandService.markAsSent(paymentId, currentUserId);
+        paymentCommandService.markAsSent(eventId, paymentId, currentUserId);
         return ResponseEntity.ok().build();
     }
 
@@ -30,7 +29,7 @@ public class PaymentController {
             @PathVariable UUID eventId,
             @PathVariable UUID paymentId) {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
-        paymentCommandService.markAsFailed(paymentId, currentUserId);
+        paymentCommandService.markAsFailed(eventId, paymentId, currentUserId);
         return ResponseEntity.ok().build();
     }
 
@@ -39,7 +38,7 @@ public class PaymentController {
             @PathVariable UUID eventId,
             @PathVariable UUID paymentId) {
         UUID currentUserId = SecurityUtils.getCurrentUserId();
-        paymentCommandService.markAsComplete(paymentId, currentUserId);
+        paymentCommandService.markAsComplete(eventId, paymentId, currentUserId);
         return ResponseEntity.ok().build();
     }
 }

@@ -3,6 +3,7 @@ package com.tbank.tevent.config;
 import com.tbank.tevent.auth.JwtAuthenticationFilter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -51,6 +52,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
+                        // Превью события по invite-токену доступно до входа
+                        // (пользователь открывает приглашение, ещё не залогинен)
+                        .requestMatchers(HttpMethod.GET, "/events/preview/**").permitAll()
 
                         .anyRequest().authenticated()
                 )

@@ -133,7 +133,7 @@ public class EventService {
         return new EventPreviewResponse(
                 event.getId(),
                 event.getTitle(),
-                event.getImageKey(), // Assuming imageKey is stored, might need conversion to URL
+                s3Service.generatePublicUrl(event.getImageKey()),
                 participantCount,
                 event.getStartDate(),
                 event.getEndDate(),
@@ -230,8 +230,10 @@ public class EventService {
             throw new AccessDeniedException("Only owner can complete event");
         }
 
+        // Идемпотентность: повторный complete не ошибка, возвращаем
+        // текущее состояние (операция уже выполнена).
         if (Boolean.TRUE.equals(event.getIsCompleted())) {
-            throw new ValidationException("Event is already completed");
+            return getEvent(eventId);
         }
 
         event.setIsCompleted(true);

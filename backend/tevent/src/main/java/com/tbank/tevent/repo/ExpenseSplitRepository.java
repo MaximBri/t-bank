@@ -28,6 +28,14 @@ public interface ExpenseSplitRepository extends JpaRepository<ExpenseSplit, UUID
     @Query("SELECT s FROM ExpenseSplit s JOIN Expense e ON s.expenseId = e.id WHERE e.eventId = :eventId AND s.isConfirmed = true")
     List<ExpenseSplit> findAllConfirmedByEventId(@Param("eventId") UUID eventId);
 
+    // Есть ли у пользователя доля в любом неудалённом расходе события
+    // (защита от удаления/выхода участника с висящими split — рвёт расчёт долгов).
+    @Query("""
+        SELECT COUNT(s) > 0 FROM ExpenseSplit s JOIN Expense e ON s.expenseId = e.id
+        WHERE e.eventId = :eventId AND s.userId = :userId
+        """)
+    boolean existsSplitForUserInEvent(@Param("eventId") UUID eventId, @Param("userId") UUID userId);
+
 
     void deleteByExpenseId(UUID expenseId);
 
