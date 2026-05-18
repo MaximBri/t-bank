@@ -56,11 +56,7 @@ public class S3Service {
     private long maxFileSizeBytes;
 
     public PresignedUpload generateUploadUrl(UUID userId, String fileName, String contentType, Long fileSizeBytes) {
-        try {
-            cleanupExpiredPendingUploads();
-        } catch (Exception ex) {
-            log.warn("Failed to cleanup expired pending uploads", ex);
-        }
+        cleanupExpiredPendingUploadsSafe();
 
         validateExpectedFileSize(fileSizeBytes);
 
@@ -245,6 +241,14 @@ public class S3Service {
             } finally {
                 removePendingUpload(s3Key);
             }
+        }
+    }
+
+    public void cleanupExpiredPendingUploadsSafe() {
+        try {
+            cleanupExpiredPendingUploads();
+        } catch (Exception ex) {
+            log.warn("Failed to cleanup expired pending uploads", ex);
         }
     }
 
