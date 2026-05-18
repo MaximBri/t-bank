@@ -140,8 +140,8 @@ class ExpenseIntegrationTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode participantInbox = objectMapper.readTree(participantInboxStr);
-        assertThat(participantInbox.get("pendingConfirmations").size()).isEqualTo(1);
-        assertThat(participantInbox.get("pendingConfirmations").get(0).get("description").asText()).isEqualTo("Restaurant Bill");
+        assertThat(participantInbox.get("listInbox").size()).isEqualTo(1);
+        assertThat(participantInbox.get("listInbox").get(0).get("expenseTitle").asText()).isEqualTo("Restaurant Bill");
 
         // --- 8. Боб подтверждает свою долю ---
         webTestClient.post().uri("/expenses/participant/" + expenseId + "/confirm")
@@ -149,7 +149,7 @@ class ExpenseIntegrationTest {
                 .exchange()
                 .expectStatus().isNoContent();
 
-        // --- 9. Проверка: после подтверждения всех участников статус расхода стал CONFIRMED ---
+        // --- 9. Проверка: после подтверждения всех участников статус расхода стал ACTIVE ---
         String updatedExpensesStr = webTestClient.get().uri("/events/" + eventId + "/expenses")
                 .header("Cookie", aliceSession.cookie())
                 .exchange()
@@ -157,7 +157,7 @@ class ExpenseIntegrationTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode updatedExpenses = objectMapper.readTree(updatedExpensesStr).get("expenses");
-        assertThat(updatedExpenses.get(0).get("status").asText()).isEqualTo("CONFIRMED");
+        assertThat(updatedExpenses.get(0).get("status").asText()).isEqualTo("ACTIVE");
 
         // --- 10. Проверка: Боб больше не видит этот расход в inbox ---
         String updatedParticipantInboxStr = webTestClient.get().uri("/expenses/participant/inbox")
@@ -167,7 +167,7 @@ class ExpenseIntegrationTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode updatedParticipantInbox = objectMapper.readTree(updatedParticipantInboxStr);
-        assertThat(updatedParticipantInbox.get("pendingConfirmations").size()).isEqualTo(0);
+        assertThat(updatedParticipantInbox.get("listInbox").size()).isEqualTo(0);
     }
 
     private TestSession registerUser(String login, String email, String password, String token) throws Exception {

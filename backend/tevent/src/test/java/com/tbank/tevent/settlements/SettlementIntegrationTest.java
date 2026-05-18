@@ -106,7 +106,7 @@ class SettlementIntegrationTest {
                     .expectStatus().isNoContent();
         }
 
-        // --- 4. Алиса создает подтвержденный расход (она заплатила 300, Боб и Чарли должны по 100) ---
+        // --- 4. Алиса создает подтвержденный расход (она заплатила 300, Боб и Чарли должны по 150) ---
         Map<String, Object> expenseReq = Map.of(
                 "title", "Dinner",
                 "description", "Restaurant bill",
@@ -143,36 +143,32 @@ class SettlementIntegrationTest {
                 .expectStatus().isOk()
                 .expectBody(String.class).returnResult().getResponseBody();
 
-        JsonNode settlements = objectMapper.readTree(settlementsStr);
+        JsonNode settlementsResponse = objectMapper.readTree(settlementsStr);
+        JsonNode settlements = settlementsResponse.get("settlements");
         assertThat(settlements.isArray()).isTrue();
-        // Ожидаем два шага: Боб → Алиса 100, Чарли → Алиса 100
+        // Ожидаем два шага: Боб → Алиса 150, Чарли → Алиса 150
         assertThat(settlements.size()).isEqualTo(2);
 
         // Проверяем что каждый шаг содержит правильные суммы
         for (JsonNode step : settlements) {
             BigDecimal amount = new BigDecimal(step.get("amount").asText());
-            assertThat(amount).isEqualByComparingTo("100");
-            UUID fromUserId = UUID.fromString(step.get("fromUserId").asText());
-            UUID toUserId = UUID.fromString(step.get("toUserId").asText());
-            // fromUserId должен быть Боб или Чарли, toUserId - Алиса
-            assertThat(fromUserId).isIn(bobSession.userId(), charlieSession.userId());
-            assertThat(toUserId).isEqualTo(aliceSession.userId());
+            assertThat(amount).isEqualByComparingTo("150");
+            UUID debtorId = UUID.fromString(step.get("debtorId").asText());
+            UUID creditorId = UUID.fromString(step.get("creditorId").asText());
+            assertThat(debtorId).isIn(bobSession.userId(), charlieSession.userId());
+            assertThat(creditorId).isEqualTo(aliceSession.userId());
         }
 
-        // --- 6. Боб инициирует платеж Алисе (100) ---
-        Map<String, Object> paymentReq = Map.of(
-                "toUserId", aliceSession.userId().toString(),
-                "amount", 100.0
-        );
-
-        String paymentRespStr = webTestClient.post().uri("/events/" + eventId + "/payments/initiate")
-                .header("Cookie", bobSession.cookie())
-                .bodyValue(paymentReq)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBody(String.class).returnResult().getResponseBody();
-
-        UUID paymentId = UUID.fromString(objectMapper.readTree(paymentRespStr).asText());
+        // --- 6. Боб отправляет уже сгенерированный платеж Алисе ---
+        UUID paymentId = null;
+        for (JsonNode step : settlements) {
+            UUID debtorId = UUID.fromString(step.get("debtorId").asText());
+            if (debtorId.equals(bobSession.userId())) {
+                paymentId = UUID.fromString(step.get("paymentId").asText());
+                break;
+            }
+        }
+        assertThat(paymentId).isNotNull();
 
         // --- 7. Боб отмечает платеж как отправленный ---
         webTestClient.post().uri("/events/" + eventId + "/payments/" + paymentId + "/sent")
@@ -193,32 +189,23 @@ class SettlementIntegrationTest {
                 .expectStatus().isOk()
                 .expectBody(String.class).returnResult().getResponseBody();
 
-        JsonNode updatedSettlements = objectMapper.readTree(updatedSettlementsStr);
-        // Теперь должен остаться только один шаг: Чарли → Алиса 100
+        JsonNode updatedSettlementsResponse = objectMapper.readTree(updatedSettlementsStr);
+        JsonNode updatedSettlements = updatedSettlementsResponse.get("settlements");
         assertThat(updatedSettlements.size()).isEqualTo(1);
         JsonNode remainingStep = updatedSettlements.get(0);
-        assertThat(UUID.fromString(remainingStep.get("fromUserId").asText())).isEqualTo(charlieSession.userId());
-        assertThat(UUID.fromString(remainingStep.get("toUserId").asText())).isEqualTo(aliceSession.userId());
-        assertThat(new BigDecimal(remainingStep.get("amount").asText())).isEqualByComparingTo("100");
+        assertThat(UUID.fromString(remainingStep.get("debtorId").asText())).isEqualTo(charlieSession.userId());
+        assertThat(UUID.fromString(remainingStep.get("creditorId").asText())).isEqualTo(aliceSession.userId());
+        assertThat(new BigDecimal(remainingStep.get("amount").asText())).isEqualByComparingTo("150");
+        UUID secondPaymentId = UUID.fromString(remainingStep.get("paymentId").asText());
 
-        // --- 10. Тестируем отмену платежа (Чарли инициирует, но отменяет) ---
-        Map<String, Object> paymentReq2 = Map.of(
-                "toUserId", aliceSession.userId().toString(),
-                "amount", 100.0
-        );
-
-        String paymentRespStr2 = webTestClient.post().uri("/events/" + eventId + "/payments/initiate")
+        // --- 10. Чарли отправляет платеж, Алиса отклоняет ---
+        webTestClient.post().uri("/events/" + eventId + "/payments/" + secondPaymentId + "/sent")
                 .header("Cookie", charlieSession.cookie())
-                .bodyValue(paymentReq2)
                 .exchange()
-                .expectStatus().isCreated()
-                .expectBody(String.class).returnResult().getResponseBody();
+                .expectStatus().isOk();
 
-        UUID paymentId2 = UUID.fromString(objectMapper.readTree(paymentRespStr2).asText());
-
-        // Чарли отменяет платеж
-        webTestClient.post().uri("/events/" + eventId + "/payments/" + paymentId2 + "/fail")
-                .header("Cookie", charlieSession.cookie())
+        webTestClient.post().uri("/events/" + eventId + "/payments/" + secondPaymentId + "/fail")
+                .header("Cookie", aliceSession.cookie())
                 .exchange()
                 .expectStatus().isOk();
 
@@ -229,9 +216,14 @@ class SettlementIntegrationTest {
                 .expectStatus().isOk()
                 .expectBody(String.class).returnResult().getResponseBody();
 
-        JsonNode finalSettlements = objectMapper.readTree(finalSettlementsStr);
-        // Должен быть один шаг (Чарли → Алиса)
-        assertThat(finalSettlements.size()).isEqualTo(1);
+        JsonNode finalSettlementsResponse = objectMapper.readTree(finalSettlementsStr);
+        JsonNode finalSettlements = finalSettlementsResponse.get("settlements");
+        assertThat(finalSettlements.size()).isEqualTo(2);
+        List<String> finalStatuses = List.of(
+                finalSettlements.get(0).get("status").asText(),
+                finalSettlements.get(1).get("status").asText()
+        );
+        assertThat(finalStatuses).containsExactlyInAnyOrder("FAILED", "ACTIVE");
     }
 
     private TestSession registerUser(String login, String email, String password, String token) throws Exception {
