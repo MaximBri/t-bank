@@ -5,7 +5,9 @@ import com.tbank.tevent.category.dto.CategoryResponse;
 import com.tbank.tevent.event.dto.EventRequest;
 import com.tbank.tevent.repo.EventRepository;
 import com.tbank.tevent.repo.EventUserRepository;
+import com.tbank.tevent.repo.InvitationRepository;
 import com.tbank.tevent.repo.InviteTokenRepository;
+import com.tbank.tevent.repo.UserRepository;
 import com.tbank.tevent.repo.entity.Event;
 import com.tbank.tevent.repo.entity.InviteToken;
 import com.tbank.tevent.repo.entity.User;
@@ -42,6 +44,10 @@ class EventServiceTest {
     @Mock
     private InviteTokenRepository inviteTokenRepository;
     @Mock
+    private UserRepository userRepository;
+    @Mock
+    private InvitationRepository invitationRepository;
+    @Mock
     private EventMapper eventMapper;
     @Mock
     private S3Service s3Service;
@@ -51,7 +57,16 @@ class EventServiceTest {
 
     @BeforeEach
     void setUp() {
-        eventService = new EventService(eventRepository, eventUserRepository, categoryService, inviteTokenRepository, eventMapper, s3Service);
+        eventService = new EventService(
+                eventRepository,
+                eventUserRepository,
+                categoryService,
+                inviteTokenRepository,
+                userRepository,
+                invitationRepository,
+                eventMapper,
+                s3Service
+        );
         currentUserId = UUID.randomUUID();
         User user = User.builder().id(currentUserId).login("user").build();
         SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken(user, null));
@@ -94,6 +109,14 @@ class EventServiceTest {
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(persistedEvent));
         when(eventUserRepository.countByEventId(eventId)).thenReturn(1L);
         when(categoryService.findAllByEventId(eventId)).thenReturn(List.of());
+        User owner = User.builder()
+                .id(currentUserId)
+                .firstName("Ivan")
+                .secondName("Ivanov")
+                .login("user")
+                .avatarUrl("avatar")
+                .build();
+        when(userRepository.findById(currentUserId)).thenReturn(Optional.of(owner));
         EventResponse expected = new EventResponse(
                 eventId,
                 request.title(),
@@ -104,13 +127,14 @@ class EventServiceTest {
                 "PLANNED",
                 imageKey,
                 currentUserId,
-                1L
+                1L,
+                null
         );
-        when(eventMapper.mapToResponse(eq(persistedEvent), any(List.class), eq(1L))).thenReturn(expected);
+        when(eventMapper.mapToResponse(eq(persistedEvent), any(List.class), eq(1L), any())).thenReturn(expected);
 
         EventResponse result = eventService.createEvent(request);
 
-        assertThat(result.imageKey()).isEqualTo(imageKey);
+        assertThat(result.imageUrl()).isEqualTo(imageKey);
         verify(s3Service).useKey(currentUserId, imageKey);
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
         verify(eventRepository).saveAndFlush(eventCaptor.capture());
@@ -142,6 +166,14 @@ class EventServiceTest {
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(existing));
         when(eventUserRepository.countByEventId(eventId)).thenReturn(1L);
         when(categoryService.findAllByEventId(eventId)).thenReturn(List.<CategoryResponse>of());
+        User owner = User.builder()
+                .id(currentUserId)
+                .firstName("Ivan")
+                .secondName("Ivanov")
+                .login("user")
+                .avatarUrl("avatar")
+                .build();
+        when(userRepository.findById(currentUserId)).thenReturn(Optional.of(owner));
         EventResponse expected = new EventResponse(
                 eventId,
                 existing.getTitle(),
@@ -152,13 +184,14 @@ class EventServiceTest {
                 "PLANNED",
                 newImageKey,
                 currentUserId,
-                1L
+                1L,
+                null
         );
-        when(eventMapper.mapToResponse(eq(existing), any(List.class), eq(1L))).thenReturn(expected);
+        when(eventMapper.mapToResponse(eq(existing), any(List.class), eq(1L), any())).thenReturn(expected);
 
         EventResponse result = eventService.updateEvent(eventId, request);
 
-        assertThat(result.imageKey()).isEqualTo(newImageKey);
+        assertThat(result.imageUrl()).isEqualTo(newImageKey);
         verify(s3Service).useKey(currentUserId, newImageKey);
         verify(eventRepository).saveAndFlush(existing);
         assertThat(existing.getImageKey()).isEqualTo(newImageKey);

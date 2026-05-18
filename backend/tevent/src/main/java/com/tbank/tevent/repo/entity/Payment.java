@@ -1,5 +1,6 @@
 package com.tbank.tevent.repo.entity;
 
+import com.tbank.tevent.settlements.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -37,8 +38,7 @@ public class Payment {
     @Column(name = "amount", nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
-    @Column(name = "status", nullable = false, length = 30)
-    private String status;
+    @Enumerated(EnumType.STRING) private PaymentStatus status;
 
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
