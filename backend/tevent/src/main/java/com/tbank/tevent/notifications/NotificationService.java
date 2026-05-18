@@ -16,6 +16,9 @@ public class NotificationService {
 
     private final UserNotificationRepository notificationRepository;
 
+    /**
+     * Создать пакет уведомлений для списка пользователей (Batch Insert)
+     */
     @Transactional
     public void createNotifications(List<UUID> userIds, UUID eventId, UUID expenseId, String title, String message) {
         if (userIds == null || userIds.isEmpty()) return;
@@ -35,13 +38,32 @@ public class NotificationService {
         notificationRepository.saveAll(notifications);
     }
 
+    /**
+     * Отметить пачку уведомлений как прочитанные
+     */
     @Transactional
     public void markAsRead(List<UUID> notificationIds) {
+        if (notificationIds == null || notificationIds.isEmpty()) return;
+
         List<UserNotification> notifications = notificationRepository.findAllById(notificationIds);
         notifications.forEach(n -> n.setIsRead(true));
         notificationRepository.saveAll(notifications);
     }
 
+    /**
+     * Отметить одиночное уведомление как прочитанное
+     */
+    @Transactional
+    public void markAsRead(UUID notificationId) {
+        notificationRepository.findById(notificationId).ifPresent(n -> {
+            n.setIsRead(true);
+            notificationRepository.save(n);
+        });
+    }
+
+    /**
+     * Получить список всех уведомлений пользователя (Read-Only Query)
+     */
     @Transactional(readOnly = true)
     public NotificationListResponse getUserNotifications(UUID userId) {
         List<UserNotificationResponse> items = notificationRepository
@@ -55,19 +77,17 @@ public class NotificationService {
         return new NotificationListResponse(items, unreadCount);
     }
 
+    /**
+     * Быстрый счетчик непрочитанных для иконки колокольчика в UI
+     */
     @Transactional(readOnly = true)
     public long countUnread(UUID userId) {
         return notificationRepository.countByUserIdAndIsReadFalse(userId);
     }
 
-    @Transactional
-    public void markAsRead(UUID notificationId) {
-        notificationRepository.findById(notificationId).ifPresent(n -> {
-            n.setIsRead(true);
-            notificationRepository.save(n);
-        });
-    }
-
+    /**
+     * Внутренний маппер сущности базы данных в плоский DTO Response
+     */
     private UserNotificationResponse mapToResponse(UserNotification n) {
         return new UserNotificationResponse(
                 n.getId(),

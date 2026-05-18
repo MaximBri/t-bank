@@ -46,7 +46,6 @@ public class AuthService {
             User savedUser = userRepository.saveAndFlush(user);
 
             if (request.inviteToken() != null && !request.inviteToken().isBlank()) {
-                log.info("Processing invite token during login for user: {}", user.getLogin());
                 inviteService.applyToken(user, request.inviteToken());
             }
             return generateTokens(savedUser);

@@ -14,6 +14,15 @@ CREATE TABLE user_data (
 );
 
 
+CREATE TABLE event_history (
+   id UUID PRIMARY KEY,
+   event_id UUID NOT NULL,
+   user_id UUID NOT NULL,
+   action_type VARCHAR(50) NOT NULL,
+   message VARCHAR(500) NOT NULL,
+   created_at TIMESTAMP NOT NULL
+);
+
 CREATE TABLE category (
       id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name        VARCHAR(255) NOT NULL,
@@ -41,7 +50,6 @@ CREATE TABLE event (
        owner_id                UUID NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
        invite_token_id         UUID NOT NULL REFERENCES invite_token(id),
        created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-       version                 BIGINT NOT NULL DEFAULT 0,
        updated_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -89,7 +97,6 @@ CREATE TABLE expense (
      image_url VARCHAR(255),
      description VARCHAR(255),
      status VARCHAR(30) NOT NULL DEFAULT 'PLANNED', -- PLANNED, PENDING, REJECTED, CONFIRMED, LOCKED
-     version BIGINT NOT NULL DEFAULT 0, -- Optimistic Lock
      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -119,7 +126,6 @@ CREATE TABLE payment (
      to_user_id UUID NOT NULL REFERENCES user_data(id),
      amount DECIMAL(19, 2) NOT NULL,
      status VARCHAR(30) NOT NULL, -- INITIATED, SENT, FAILED, COMPLETED
-     expires_at TIMESTAMP NOT NULL, -- Для TTL логики
      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
      confirmed_at TIMESTAMP
 );

@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OptimisticLocking;
+import org.hibernate.annotations.OptimisticLockType;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
@@ -21,6 +23,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Table(name = "expense")
+@OptimisticLocking(type = OptimisticLockType.NONE)
 public class Expense {
 
     @Id
@@ -52,11 +55,6 @@ public class Expense {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Version
-    @Column(name = "version", nullable = false)
-    @Builder.Default
-    private Long version = 0L;
-
     @Column(name = "created_at", nullable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -64,4 +62,14 @@ public class Expense {
     @Column(name = "updated_at", nullable = false)
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    public void activate() {
+        this.status = "ACTIVE";
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void reject() {
+        this.status = "REJECTED";
+        this.updatedAt = LocalDateTime.now();
+    }
 }

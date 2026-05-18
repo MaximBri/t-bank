@@ -5,6 +5,7 @@ import java.util.UUID;
 
 public record OwnerInvitationResponse(
         UUID id,
+        UUID eventId,
         String title,
         String login,
         String status,

@@ -25,9 +25,14 @@ public class InvitationController{
     }
 
     @GetMapping("/inbox")
-    public ResponseEntity<List<OwnerInvitationResponse>> getIncomingInvitations() {
+    public ResponseEntity<List<OwnerInvitationResponse>> getIncomingInvitations(
+            @RequestParam(required = false) UUID eventId) {
         UUID ownerId = SecurityUtils.getCurrentUserId();
-        return ResponseEntity.ok(invitationService.getOwnerInbox(ownerId));
+        if (eventId != null) {
+            return ResponseEntity.ok(invitationService.getOwnerInboxByEventId(ownerId, eventId));
+        } else {
+            return ResponseEntity.ok(invitationService.getOwnerInbox(ownerId));
+        }
     }
 
     @PatchMapping("/{invitationId}/decide")

@@ -34,4 +34,15 @@ public interface InvitationRepository extends JpaRepository<EventInvitation, UUI
           AND i.status = 'PENDING'
     """)
     List<OwnerInvitationResponse> findOwnerInbox(@Param("ownerId") UUID ownerId);
+
+    @Query("""
+        SELECT i.id as id, e.id as eventId, e.title as title, u.login as login, i.status as status, i.createdAt as createdAt
+        FROM EventInvitation i, Event e, User u
+        WHERE i.eventId = e.id
+          AND i.userId = u.id
+          AND e.ownerId = :ownerId
+          AND i.eventId = :eventId
+          AND i.status = 'PENDING'
+    """)
+    List<OwnerInvitationResponse> findOwnerInboxByEventId(@Param("ownerId") UUID ownerId, @Param("eventId") UUID eventId);
 }

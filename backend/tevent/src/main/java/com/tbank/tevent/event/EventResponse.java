@@ -1,6 +1,9 @@
 package com.tbank.tevent.event;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tbank.tevent.event.dto.CreatorInfo;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +17,8 @@ public record EventResponse (
     LocalDateTime endDate,
     List<String> categories,
     String status,
-    @JsonProperty("image_key") String imageKey,
+    String imageUrl,
     UUID ownerId,
-    Long countOfParticipants
+    Long countOfParticipants,
+    CreatorInfo creatorInfo
 ){}

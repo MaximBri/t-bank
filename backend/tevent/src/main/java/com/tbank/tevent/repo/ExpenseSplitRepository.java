@@ -1,5 +1,6 @@
 package com.tbank.tevent.repo;
 
+import com.tbank.tevent.expenses.ExpenseParticipantView;
 import com.tbank.tevent.repo.entity.Expense;
 import com.tbank.tevent.repo.entity.ExpenseSplit;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +27,16 @@ public interface ExpenseSplitRepository extends JpaRepository<ExpenseSplit, UUID
 
     @Query("SELECT s FROM ExpenseSplit s JOIN Expense e ON s.expenseId = e.id WHERE e.eventId = :eventId AND s.isConfirmed = true")
     List<ExpenseSplit> findAllConfirmedByEventId(@Param("eventId") UUID eventId);
+
+
+    void deleteByExpenseId(UUID expenseId);
+
+    @Query("""
+        SELECT s.expenseId as expenseId, s.userId as userId 
+        FROM ExpenseSplit s 
+        WHERE s.expenseId IN :expenseIds
+        """)
+    List<ExpenseParticipantView> findAllParticipantsByExpenseIds(@Param("expenseIds") List<UUID> expenseIds);
+
+    List<ExpenseSplit> findAllByUserIdAndIsConfirmedFalse(UUID userId);
 }
