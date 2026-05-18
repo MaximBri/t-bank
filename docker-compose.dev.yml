@@ -1,31 +1,41 @@
 services:
   frontend:
-    image: ${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/frontend:${IMAGE_TAG}
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
     restart: unless-stopped
     ports:
-      - "127.0.0.1:${FRONTEND_PORT:-3001}:80"
+      - "127.0.0.1:3001:80"
     depends_on:
       - backend
+
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
     restart: unless-stopped
     ports:
-      - "127.0.0.1:${BACKEND_PORT:-8081}:8080"
+      - "127.0.0.1:8081:8080"
     environment:
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-      SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST:-redis}
-      SPRING_DATA_REDIS_PORT: ${SPRING_DATA_REDIS_PORT:-6379}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_COOKIE_SECURE: ${JWT_COOKIE_SECURE:-false}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tbank
+      SPRING_DATASOURCE_USERNAME: tbank
+      SPRING_DATASOURCE_PASSWORD: tbank
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      JWT_SECRET: local_dev_jwt_secret_change_me_please_32chars
+      JWT_COOKIE_SECURE: "false"
+      SPRING_CLOUD_AWS_S3_ENDPOINT: http://minio:9000
+      SPRING_CLOUD_AWS_S3_BUCKET_NAME: tbank-receipts
+      SPRING_CLOUD_AWS_CREDENTIALS_ACCESS_KEY: minioadmin
+      SPRING_CLOUD_AWS_CREDENTIALS_SECRET_KEY: minioadmin123
+      SPRING_CLOUD_AWS_REGION_STATIC: us-east-1
     depends_on:
       postgres:
         condition: service_started
       redis:
         condition: service_started
+      minio:
+        condition: service_healthy
 
   postgres:
     image: postgres:16
@@ -33,9 +43,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-tbank}
-      POSTGRES_USER: ${POSTGRES_USER:-tbank}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tbank}
+      POSTGRES_DB: tbank
+      POSTGRES_USER: tbank
+      POSTGRES_PASSWORD: tbank
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -47,6 +57,37 @@ services:
     volumes:
       - redis_data:/data
 
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  create-bucket:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minioadmin minioadmin123;
+      mc mb local/tbank-receipts --ignore-existing;
+      echo 'Bucket tbank-receipts created';
+      "
+
 volumes:
   postgres_data:
   redis_data:
+  minio_data:
