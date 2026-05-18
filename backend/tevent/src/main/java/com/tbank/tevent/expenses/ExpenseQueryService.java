@@ -50,11 +50,12 @@ public class ExpenseQueryService {
 
                     return new ExpenseResponse(
                             expense.getId(),
-                            expense.getDescription(),
                             expense.getTitle(),
+                            expense.getDescription(),
                             expense.getAmount(),
                             expense.getPayerId(),
                             expense.getStatus(),
+                            expense.getImageUrl(),
                             categoriesMap.getOrDefault(expense.getId(), List.of()),
                             firstTen,
                             totalCount,

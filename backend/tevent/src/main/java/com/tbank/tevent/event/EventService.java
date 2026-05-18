@@ -18,6 +18,7 @@ import com.tbank.tevent.repo.entity.EventInvitation;
 import com.tbank.tevent.repo.entity.EventUser;
 import com.tbank.tevent.repo.entity.InviteToken;
 import com.tbank.tevent.repo.entity.User;
+import com.tbank.tevent.s3.S3Service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -43,6 +44,7 @@ public class EventService {
     private final UserRepository userRepository;
     private final InvitationRepository invitationRepository;
     private final EventMapper eventMapper;
+    private final S3Service s3Service;
 
     @Transactional
     public EventResponse createEvent(EventRequest request) {
@@ -67,6 +69,10 @@ public class EventService {
         event.setInviteTokenId(inviteToken.getId());
 
         event = eventRepository.saveAndFlush(event);
+
+        if (request.imageKey() != null && !request.imageKey().isBlank()) {
+            s3Service.useKey(currentUserId, request.imageKey());
+        }
 
         EventUser eventUser = new EventUser();
         eventUser.setEventId(event.getId());
@@ -197,7 +203,12 @@ public class EventService {
         if (request.description() != null) event.setDescription(request.description());
         if (request.startDate() != null) event.setStartDate(request.startDate());
         if (request.endDate() != null) event.setEndDate(request.endDate());
-        if (request.imageKey() != null) event.setImageKey(request.imageKey());
+        if (request.imageKey() != null) {
+            event.setImageKey(request.imageKey());
+            if (!request.imageKey().isBlank()) {
+                s3Service.useKey(currentUserId, request.imageKey());
+            }
+        }
 
         eventRepository.saveAndFlush(event);
 

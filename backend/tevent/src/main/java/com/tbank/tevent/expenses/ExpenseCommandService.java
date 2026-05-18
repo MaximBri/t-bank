@@ -4,10 +4,10 @@ import com.tbank.tevent.EventBalanceRepository;
 import com.tbank.tevent.history.ActionType;
 import com.tbank.tevent.history.EventHistoryService;
 import com.tbank.tevent.repo.EventRepository;
-import com.tbank.tevent.repo.ExpenseCategoryRepository;
 import com.tbank.tevent.repo.ExpenseRepository;
 import com.tbank.tevent.repo.entity.Event;
 import com.tbank.tevent.repo.entity.Expense;
+import com.tbank.tevent.s3.S3Service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,6 +27,7 @@ public class ExpenseCommandService {
     private final EventBalanceRepository balanceRepository;
     private final EventHistoryService historyService;
     private final ExpenseCategoryCommandService categoryCommandService;
+    private final S3Service s3Service;
 
     public UUID create(UUID payerId, UUID eventId, CreateExpenseRequest request) {
         eventRepository.findById(eventId)
@@ -42,11 +43,15 @@ public class ExpenseCommandService {
                 .amount(request.totalAmount())
                 .title(request.title())
                 .description(request.description())
-                .imageUrl(request.imageUrl())
+                .imageUrl(request.imageKey())
                 .status("PENDING")
                 .build();
 
         Expense savedExpense = expenseRepository.save(expense);
+
+        if (request.imageKey() != null && !request.imageKey().isBlank()) {
+            s3Service.useKey(payerId, request.imageKey());
+        }
 
         splitService.createEqualSplits(savedExpense.getId(), request.participantIds(), request.totalAmount());
         categoryCommandService.syncCategories(savedExpense.getId(), request.categories());
@@ -65,9 +70,13 @@ public class ExpenseCommandService {
         expense.setTitle(request.title());
         expense.setDescription(request.description());
         expense.setAmount(request.totalAmount());
-        expense.setImageUrl(request.imageUrl());
+        expense.setImageUrl(request.imageKey());
         expense.setStatus("PENDING");
         expense.setUpdatedAt(LocalDateTime.now());
+
+        if (request.imageKey() != null && !request.imageKey().isBlank()) {
+            s3Service.useKey(authorId, request.imageKey());
+        }
 
         expenseRepository.save(expense);
 

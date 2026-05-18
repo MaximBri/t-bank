@@ -26,7 +26,7 @@ public interface InvitationRepository extends JpaRepository<EventInvitation, UUI
     List<MyInvitationResponse> findUserOutbox(@Param("userId") UUID userId);
 
     @Query("""
-        SELECT i.id as id, e.title as title, u.login as login, i.status as status, i.createdAt as createdAt
+        SELECT i.id as id, e.id as eventId, e.title as title, u.login as login, i.status as status, i.createdAt as createdAt
         FROM EventInvitation i, Event e, User u
         WHERE i.eventId = e.id
           AND i.userId = u.id

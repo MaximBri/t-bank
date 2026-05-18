@@ -25,13 +25,15 @@ public class ExpenseAuthorController {
     @PatchMapping("/{expenseId}")
     public ResponseEntity<Void> update(@PathVariable UUID eventId, @PathVariable UUID expenseId,
                                        @RequestBody CreateExpenseRequest request) {
-        commandService.update(eventId, expenseId, request);
+        UUID authorId = SecurityUtils.getCurrentUserId();
+        commandService.update(expenseId, authorId, request);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{expenseId}")
     public ResponseEntity<Void> delete(@PathVariable UUID eventId, @PathVariable UUID expenseId) {
-        commandService.delete(eventId, expenseId);
+        UUID authorId = SecurityUtils.getCurrentUserId();
+        commandService.delete(expenseId, authorId);
         return ResponseEntity.noContent().build();
     }
 
