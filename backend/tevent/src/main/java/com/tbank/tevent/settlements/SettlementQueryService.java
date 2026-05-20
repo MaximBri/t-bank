@@ -46,7 +46,7 @@ public class SettlementQueryService {
 
         // Проверяем наличие подтвержденных расходов
         List<com.tbank.tevent.repo.entity.Expense> confirmedExpenses =
-            expenseRepository.findAllByEventIdAndStatus(eventId, "ACTIVE");
+            expenseRepository.findAllByEventIdAndStatus(eventId, "CONFIRMED");
         log.debug("Found {} confirmed expenses for event: {}", confirmedExpenses.size(), eventId);
         
         if (confirmedExpenses.isEmpty()) {

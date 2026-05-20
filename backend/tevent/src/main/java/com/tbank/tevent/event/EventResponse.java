@@ -19,5 +19,6 @@ public record EventResponse (
     String imageUrl,
     UUID ownerId,
     Long countOfParticipants,
-    CreatorInfo creatorInfo
+    CreatorInfo creatorInfo,
+    boolean isCompleted
 ){}

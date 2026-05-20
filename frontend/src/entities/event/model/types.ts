@@ -18,6 +18,7 @@ export type EventResponse = {
   image_key: string | null
   imageUrl: string
   ownerId: string
+  isCompleted: boolean
 }
 
 export type UserEventDto = {
@@ -52,6 +53,7 @@ export type Participant = {
   login: string
   firstName: string | null
   lastName: string | null
+  avatarUrl: string | null
 }
 
 export type ParticipantsResponse = {
@@ -61,4 +63,21 @@ export type ParticipantsResponse = {
 export type EventInviteToken = {
   token: string
   expiresAt: string
+}
+
+export type CreatorInfo = {
+  firstName: string
+  secondName: string
+  login: string
+  avatarUrl: string
+}
+
+export type EventPreview = {
+  eventId: string
+  title: string
+  imageUrl: string | null
+  participantCount: number
+  startDate: string
+  endDate: string
+  creatorInfo: CreatorInfo
 }

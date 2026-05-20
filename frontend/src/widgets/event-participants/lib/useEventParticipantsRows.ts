@@ -41,6 +41,7 @@ export const useEventParticipantsRows = ({
       login: participant.login,
       firstName: participant.firstName,
       lastName: participant.lastName,
+      avatarUrl: participant.avatarUrl,
       status:
         !!ownerId && participant.userId === ownerId
           ? EventParticipantStatus.owner

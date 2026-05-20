@@ -2,6 +2,8 @@ import ArrowBoldIcon from '@/shared/assets/icons/arrow-bold.svg?react'
 
 import { Button } from '@/shared/ui/button/Button.tsx'
 import { Text } from '@/shared/ui/text/Text.tsx'
+import { UserAvatar } from '@/shared/ui/userAvatar/UserAvatar.tsx'
+import { UserAvatarSizes } from '@/shared/ui/userAvatar/constants.ts'
 import { formatPrice } from '@/shared/lib/number/format-price.ts'
 
 import type { SettlementStepDto } from '@/entities/settlement'
@@ -13,8 +15,10 @@ type SettlementRowProps = {
   fromUser: ParticipantLookupEntry
   toUser: ParticipantLookupEntry
   isMyDebt: boolean
+  isMyCredit: boolean
   isMutating: boolean
   onPay: () => void
+  onConfirm: () => void
 }
 
 export const SettlementRow = ({
@@ -22,15 +26,24 @@ export const SettlementRow = ({
   fromUser,
   toUser,
   isMyDebt,
+  isMyCredit,
   isMutating,
   onPay,
+  onConfirm,
 }: SettlementRowProps) => {
+  const isActive = step.status === 'ACTIVE'
+  const isSent = step.status === 'SENT'
+  const isCompleted = step.status === 'COMPLETED'
   return (
     <div className="flex flex-col rounded-lg border-[2px] border-primary bg-primary p-[10px] sm:flex-row sm:px-[20px] sm:py-[10px]">
       <div className="flex flex-1 items-center gap-[20px]">
-        <div className="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-full bg-yellow sm:h-[80px] sm:w-[80px]">
-          <Text className="text-h3-d sm:text-h2-d">{fromUser.initials}</Text>
-        </div>
+        <UserAvatar
+          firstName={fromUser.firstName}
+          lastName={fromUser.lastName}
+          login={fromUser.login ?? fromUser.fullName}
+          avatarUrl={fromUser.avatarUrl}
+          variant={UserAvatarSizes.L}
+        />
         <div className="max-w-[250px] min-w-0">
           <Text className="truncate text-h3-d font-medium sm:text-h2-d">
             {fromUser.fullName}
@@ -48,18 +61,39 @@ export const SettlementRow = ({
           </Text>
           <Text className="text-h3-d font-medium text-muted">получит</Text>
         </div>
-        <div className="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-full bg-yellow sm:h-[80px] sm:w-[80px]">
-          <Text className="text-h3-d sm:text-h2-d">{toUser.initials}</Text>
-        </div>
+        <UserAvatar
+          firstName={toUser.firstName}
+          lastName={toUser.lastName}
+          login={toUser.login ?? toUser.fullName}
+          avatarUrl={toUser.avatarUrl}
+          variant={UserAvatarSizes.L}
+        />
       </div>
       <div className="flex flex-1 flex-col-reverse items-center justify-end gap-[10px] sm:flex-row sm:gap-[20px]">
-        {isMyDebt ? (
+        {isMyDebt && isActive && (
           <Button type="button" disabled={isMutating} onClick={onPay}>
             <Text variant="h2" className="font-normal">
               {isMutating ? 'Отправляем...' : 'Оплатить'}
             </Text>
           </Button>
-        ) : null}
+        )}
+        {isMyDebt && isSent && (
+          <Text variant="h3" className="font-normal text-muted">
+            Ожидает подтверждения
+          </Text>
+        )}
+        {isMyCredit && isSent && (
+          <Button type="button" disabled={isMutating} onClick={onConfirm}>
+            <Text variant="h2" className="font-normal">
+              {isMutating ? 'Подтверждаем...' : 'Подтвердить получение'}
+            </Text>
+          </Button>
+        )}
+        {isCompleted && (
+          <Text variant="h3" className="font-normal text-muted">
+            Оплачено
+          </Text>
+        )}
         <Text className="text-h2 sm:text-h1-d">{formatPrice(step.amount)}</Text>
       </div>
     </div>

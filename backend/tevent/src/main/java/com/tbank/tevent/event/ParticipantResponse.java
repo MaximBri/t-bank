@@ -7,5 +7,6 @@ public record ParticipantResponse(
         UUID userId,
         String login,
         String firstName,
-        String lastName
+        String lastName,
+        String avatarUrl
 ) {}

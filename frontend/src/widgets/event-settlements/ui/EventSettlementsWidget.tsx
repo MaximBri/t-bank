@@ -3,22 +3,36 @@ import { useParams } from 'react-router-dom'
 import ArrowGrowthIcon from '@/shared/assets/icons/arrow-growth.svg?react'
 
 import { useGetEventSettlements } from '@/entities/settlement'
+import { useGetEvent } from '@/entities/event/api/hooks/useGetEvent.ts'
 import { useGetEventParticipants } from '@/entities/event/api/hooks/useGetEventParticipants.ts'
 import { useUserStore } from '@/entities/user'
 import { Text } from '@/shared/ui/text/Text.tsx'
 
 import { buildParticipantLookup } from '@/widgets/event-settlements/lib/build-participant-lookup.ts'
 import { useSettlementsActions } from '@/widgets/event-settlements/lib/use-settlements-actions.ts'
-import { UNKNOWN_USER } from '@/widgets/event-settlements/model/constants.ts'
 import { SettlementRow } from '@/widgets/event-settlements/ui/SettlementRow.tsx'
 
 export const EventSettlementsWidget = () => {
   const { eventId } = useParams<{ eventId: string }>()
   const currentUserId = useUserStore((state) => state.user?.id)
-  const { data: settlements = [], isLoading } = useGetEventSettlements(eventId)
+  const { data: event } = useGetEvent(eventId)
+  const isCompleted = !!event?.isCompleted
+  const { data: settlements = [], isLoading } = useGetEventSettlements(eventId, isCompleted)
   const { data: participants = [] } = useGetEventParticipants(eventId)
-  const { pay, isMutating } = useSettlementsActions({ eventId })
+  const { pay, confirm, isMutating } = useSettlementsActions({ eventId })
   const participantLookup = buildParticipantLookup(participants)
+
+  const resolveUser = (userId: string, nameFromServer: string) => {
+    const fromLookup = participantLookup.get(userId)
+    if (fromLookup) return fromLookup
+    const initials = nameFromServer
+      .split(' ')
+      .map((w) => w[0] ?? '')
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+    return { fullName: nameFromServer, initials, avatarUrl: null }
+  }
 
   return (
     <section className="flex flex-col gap-[15px] sm:gap-[20px]">
@@ -41,7 +55,11 @@ export const EventSettlementsWidget = () => {
             </div>
           </div>
         </div>
-        {isLoading && settlements.length === 0 ? (
+        {!isCompleted ? (
+          <Text className="text-muted">
+            Взаиморасчёты станут доступны после завершения события.
+          </Text>
+        ) : isLoading && settlements.length === 0 ? (
           <Text className="text-muted">Загружаем расчёты...</Text>
         ) : settlements.length === 0 ? (
           <Text className="text-muted">
@@ -51,13 +69,15 @@ export const EventSettlementsWidget = () => {
           <div className="flex flex-col gap-[15px]">
             {settlements.map((step, index) => (
               <SettlementRow
-                key={`${step.fromUserId}->${step.toUserId}-${index}`}
+                key={`${step.debtorId}->${step.creditorId}-${index}`}
                 step={step}
-                fromUser={participantLookup.get(step.fromUserId) ?? UNKNOWN_USER}
-                toUser={participantLookup.get(step.toUserId) ?? UNKNOWN_USER}
-                isMyDebt={!!currentUserId && step.fromUserId === currentUserId}
+                fromUser={resolveUser(step.debtorId, step.debtorName)}
+                toUser={resolveUser(step.creditorId, step.creditorName)}
+                isMyDebt={!!currentUserId && step.debtorId === currentUserId}
+                isMyCredit={!!currentUserId && step.creditorId === currentUserId}
                 isMutating={isMutating}
-                onPay={() => pay({ toUserId: step.toUserId, amount: step.amount })}
+                onPay={() => pay({ paymentId: step.paymentId })}
+                onConfirm={() => confirm({ paymentId: step.paymentId })}
               />
             ))}
           </div>

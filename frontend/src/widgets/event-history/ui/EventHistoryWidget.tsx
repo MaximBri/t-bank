@@ -1,74 +1,90 @@
+import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 import SearchIcon from '@/shared/assets/icons/search.svg?react'
 
 import { Text } from '@/shared/ui/text/Text.tsx'
 import { TextInput } from '@/shared/ui/inputs'
-import { HistoryRecord, HistoryRecordType } from '@/entities/historyRecord/model/type.ts'
+import { HistoryRecordType } from '@/entities/historyRecord/model/type.ts'
 import { HistoryRecordTypeTranslation } from '@/entities/historyRecord/model/constants.ts'
-import { useState } from 'react'
+import { useGetEventHistory } from '@/entities/historyRecord/api/hooks/useGetEventHistory.ts'
 import clsx from 'clsx'
 
-const historyRecords: HistoryRecord[] = [
-  {
-    id: 1,
-    type: HistoryRecordType.EventCompleted,
-    detail: 'Событие завершено',
-    userFullName: 'Антон Сидоров',
-    createdAt: '15.05.2026 17:46',
-  },
-  {
-    id: 2,
-    type: HistoryRecordType.ExpenseCreated,
-    detail: 'Добавлен расход «Экскурсия по городу»',
-    userFullName: 'Дмитрий Волков',
-    createdAt: '14.05.2026 18:45',
-  },
-  {
-    id: 3,
-    type: HistoryRecordType.UserJoined,
-    detail: 'Присоединился к событию',
-    userFullName: 'Дмитрий Волков',
-    createdAt: '13.05.2026 11:05',
-  },
-  {
-    id: 4,
-    type: HistoryRecordType.EventCreated,
-    detail: 'Создано событие',
-    userFullName: 'Антон Сидоров',
-    createdAt: '12.05.2026 08:05',
-  },
-  {
-    id: 6,
-    type: HistoryRecordType.ExpenseUpdated,
-    detail: 'Обновлен расход «Бронирование отеля»',
-    userFullName: 'Екатерина Смирнова',
-    createdAt: '11.05.2026 14:22',
-  },
-  {
-    id: 7,
-    type: HistoryRecordType.UserLeft,
-    detail: 'Покинул событие',
-    userFullName: 'Илья Петров',
-    createdAt: '10.05.2026 09:10',
-  },
-  {
-    id: 8,
-    type: HistoryRecordType.UserRemoved,
-    detail: 'Удален из списка участников',
-    userFullName: 'Антон Сидоров',
-    createdAt: '09.05.2026 10:35',
-  },
-  {
-    id: 9,
-    type: HistoryRecordType.ExpenseDeleted,
-    detail: 'Удален расход «Трансфер из аэропорта»',
-    userFullName: 'Екатерина Смирнова',
-    createdAt: '08.05.2026 12:18',
-  },
+const ACTION_TYPE_MAP: Record<string, HistoryRecordType> = {
+  EXPENSE_CREATED: HistoryRecordType.ExpenseCreated,
+  EXPENSE_UPDATED: HistoryRecordType.ExpenseUpdated,
+  EXPENSE_DELETED: HistoryRecordType.ExpenseDeleted,
+  EXPENSE_ACTIVATED: HistoryRecordType.ExpenseActivated,
+  EXPENSE_REJECTED: HistoryRecordType.ExpenseRejected,
+  SPLIT_CONFIRMED: HistoryRecordType.SplitConfirmed,
+  PAYMENT_INITIATED: HistoryRecordType.PaymentInitiated,
+  PAYMENT_CONFIRMED: HistoryRecordType.PaymentConfirmed,
+  PAYMENT_SENT: HistoryRecordType.PaymentSent,
+  PAYMENT_FAILED: HistoryRecordType.PaymentFailed,
+  PAYMENT_COMPLETED: HistoryRecordType.PaymentCompleted,
+  USER_KICKED: HistoryRecordType.UserRemoved,
+  USER_LEFT: HistoryRecordType.UserLeft,
+  USER_JOINED: HistoryRecordType.UserJoined,
+  INVITATION_CREATED: HistoryRecordType.InvitationCreated,
+  EVENT_CREATED: HistoryRecordType.EventCreated,
+  EVENT_COMPLETED: HistoryRecordType.EventCompleted,
+}
+
+type FilterKey = 'all' | 'expenses' | 'participants' | 'events'
+
+const FILTER_BUTTONS: { label: string; key: FilterKey }[] = [
+  { label: 'Все', key: 'all' },
+  { label: 'Расходы', key: 'expenses' },
+  { label: 'Участники', key: 'participants' },
+  { label: 'События', key: 'events' },
 ]
 
+const FILTER_TYPES: Record<FilterKey, HistoryRecordType[] | null> = {
+  all: null,
+  expenses: [HistoryRecordType.ExpenseCreated, HistoryRecordType.ExpenseUpdated, HistoryRecordType.ExpenseDeleted, HistoryRecordType.ExpenseActivated, HistoryRecordType.ExpenseRejected, HistoryRecordType.SplitConfirmed, HistoryRecordType.PaymentInitiated, HistoryRecordType.PaymentConfirmed, HistoryRecordType.PaymentSent, HistoryRecordType.PaymentFailed, HistoryRecordType.PaymentCompleted],
+  participants: [HistoryRecordType.UserJoined, HistoryRecordType.UserLeft, HistoryRecordType.UserRemoved, HistoryRecordType.InvitationCreated],
+  events: [HistoryRecordType.EventCreated, HistoryRecordType.EventCompleted],
+}
+
+const formatDate = (isoString: string) => {
+  try {
+    const date = new Date(isoString)
+    return date.toLocaleString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  } catch {
+    return isoString
+  }
+}
+
 export const EventHistoryWidget = () => {
-  const buttons = ['Все', 'Расходы', 'Участники', 'События']
-  const [activeIndex, setActiveIndex] = useState<number>(0)
+  const { eventId } = useParams<{ eventId: string }>()
+  const [activeFilter, setActiveFilter] = useState<FilterKey>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const { data: records = [], isLoading } = useGetEventHistory(eventId)
+
+  const filteredRecords = records.filter((record) => {
+    const recordType = ACTION_TYPE_MAP[record.actionType]
+    const allowedTypes = FILTER_TYPES[activeFilter]
+
+    if (allowedTypes && (!recordType || !allowedTypes.includes(recordType))) {
+      return false
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      return (
+        record.message.toLowerCase().includes(q) ||
+        record.userFullName.toLowerCase().includes(q)
+      )
+    }
+
+    return true
+  })
 
   return (
     <section className="flex flex-col gap-[15px] sm:gap-[20px]">
@@ -83,6 +99,8 @@ export const EventHistoryWidget = () => {
             <div className="flex-1 sm:max-w-[660px]">
               <TextInput
                 name="history-search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className=" text-body sm:text-h3-d h-[40px] sm:h-[56px] rounded-[10px] sm:rounded-md border border-primary pl-[67px] pr-[16px] text-primary placeholder:text-placeholder focus:border-primary"
                 placeholder="Поиск по истории"
                 icon={<SearchIcon width="24px" height="24px" className="text-placeholder" />}
@@ -90,17 +108,17 @@ export const EventHistoryWidget = () => {
               />
             </div>
             <div className="flex flex-wrap gap-[10px] sm:gap-[14px]">
-              {buttons.map((button, index) => (
+              {FILTER_BUTTONS.map((button) => (
                 <button
-                  key={index}
-                  onClick={() => setActiveIndex(index)}
+                  key={button.key}
+                  onClick={() => setActiveFilter(button.key)}
                   className={clsx(
                     'border border-primary rounded-[10px] sm:rounded-md px-[10px] sm:px-[16px]',
-                    index === activeIndex ? 'bg-yellow' : null,
+                    button.key === activeFilter ? 'bg-yellow' : null,
                   )}
                 >
                   <Text variant="h3" className="font-normal">
-                    {button}
+                    {button.label}
                   </Text>
                 </button>
               ))}
@@ -108,35 +126,46 @@ export const EventHistoryWidget = () => {
           </div>
           <div>
             <Text className="text-h3-d sm:text-h2-d font-medium">
-              Всего записей: {historyRecords.length}
+              Всего записей: {filteredRecords.length}
             </Text>
           </div>
         </div>
         <div className="flex flex-col gap-[10px] sm:gap-[24px]">
-          {historyRecords.map((record, index) => (
-            <div
-              key={index}
-              className="flex flex-col sm:flex-row sm:gap-[10px] items-start sm:justify-between"
-            >
-              <div>
-                <div className="flex gap-[16px] items-center justify-center">
-                  <div className="w-[16px] h-[16px] shrink-0 bg-yellow rounded-full"></div>
-                  <Text className="text-h3-d sm:text-h2-d font-medium">{record.detail}</Text>
+          {isLoading && (
+            <Text className="text-h3-d text-placeholder">Загрузка...</Text>
+          )}
+          {!isLoading && filteredRecords.length === 0 && (
+            <Text className="text-h3-d text-placeholder">Записей не найдено</Text>
+          )}
+          {filteredRecords.map((record) => {
+            const recordType = ACTION_TYPE_MAP[record.actionType]
+            const typeLabel = recordType ? HistoryRecordTypeTranslation[recordType] : record.actionType
+
+            return (
+              <div
+                key={record.id}
+                className="flex flex-col sm:flex-row sm:gap-[10px] items-start sm:justify-between"
+              >
+                <div>
+                  <div className="flex gap-[16px] items-center justify-center">
+                    <div className="w-[16px] h-[16px] shrink-0 bg-yellow rounded-full"></div>
+                    <Text className="text-h3-d sm:text-h2-d font-medium">{record.message}</Text>
+                  </div>
+                  <Text variant="h3" className="sm:ml-[32px] text-placeholder">
+                    {record.userFullName}
+                  </Text>
                 </div>
-                <Text variant="h3" className="sm:ml-[32px] text-placeholder">
-                  {record.userFullName}
-                </Text>
+                <div className="text-end">
+                  <Text className="hidden sm:text-h2-d sm:block font-medium">
+                    {typeLabel}
+                  </Text>
+                  <Text variant="h3" className="text-placeholder">
+                    {formatDate(record.createdAt)}
+                  </Text>
+                </div>
               </div>
-              <div className="text-end">
-                <Text className="hidden sm:text-h2-d sm:block font-medium">
-                  {HistoryRecordTypeTranslation[record.type]}
-                </Text>
-                <Text variant="h3" className="text-placeholder">
-                  {record.createdAt}
-                </Text>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </section>

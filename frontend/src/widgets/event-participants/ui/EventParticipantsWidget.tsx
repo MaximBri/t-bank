@@ -31,7 +31,9 @@ import { InviteParticipantsModal } from '@/features/InviteParticipantsModal/ui/I
 import { useDecideInvitation } from '@/entities/invitation/api/hooks/useDecideInvitation.ts'
 import { InvitationStatus } from '@/entities/invitation'
 import { useGetEvent } from '@/entities/event/api/hooks/useGetEvent.ts'
+import { useRemoveParticipant } from '@/entities/event/api/hooks/useRemoveParticipant.ts'
 import { useUserStore } from '@/entities/user'
+import { toast } from 'sonner'
 
 export const EventParticipantsWidget = () => {
   const { eventId } = useParams<{ eventId: string }>()
@@ -45,10 +47,18 @@ export const EventParticipantsWidget = () => {
     searchQuery,
   })
   const { mutate: decideInvitation, isPending: isDeciding } = useDecideInvitation()
+  const { mutate: removeParticipant, isPending: isRemoving } = useRemoveParticipant(eventId ?? '')
 
   const { data: event } = useGetEvent(eventId)
   const currentUserId = useUserStore((state) => state.user?.id)
   const isOwner = !!currentUserId && currentUserId === event?.ownerId
+
+  const handleRemove = (userId: string) => {
+    removeParticipant(userId, {
+      onSuccess: () => toast.success('Участник исключён'),
+      onError: () => toast.error('Не удалось исключить участника'),
+    })
+  }
 
   return (
     <>
@@ -133,6 +143,7 @@ export const EventParticipantsWidget = () => {
                     firstName={row.kind === ParticipantRowKind.Participant ? row.firstName : null}
                     lastName={row.kind === ParticipantRowKind.Participant ? row.lastName : null}
                     login={row.login}
+                    avatarUrl={row.kind === ParticipantRowKind.Participant ? row.avatarUrl : null}
                     variant={UserAvatarSizes.L}
                   />
                   <div className="flex flex-1 flex-col justify-between sm:flex-row sm:items-center">
@@ -188,10 +199,12 @@ export const EventParticipantsWidget = () => {
                             <CloseIcon className="h-[16px] w-[16px] sm:h-[24px] sm:w-[24px]" />
                           </button>
                         </>
-                      ) : row.status !== EventParticipantStatus.owner ? (
+                      ) : row.status !== EventParticipantStatus.owner && isOwner ? (
                         <button
                           type="button"
-                          className="flex items-center rounded-md border border-primary px-[8px] sm:px-[12px] sm:py-[10px]"
+                          disabled={isRemoving}
+                          onClick={() => row.kind === ParticipantRowKind.Participant && handleRemove(row.userId)}
+                          className="flex items-center rounded-md border border-primary px-[8px] disabled:opacity-60 sm:px-[12px] sm:py-[10px]"
                           aria-label="Исключить участника"
                         >
                           <UserMinusIcon className="h-[16px] w-[16px] sm:h-[24px] sm:w-[24px]" />

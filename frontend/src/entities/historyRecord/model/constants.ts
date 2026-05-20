@@ -10,4 +10,12 @@ export const HistoryRecordTypeTranslation: Record<HistoryRecordType, string> = {
   [HistoryRecordType.ExpenseCreated]: 'Создание расхода',
   [HistoryRecordType.ExpenseUpdated]: 'Обновление расхода',
   [HistoryRecordType.ExpenseDeleted]: 'Удаление расхода',
+  [HistoryRecordType.ExpenseActivated]: 'Расход подтверждён',
+  [HistoryRecordType.ExpenseRejected]: 'Расход отклонён',
+  [HistoryRecordType.SplitConfirmed]: 'Участник подтвердил расход',
+  [HistoryRecordType.PaymentInitiated]: 'Перевод инициирован',
+  [HistoryRecordType.PaymentConfirmed]: 'Перевод подтверждён',
+  [HistoryRecordType.PaymentSent]: 'Перевод отправлен',
+  [HistoryRecordType.PaymentFailed]: 'Перевод не удался',
+  [HistoryRecordType.PaymentCompleted]: 'Перевод завершён',
 }

@@ -10,7 +10,7 @@ describe('buildParticipantLookup', () => {
 
   it('отображает участника с firstName+lastName в полное имя "First Last"', () => {
     const participants = [
-      { userId: 'u1', login: 'user1', firstName: 'First', lastName: 'Last' },
+      { userId: 'u1', login: 'user1', firstName: 'First', lastName: 'Last', avatarUrl: null },
     ]
     const result = buildParticipantLookup(participants)
     expect(result.get('u1')?.fullName).toBe('First Last')
@@ -18,7 +18,7 @@ describe('buildParticipantLookup', () => {
 
   it('использует login как запасной вариант когда firstName и lastName оба null', () => {
     const participants = [
-      { userId: 'u2', login: 'mylogin', firstName: null, lastName: null },
+      { userId: 'u2', login: 'mylogin', firstName: null, lastName: null, avatarUrl: null },
     ]
     const result = buildParticipantLookup(participants)
     expect(result.get('u2')?.fullName).toBe('mylogin')
@@ -26,7 +26,7 @@ describe('buildParticipantLookup', () => {
 
   it('устанавливает корректный userId в качестве ключа карты', () => {
     const participants = [
-      { userId: 'abc-123', login: 'user', firstName: 'Alice', lastName: null },
+      { userId: 'abc-123', login: 'user', firstName: 'Alice', lastName: null, avatarUrl: null },
     ]
     const result = buildParticipantLookup(participants)
     expect(result.has('abc-123')).toBe(true)
@@ -34,8 +34,8 @@ describe('buildParticipantLookup', () => {
 
   it('обрабатывает нескольких участников', () => {
     const participants = [
-      { userId: 'u1', login: 'alice', firstName: 'Alice', lastName: 'Smith' },
-      { userId: 'u2', login: 'bob', firstName: null, lastName: null },
+      { userId: 'u1', login: 'alice', firstName: 'Alice', lastName: 'Smith', avatarUrl: null },
+      { userId: 'u2', login: 'bob', firstName: null, lastName: null, avatarUrl: null },
     ]
     const result = buildParticipantLookup(participants)
     expect(result.size).toBe(2)
@@ -45,7 +45,7 @@ describe('buildParticipantLookup', () => {
 
   it('обрабатывает только firstName (без lastName) → "First"', () => {
     const participants = [
-      { userId: 'u3', login: 'carol', firstName: 'Carol', lastName: null },
+      { userId: 'u3', login: 'carol', firstName: 'Carol', lastName: null, avatarUrl: null },
     ]
     const result = buildParticipantLookup(participants)
     expect(result.get('u3')?.fullName).toBe('Carol')
@@ -53,7 +53,7 @@ describe('buildParticipantLookup', () => {
 
   it('корректно вычисляет инициалы для участника с firstName+lastName', () => {
     const participants = [
-      { userId: 'u4', login: 'user4', firstName: 'Alice', lastName: 'Smith' },
+      { userId: 'u4', login: 'user4', firstName: 'Alice', lastName: 'Smith', avatarUrl: null },
     ]
     const result = buildParticipantLookup(participants)
     expect(result.get('u4')?.initials).toBe('A.S.')
@@ -61,7 +61,7 @@ describe('buildParticipantLookup', () => {
 
   it('корректно вычисляет инициалы для участника только с login', () => {
     const participants = [
-      { userId: 'u5', login: 'zara', firstName: null, lastName: null },
+      { userId: 'u5', login: 'zara', firstName: null, lastName: null, avatarUrl: null },
     ]
     const result = buildParticipantLookup(participants)
     expect(result.get('u5')?.initials).toBe('Z')

@@ -78,6 +78,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             UserAlreadyExistsException.class,
             CategoryAlreadyExistsException.class,
+            IllegalStateException.class,
     })
     public ResponseEntity<ApiError> handleConflict(RuntimeException ex) {
         return buildError(HttpStatus.CONFLICT, ex.getMessage());

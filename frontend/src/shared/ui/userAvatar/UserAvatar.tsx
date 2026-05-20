@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from 'react'
 import { avatarSizeClasses, UserAvatarSizes } from './constants'
 import clsx from 'clsx'
+import { useResolvedAvatarUrl } from '@/shared/api/hooks/useResolvedAvatarUrl.ts'
 
 interface UserAvatarProps {
   firstName?: string | null
@@ -17,6 +18,8 @@ export const UserAvatar: FC<UserAvatarProps> = ({
   avatarUrl,
   variant = UserAvatarSizes.S,
 }) => {
+  const resolvedUrl = useResolvedAvatarUrl(avatarUrl)
+  avatarUrl = resolvedUrl ?? avatarUrl
   const firstInitial = firstName?.[0] ?? ''
   const lastInitial = lastName?.[0] ?? ''
   const nickname = (

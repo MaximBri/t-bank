@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { useUserStore } from '@/entities/user'
+import { eventsApi } from '@/entities/event'
 import { LogoWithForm } from '@/shared/ui/LogoWithForm.tsx'
 import { SignInByCredentialsSubmit, SignInForm } from '@/features/SignInForm'
 import { APP_ROUTES } from '@/shared/routes'
@@ -14,9 +15,20 @@ export const LoginPage = () => {
   const submitSignInForm: SignInByCredentialsSubmit = async (payload) => {
     try {
       const inviteToken = pendingInvite.get()
-      await login({ ...payload, inviteToken })
+      await login(payload)
       pendingInvite.clear()
-      toast.success(inviteToken ? 'Заявка отправлена организатору' : 'Вход выполнен')
+
+      if (inviteToken) {
+        try {
+          await eventsApi.applyByToken(inviteToken)
+          toast.success('Заявка отправлена организатору')
+        } catch {
+          toast.success('Вход выполнен')
+        }
+      } else {
+        toast.success('Вход выполнен')
+      }
+
       navigate(APP_ROUTES.HOME)
     } catch (error) {
       const status = (error as { status?: number })?.status
