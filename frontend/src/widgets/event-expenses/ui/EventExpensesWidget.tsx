@@ -27,6 +27,7 @@ export const EventExpensesWidget = () => {
   const [editingExpense, setEditingExpense] = useState<ExpenseResponseDto | null>(null)
 
   const isOwner = !!currentUserId && !!event && currentUserId === event.ownerId
+  const isCompleted = !!event?.isCompleted
 
   const participantsById = useMemo(() => {
     const map = new Map<string, string>()
@@ -51,16 +52,18 @@ export const EventExpensesWidget = () => {
             {expenses.length}
           </Text>
         </div>
-        <Button
-          type="button"
-          className="w-fit h-[30px] sm:h-[47px] py-[2px] gap-[10px] rounded-[10px] sm:rounded-[16px] bg-yellow px-[16px] sm:px-[30px]"
-          onClick={() => setCreateExpenseModalOpen(true)}
-        >
-          <AddIcon className="h-[24px] w-[24px]" />
-          <Text variant="h2" className="font-normal">
-            Добавить расход
-          </Text>
-        </Button>
+        {!isCompleted && (
+          <Button
+            type="button"
+            className="w-fit h-[30px] sm:h-[47px] py-[2px] gap-[10px] rounded-[10px] sm:rounded-[16px] bg-yellow px-[16px] sm:px-[30px]"
+            onClick={() => setCreateExpenseModalOpen(true)}
+          >
+            <AddIcon className="h-[24px] w-[24px]" />
+            <Text variant="h2" className="font-normal">
+              Добавить расход
+            </Text>
+          </Button>
+        )}
       </div>
 
       {isLoading && expenses.length === 0 ? (
@@ -74,7 +77,7 @@ export const EventExpensesWidget = () => {
               key={expense.id}
               expense={expense}
               payerName={participantsById.get(expense.payerId) ?? '—'}
-              isOwner={isOwner}
+              isOwner={isOwner && !isCompleted}
               isPayer={!!currentUserId && expense.payerId === currentUserId}
               isMutating={isMutating}
               onApprove={() => approve(expense.id)}

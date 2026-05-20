@@ -1,6 +1,7 @@
 package com.tbank.tevent.event;
 
 import com.tbank.tevent.category.dto.CategoryResponse;
+import com.tbank.tevent.event.dto.CreatorInfo;
 import com.tbank.tevent.repo.entity.Event;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 @Component
 public class EventMapper {
-    public EventResponse mapToResponse(Event event, List<CategoryResponse> categories, Long count) {
+    public EventResponse mapToResponse(Event event, List<CategoryResponse> categories, Long count, CreatorInfo creatorInfo) {
         List<String> eventCategoryNames = categories.stream()
                 .filter(c -> event.getId().equals(c.eventId()))
                 .map(CategoryResponse::name)
@@ -23,7 +24,15 @@ public class EventMapper {
                 EventStatusCalculator.calculate(event.getStartDate(), event.getEndDate()),
                 event.getImageKey(),
                 event.getOwnerId(),
-                count
+                count,
+                creatorInfo,
+                Boolean.TRUE.equals(event.getIsCompleted())
         );
+    }
+    
+    public EventResponse mapToResponse(Event event, List<CategoryResponse> categories, Long count) {
+        // For backward compatibility, create empty creator info
+        return mapToResponse(event, categories, count,
+                CreatorInfo.from("", "", "", ""));
     }
 }

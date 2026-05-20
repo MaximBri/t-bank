@@ -113,8 +113,7 @@ class ParticipantInboxTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode participantInbox = objectMapper.readTree(participantInboxStr);
-        assertThat(participantInbox.get("pendingConfirmations").size()).isEqualTo(0);
-        assertThat(participantInbox.get("actionRequired").size()).isEqualTo(0);
+        assertThat(participantInbox.get("listInbox").size()).isEqualTo(0);
     }
 
     @Test
@@ -193,8 +192,7 @@ class ParticipantInboxTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode participantInbox = objectMapper.readTree(participantInboxStr);
-        assertThat(participantInbox.get("pendingConfirmations").size()).isEqualTo(1);
-        assertThat(participantInbox.get("actionRequired").size()).isEqualTo(0);
+        assertThat(participantInbox.get("listInbox").size()).isEqualTo(1);
     }
 
     @Test
@@ -273,7 +271,7 @@ class ParticipantInboxTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode participantInbox = objectMapper.readTree(participantInboxStr);
-        UUID expenseId = UUID.fromString(participantInbox.get("pendingConfirmations").get(0).get("expenseId").asText());
+        UUID expenseId = UUID.fromString(participantInbox.get("listInbox").get(0).get("expenseId").asText());
 
         webTestClient.post().uri("/expenses/participant/" + expenseId + "/confirm")
                 .header("Cookie", bobSessionWithInvite.cookie())
@@ -288,8 +286,7 @@ class ParticipantInboxTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode participantInboxAfter = objectMapper.readTree(participantInboxStrAfter);
-        assertThat(participantInboxAfter.get("pendingConfirmations").size()).isEqualTo(0);
-        assertThat(participantInboxAfter.get("actionRequired").size()).isEqualTo(0);
+        assertThat(participantInboxAfter.get("listInbox").size()).isEqualTo(0);
     }
 
     @Test
@@ -368,7 +365,7 @@ class ParticipantInboxTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode participantInbox = objectMapper.readTree(participantInboxStr);
-        UUID expenseId = UUID.fromString(participantInbox.get("pendingConfirmations").get(0).get("expenseId").asText());
+        UUID expenseId = UUID.fromString(participantInbox.get("listInbox").get(0).get("expenseId").asText());
 
         webTestClient.post().uri("/expenses/participant/" + expenseId + "/confirm")
                 .header("Cookie", bobSessionWithInvite.cookie())
@@ -383,8 +380,7 @@ class ParticipantInboxTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode participantInboxAfter = objectMapper.readTree(participantInboxStrAfter);
-        assertThat(participantInboxAfter.get("pendingConfirmations").size()).isEqualTo(0);
-        assertThat(participantInboxAfter.get("actionRequired").size()).isEqualTo(0);
+        assertThat(participantInboxAfter.get("listInbox").size()).isEqualTo(0);
     }
 
     @Test
@@ -463,7 +459,7 @@ class ParticipantInboxTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode participantInbox = objectMapper.readTree(participantInboxStr);
-        UUID expenseId = UUID.fromString(participantInbox.get("pendingConfirmations").get(0).get("expenseId").asText());
+        UUID expenseId = UUID.fromString(participantInbox.get("listInbox").get(0).get("expenseId").asText());
 
         webTestClient.post().uri("/expenses/participant/" + expenseId + "/leave")
                 .header("Cookie", bobSessionWithInvite.cookie())
@@ -478,8 +474,8 @@ class ParticipantInboxTest {
                 .expectBody(String.class).returnResult().getResponseBody();
 
         JsonNode participantInboxAfter = objectMapper.readTree(participantInboxStrAfter);
-        assertThat(participantInboxAfter.get("pendingConfirmations").size()).isEqualTo(0);
-        assertThat(participantInboxAfter.get("actionRequired").size()).isEqualTo(0);
+        assertThat(participantInboxAfter.get("listInbox").size()).isEqualTo(1);
+        assertThat(participantInboxAfter.get("listInbox").get(0).get("expenseStatus").asText()).isEqualTo("REJECTED");
     }
 
     private TestSession registerUser(String login, String email, String password, String token) throws Exception {

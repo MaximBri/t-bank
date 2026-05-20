@@ -24,6 +24,7 @@ export type ParticipantRow =
       login: string
       firstName: string | null
       lastName: string | null
+      avatarUrl: string | null
       status: EventParticipantStatus
     }
   | {

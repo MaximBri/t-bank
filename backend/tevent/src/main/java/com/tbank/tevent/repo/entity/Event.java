@@ -3,6 +3,8 @@ package com.tbank.tevent.repo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OptimisticLocking;
+import org.hibernate.annotations.OptimisticLockType;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@OptimisticLocking(type = OptimisticLockType.NONE)
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -40,10 +43,6 @@ public class Event {
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID ownerId;
 
-    @Column(name = "version", nullable = false)
-    @Builder.Default
-    private Long version = 0L;
-
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -53,6 +52,10 @@ public class Event {
     @Column(name = "invite_token_id", nullable = false)
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID inviteTokenId;
+
+    @Column(name = "is_completed")
+    @Builder.Default
+    private Boolean isCompleted = false;
 
     @PrePersist
     protected void onCreate() {

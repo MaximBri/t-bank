@@ -21,7 +21,12 @@ export type Settlement = {
 }
 
 export type SettlementStepDto = {
-  fromUserId: string
-  toUserId: string
+  paymentId: string
+  debtorId: string
+  debtorName: string
+  creditorId: string
+  creditorName: string
   amount: number
+  status: string
+  isCurrentUserRelated: boolean
 }

@@ -56,11 +56,7 @@ public class S3Service {
     private long maxFileSizeBytes;
 
     public PresignedUpload generateUploadUrl(UUID userId, String fileName, String contentType, Long fileSizeBytes) {
-        try {
-            cleanupExpiredPendingUploads();
-        } catch (Exception ex) {
-            log.warn("Failed to cleanup expired pending uploads", ex);
-        }
+        cleanupExpiredPendingUploadsSafe();
 
         validateExpectedFileSize(fileSizeBytes);
 
@@ -108,6 +104,27 @@ public class S3Service {
         );
 
         log.info("Generated presigned download URL, userId={}, key={}", userId, s3Key);
+        return url.toString();
+    }
+
+    /**
+     * Presigned GET без проверки владельца — для публично-показываемых
+     * объектов (обложка события в invite-превью, открывается до входа).
+     * Возвращает null, если ключ пуст или объект отсутствует, чтобы
+     * превью не падало из-за отсутствующей картинки.
+     */
+    public String generatePublicUrl(String s3Key) {
+        if (s3Key == null || s3Key.isBlank()) {
+            return null;
+        }
+        if (!s3Template.objectExists(bucketName, s3Key)) {
+            return null;
+        }
+        URL url = s3Template.createSignedGetURL(
+                bucketName,
+                s3Key,
+                Duration.ofMinutes(presignTtlMinutes)
+        );
         return url.toString();
     }
 
@@ -245,6 +262,14 @@ public class S3Service {
             } finally {
                 removePendingUpload(s3Key);
             }
+        }
+    }
+
+    public void cleanupExpiredPendingUploadsSafe() {
+        try {
+            cleanupExpiredPendingUploads();
+        } catch (Exception ex) {
+            log.warn("Failed to cleanup expired pending uploads", ex);
         }
     }
 

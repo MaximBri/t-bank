@@ -31,7 +31,7 @@ public interface EventUserRepository extends JpaRepository<EventUser, UUID> {
     List<EventParticipantCount> countParticipantsByEventIds(@Param("eventIds") List<UUID> eventIds);
 
     @Query("""
-        SELECT u.id as userId, u.login as login, u.firstName as firstName, u.secondName as lastName
+        SELECT u.id as userId, u.login as login, u.firstName as firstName, u.secondName as lastName, u.avatarUrl as avatarUrl
         FROM EventUser eu, User u
         WHERE eu.userId = u.id
           AND eu.eventId = :eventId

@@ -78,6 +78,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             UserAlreadyExistsException.class,
             CategoryAlreadyExistsException.class,
+            IllegalStateException.class,
     })
     public ResponseEntity<ApiError> handleConflict(RuntimeException ex) {
         return buildError(HttpStatus.CONFLICT, ex.getMessage());
@@ -105,6 +106,7 @@ public class GlobalExceptionHandler {
             org.springframework.http.converter.HttpMessageNotReadableException.class
     })
     public ResponseEntity<ApiError> handleBadRequest(Exception ex) {
+        System.out.println(ex.getMessage());
         return buildError(HttpStatus.BAD_REQUEST, "Invalid request structure or parameters");
     }
 

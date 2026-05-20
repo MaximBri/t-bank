@@ -1,7 +1,6 @@
 package com.tbank.tevent.auth;
 
 
-import com.tbank.tevent.auth.exception.InvalidCredentialsException;
 import com.tbank.tevent.repo.UserRepository;
 import com.tbank.tevent.repo.entity.User;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -56,10 +55,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String login;
         try {
             login = jwtService.extractLogin(token);
-        } catch (ExpiredJwtException e) {
-            throw new InvalidCredentialsException("Access token expired");
-        } catch (JwtException e) {
-            throw new InvalidCredentialsException("Invalid access token");
+        } catch (ExpiredJwtException | JwtException e) {
+            log.debug("JWT authentication skipped: {}", e.getMessage());
+            filterChain.doFilter(request, response);
+            return;
         }
 
         User user = userRepository.findByLogin(login).orElse(null);
