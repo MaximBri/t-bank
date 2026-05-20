@@ -8,6 +8,14 @@ export enum HistoryRecordType {
   ExpenseCreated = 'ExpenseCreated',
   ExpenseUpdated = 'ExpenseUpdated',
   ExpenseDeleted = 'ExpenseDeleted',
+  ExpenseActivated = 'ExpenseActivated',
+  ExpenseRejected = 'ExpenseRejected',
+  SplitConfirmed = 'SplitConfirmed',
+  PaymentInitiated = 'PaymentInitiated',
+  PaymentConfirmed = 'PaymentConfirmed',
+  PaymentSent = 'PaymentSent',
+  PaymentFailed = 'PaymentFailed',
+  PaymentCompleted = 'PaymentCompleted',
 }
 
 export type HistoryRecord = {

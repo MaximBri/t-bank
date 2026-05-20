@@ -139,6 +139,32 @@ public class ExpenseCommandService {
         historyService.log(expense.getEventId(), userId, ActionType.EXPENSE_REJECTED, rejectMessage);
     }
 
+    public void approveExpense(UUID expenseId, UUID ownerId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new IllegalArgumentException("Расход не найден"));
+
+        expense.activate();
+        expenseRepository.save(expense);
+
+        balanceRepository.clearCalculatedDebts(expense.getEventId());
+
+        String msg = String.format("Расход '%s' подтверждён организатором", expense.getTitle());
+        historyService.log(expense.getEventId(), ownerId, ActionType.EXPENSE_ACTIVATED, msg);
+    }
+
+    public void rejectExpenseByOwner(UUID expenseId, UUID ownerId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new IllegalArgumentException("Расход не найден"));
+
+        expense.reject();
+        expenseRepository.save(expense);
+
+        balanceRepository.clearCalculatedDebts(expense.getEventId());
+
+        String msg = String.format("Расход '%s' отклонён организатором", expense.getTitle());
+        historyService.log(expense.getEventId(), ownerId, ActionType.EXPENSE_REJECTED, msg);
+    }
+
     private Expense getVerifiedExpense(UUID expenseId, UUID authorId) {
         Expense expense = expenseRepository.findById(expenseId)
                 .orElseThrow(() -> new IllegalArgumentException("Расход не найден"));

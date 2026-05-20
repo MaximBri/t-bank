@@ -64,7 +64,7 @@ public class Expense {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     public void activate() {
-        this.status = "ACTIVE";
+        this.status = "CONFIRMED";
         this.updatedAt = LocalDateTime.now();
     }
 

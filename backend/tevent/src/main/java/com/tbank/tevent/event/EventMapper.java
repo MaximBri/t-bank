@@ -25,7 +25,8 @@ public class EventMapper {
                 event.getImageKey(),
                 event.getOwnerId(),
                 count,
-                creatorInfo
+                creatorInfo,
+                Boolean.TRUE.equals(event.getIsCompleted())
         );
     }
     

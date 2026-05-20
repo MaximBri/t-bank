@@ -41,4 +41,18 @@ public class ExpenseAuthorController {
     public ResponseEntity<EventExpensesResponse> getEventExpenses(@PathVariable UUID eventId) {
         return ResponseEntity.ok(queryService.getEventExpenses(eventId));
     }
+
+    @PostMapping("/{expenseId}/approve")
+    public ResponseEntity<Void> approve(@PathVariable UUID eventId, @PathVariable UUID expenseId) {
+        UUID ownerId = SecurityUtils.getCurrentUserId();
+        commandService.approveExpense(expenseId, ownerId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{expenseId}/reject")
+    public ResponseEntity<Void> reject(@PathVariable UUID eventId, @PathVariable UUID expenseId) {
+        UUID ownerId = SecurityUtils.getCurrentUserId();
+        commandService.rejectExpenseByOwner(expenseId, ownerId);
+        return ResponseEntity.noContent().build();
+    }
 }

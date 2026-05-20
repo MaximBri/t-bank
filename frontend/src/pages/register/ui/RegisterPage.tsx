@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { useUserStore } from '@/entities/user'
+import { eventsApi } from '@/entities/event'
 import { SignUpForm, type SignUpByCredentialsSubmit } from '@/features/SignUpForm'
 import { APP_ROUTES } from '@/shared/routes'
 import { LogoWithForm } from '@/shared/ui/LogoWithForm.tsx'
@@ -14,9 +15,20 @@ export const RegisterPage = () => {
   const submitSignUpForm: SignUpByCredentialsSubmit = async (payload) => {
     try {
       const inviteToken = pendingInvite.get()
-      await register({ ...payload, inviteToken })
+      await register(payload)
       pendingInvite.clear()
-      toast.success(inviteToken ? 'Аккаунт создан, заявка отправлена организатору' : 'Аккаунт создан')
+
+      if (inviteToken) {
+        try {
+          await eventsApi.applyByToken(inviteToken)
+          toast.success('Аккаунт создан, заявка отправлена организатору')
+        } catch {
+          toast.success('Аккаунт создан')
+        }
+      } else {
+        toast.success('Аккаунт создан')
+      }
+
       navigate(APP_ROUTES.HOME)
     } catch (error) {
       toast.error('Не удалось зарегистрироваться')

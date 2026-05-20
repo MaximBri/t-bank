@@ -133,7 +133,7 @@ public class EventService {
         return new EventPreviewResponse(
                 event.getId(),
                 event.getTitle(),
-                event.getImageKey(), // Assuming imageKey is stored, might need conversion to URL
+                s3Service.generatePublicUrl(event.getImageKey()),
                 participantCount,
                 event.getStartDate(),
                 event.getEndDate(),
@@ -170,8 +170,8 @@ public class EventService {
             throw new IllegalStateException("User is already a participant of this event");
         }
 
-        boolean alreadyInvited = invitationRepository.existsByEventIdAndUserId(event.getId(), user.getId());
-        if (alreadyInvited) {
+        boolean alreadyPending = invitationRepository.existsByEventIdAndUserIdAndStatus(event.getId(), user.getId(), "PENDING");
+        if (alreadyPending) {
             throw new IllegalStateException("User has already applied to this event");
         }
 
@@ -230,8 +230,10 @@ public class EventService {
             throw new AccessDeniedException("Only owner can complete event");
         }
 
+        // Идемпотентность: повторный complete не ошибка, возвращаем
+        // текущее состояние (операция уже выполнена).
         if (Boolean.TRUE.equals(event.getIsCompleted())) {
-            throw new ValidationException("Event is already completed");
+            return getEvent(eventId);
         }
 
         event.setIsCompleted(true);
@@ -304,7 +306,8 @@ public class EventService {
                         e.getImageKey(),
                         e.getOwnerId(),
                         countsByEventId.getOrDefault(e.getId(), 0L),
-                        creatorInfoByOwnerId.get(e.getOwnerId())
+                        creatorInfoByOwnerId.get(e.getOwnerId()),
+                        Boolean.TRUE.equals(e.getIsCompleted())
                 ))
                 .toList();
 

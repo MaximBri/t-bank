@@ -2,21 +2,19 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { paymentsApi } from '@/entities/settlement/api/paymentsApi.ts'
 
-type PaySettlementVariables = {
+type ConfirmSettlementVariables = {
   eventId: string
   paymentId: string
 }
 
-export const usePaySettlement = () => {
+export const useConfirmSettlement = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ eventId, paymentId }: PaySettlementVariables) => {
-      await paymentsApi.markAsSent(eventId, paymentId)
-    },
-    onSuccess: (_paymentId, { eventId }) => {
+    mutationFn: ({ eventId, paymentId }: ConfirmSettlementVariables) =>
+      paymentsApi.complete(eventId, paymentId),
+    onSuccess: (_data, { eventId }) => {
       queryClient.invalidateQueries({ queryKey: ['event', 'settlements', eventId] })
-      queryClient.invalidateQueries({ queryKey: ['notifications'] })
     },
   })
 }

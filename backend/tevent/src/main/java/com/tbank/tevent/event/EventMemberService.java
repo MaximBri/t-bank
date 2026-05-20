@@ -1,6 +1,8 @@
 package com.tbank.tevent.event;
 
 import com.tbank.tevent.SecurityUtils;
+import com.tbank.tevent.history.ActionType;
+import com.tbank.tevent.history.EventHistoryService;
 import com.tbank.tevent.repo.EventRepository;
 import com.tbank.tevent.repo.EventUserRepository;
 import com.tbank.tevent.repo.ExpenseRepository;
@@ -23,6 +25,8 @@ public class EventMemberService {
     private final EventUserRepository eventUserRepository;
     private final EventRepository eventRepository;
     private final ExpenseRepository expenseRepository;
+    private final ExpenseSplitRepository expenseSplitRepository;
+    private final EventHistoryService eventHistoryService;
 
     @Transactional(readOnly = true)
     public List<ParticipantResponse> getParticipants(UUID eventId) {
@@ -60,25 +64,33 @@ public class EventMemberService {
         }
         
         eventUserRepository.delete(eventUser);
-        
+
+        eventHistoryService.log(eventId, userId, ActionType.USER_KICKED,
+                "Участник исключён из события владельцем");
+
         // Also delete any pending invitations for this user to this event
         // This would require InvitationRepository dependency
     }
     
     private boolean checkIfUserHasExpenses(UUID eventId, UUID userId) {
-        // Check if user is payer of any expenses
-        boolean hasExpensesAsPayer = !expenseRepository.findAllByEventIdAndStatus(eventId, "CONFIRMED").stream()
-                .filter(expense -> expense.getPayerId().equals(userId))
-                .toList().isEmpty();
-        
+        // Плательщик любого НЕ отклонённого расхода (PLANNED/PENDING/ACTIVE/
+        // CONFIRMED) — не только CONFIRMED, как было: иначе участника с
+        // активным неподтверждённым расходом можно было удалить.
+        boolean hasExpensesAsPayer = expenseRepository
+                .findAllByEventIdAndStatusInOrderByCreatedAtDesc(
+                        eventId, List.of("PLANNED", "PENDING", "ACTIVE", "CONFIRMED"))
+                .stream()
+                .anyMatch(expense -> expense.getPayerId().equals(userId));
+
         if (hasExpensesAsPayer) {
             return true;
         }
-        
-        // Check if user is participant in any expense splits
-        // This would require a custom query in ExpenseSplitRepository
-        // For now, return false
-        return false;
+
+        // Участник любой доли (split) в расходах события. Раньше этот
+        // случай был заглушён ("return false") — участника со split-долгом
+        // можно было удалить/выпустить, оставив висящие записи и сломав
+        // расчёт долгов.
+        return expenseSplitRepository.existsSplitForUserInEvent(eventId, userId);
     }
     
     private void checkIfEventIsCompleted(Event event) {
@@ -113,5 +125,8 @@ public class EventMemberService {
         
 
         eventUserRepository.delete(eventUser);
+
+        eventHistoryService.log(eventId, currentUserId, ActionType.USER_LEFT,
+                "Участник покинул событие");
     }
 }

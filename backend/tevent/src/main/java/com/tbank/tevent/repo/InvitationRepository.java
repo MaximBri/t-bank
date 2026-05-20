@@ -12,6 +12,7 @@ import java.util.UUID;
 
 public interface InvitationRepository extends JpaRepository<EventInvitation, UUID> {
     boolean existsByEventIdAndUserId(UUID eventId, UUID userId);
+    boolean existsByEventIdAndUserIdAndStatus(UUID eventId, UUID userId, String status);
 
     List<EventInvitation> findAllByUserId(UUID userId);
 

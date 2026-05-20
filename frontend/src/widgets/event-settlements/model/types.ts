@@ -1,6 +1,10 @@
 export type ParticipantLookupEntry = {
   fullName: string
   initials: string
+  avatarUrl?: string | null
+  firstName?: string | null
+  lastName?: string | null
+  login?: string | null
 }
 
 export type ParticipantLookup = Map<string, ParticipantLookupEntry>
@@ -10,6 +14,9 @@ export type UseSettlementsActionsParams = {
 }
 
 export type PaySettlementVariables = {
-  toUserId: string
-  amount: number
+  paymentId: string
+}
+
+export type ConfirmSettlementVariables = {
+  paymentId: string
 }

@@ -11,6 +11,10 @@ export const buildParticipantLookup = (participants: Participant[]): Participant
     map.set(p.userId, {
       fullName,
       initials: getUserInitials(p.firstName, p.lastName, p.login),
+      avatarUrl: p.avatarUrl,
+      firstName: p.firstName,
+      lastName: p.lastName,
+      login: p.login,
     })
   })
   return map

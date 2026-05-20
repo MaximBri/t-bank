@@ -1,6 +1,7 @@
 package com.tbank.tevent.settlements;
 
 import com.tbank.tevent.EventBalanceRepository;
+import com.tbank.tevent.event.EventAccessGuard;
 import com.tbank.tevent.history.ActionType;
 import com.tbank.tevent.history.EventHistoryService;
 import com.tbank.tevent.repo.PaymentRepository;
@@ -10,7 +11,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -22,9 +22,10 @@ public class PaymentCommandService {
     private final PaymentRepository paymentRepository;
     private final EventHistoryService historyService;
     private final EventBalanceRepository redisRepository;
+    private final EventAccessGuard eventAccessGuard;
 
-    public void markAsSent(UUID paymentId, UUID currentUserId) {
-        Payment payment = getPaymentOrThrow(paymentId);
+    public void markAsSent(UUID eventId, UUID paymentId, UUID currentUserId) {
+        Payment payment = getPaymentForEvent(eventId, paymentId, currentUserId);
 
         if (payment.getStatus() != PaymentStatus.ACTIVE) {
             throw new IllegalStateException("Отправить можно только ACTIVE платеж");
@@ -45,8 +46,8 @@ public class PaymentCommandService {
         );
     }
 
-    public void markAsFailed(UUID paymentId, UUID currentUserId) {
-        Payment payment = getPaymentOrThrow(paymentId);
+    public void markAsFailed(UUID eventId, UUID paymentId, UUID currentUserId) {
+        Payment payment = getPaymentForEvent(eventId, paymentId, currentUserId);
 
         if (payment.getStatus() != PaymentStatus.SENT) {
             throw new IllegalStateException("Отклонить можно только отправленный (SENT) платеж");
@@ -69,8 +70,8 @@ public class PaymentCommandService {
         );
     }
 
-    public void markAsComplete(UUID paymentId, UUID currentUserId) {
-        Payment payment = getPaymentOrThrow(paymentId);
+    public void markAsComplete(UUID eventId, UUID paymentId, UUID currentUserId) {
+        Payment payment = getPaymentForEvent(eventId, paymentId, currentUserId);
 
         if (payment.getStatus() != PaymentStatus.SENT) {
             throw new IllegalStateException("Подтвердить можно только отправленный (SENT) платеж");
@@ -96,8 +97,18 @@ public class PaymentCommandService {
         );
     }
 
-    private Payment getPaymentOrThrow(UUID paymentId) {
-        return paymentRepository.findById(paymentId)
+    /**
+     * Загружает платёж и проверяет: (1) вызывающий — участник события,
+     * (2) платёж реально принадлежит этому событию (защита от IDOR:
+     * нельзя дёргать чужой paymentId через произвольный eventId в path).
+     */
+    private Payment getPaymentForEvent(UUID eventId, UUID paymentId, UUID currentUserId) {
+        eventAccessGuard.requireMember(eventId, currentUserId);
+        Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new IllegalArgumentException("Платеж не найден"));
+        if (!payment.getEventId().equals(eventId)) {
+            throw new AccessDeniedException("Платёж не относится к этому событию");
+        }
+        return payment;
     }
 }

@@ -128,7 +128,8 @@ class EventServiceTest {
                 imageKey,
                 currentUserId,
                 1L,
-                null
+                null,
+                false
         );
         when(eventMapper.mapToResponse(eq(persistedEvent), any(List.class), eq(1L), any())).thenReturn(expected);
 
@@ -185,7 +186,8 @@ class EventServiceTest {
                 newImageKey,
                 currentUserId,
                 1L,
-                null
+                null,
+                false
         );
         when(eventMapper.mapToResponse(eq(existing), any(List.class), eq(1L), any())).thenReturn(expected);
 

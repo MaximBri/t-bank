@@ -3,6 +3,7 @@ import { s3Api } from '@/shared/api/s3Api.ts'
 import {
   CreateEventDto,
   EventInviteToken,
+  EventPreview,
   EventResponse,
   GetEventsParams,
   ParticipantsResponse,
@@ -61,5 +62,27 @@ export const eventsApi = {
   getInviteToken: async (id: string) => {
     const { data } = await api.get<EventInviteToken>(`/events/${id}/token`)
     return data
+  },
+
+  getPreview: async (token: string) => {
+    const { data } = await api.get<EventPreview>(`/events/preview/${token}`)
+    return data
+  },
+
+  applyByToken: async (token: string) => {
+    await api.post<void>(`/events/${token}/apply`)
+  },
+
+  removeParticipant: async (eventId: string, userId: string) => {
+    await api.delete<void>(`/events/${eventId}/participants/${userId}`)
+  },
+
+  leaveEvent: async (eventId: string) => {
+    await api.delete<void>(`/events/${eventId}/exit`)
+  },
+
+  completeEvent: async (eventId: string) => {
+    const { data } = await api.post<EventResponse>(`/events/${eventId}/complete`)
+    return withResolvedImage(data)
   },
 }
