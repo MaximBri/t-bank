@@ -5,6 +5,7 @@ import com.tbank.tevent.event.EventAccessGuard;
 import com.tbank.tevent.repo.ExpenseRepository;
 import com.tbank.tevent.repo.PaymentRepository;
 import com.tbank.tevent.repo.UserRepository;
+import com.tbank.tevent.repo.entity.Expense;
 import com.tbank.tevent.repo.entity.Payment;
 import com.tbank.tevent.repo.entity.User;
 import com.tbank.tevent.settlements.dto.EventSettlementsResponse;
@@ -45,7 +46,7 @@ public class SettlementQueryService {
         }
 
         // Проверяем наличие подтвержденных расходов
-        List<com.tbank.tevent.repo.entity.Expense> confirmedExpenses =
+        List<Expense> confirmedExpenses =
             expenseRepository.findAllByEventIdAndStatus(eventId, "CONFIRMED");
         log.debug("Found {} confirmed expenses for event: {}", confirmedExpenses.size(), eventId);
         
