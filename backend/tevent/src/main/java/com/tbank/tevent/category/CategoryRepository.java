@@ -48,5 +48,7 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
     """)
     List<CategoryResponse> findAllByEventIds(@Param("eventIds") List<UUID> eventIds);
 
+    Optional<Category> findByNameAndUserId(String name, UUID userId);
+
     Optional<Category> findByName(String name);
 }

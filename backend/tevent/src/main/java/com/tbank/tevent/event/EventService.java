@@ -45,6 +45,7 @@ public class EventService {
     private final InvitationRepository invitationRepository;
     private final EventMapper eventMapper;
     private final S3Service s3Service;
+    private final EventCompletionService eventCompletionService;
 
     @Transactional
     public EventResponse createEvent(EventRequest request) {
@@ -199,6 +200,9 @@ public class EventService {
 
         checkIfEventIsCompleted(event);
 
+        // Запоминаем старую дату окончания для перепланирования
+        LocalDateTime oldEndDate = event.getEndDate();
+        
         if (request.title() != null) event.setTitle(request.title());
         if (request.description() != null) event.setDescription(request.description());
         if (request.startDate() != null) event.setStartDate(request.startDate());
@@ -222,6 +226,7 @@ public class EventService {
 
     @Transactional
     public EventResponse completeEvent(UUID eventId) {
+        // Проверяем, что событие существует и пользователь — владелец
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
@@ -230,17 +235,16 @@ public class EventService {
             throw new AccessDeniedException("Only owner can complete event");
         }
 
-        // Идемпотентность: повторный complete не ошибка, возвращаем
-        // текущее состояние (операция уже выполнена).
         if (Boolean.TRUE.equals(event.getIsCompleted())) {
             return getEvent(eventId);
         }
 
-        event.setIsCompleted(true);
-        eventRepository.saveAndFlush(event);
+
+        eventCompletionService.completeEvent(eventId);
 
         return getEvent(eventId);
     }
+
 
     @Transactional(readOnly = true)
     public EventsResponse getUserEvents(String state,
@@ -313,6 +317,7 @@ public class EventService {
 
         return new EventsResponse(responseList);
     }
+
 
     private void checkIfEventIsCompleted(Event event) {
         if (Boolean.TRUE.equals(event.getIsCompleted())) {

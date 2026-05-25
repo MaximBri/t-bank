@@ -1,6 +1,5 @@
 package com.tbank.tevent.settlements;
 
-import com.tbank.tevent.EventBalanceRepository;
 import com.tbank.tevent.event.EventAccessGuard;
 import com.tbank.tevent.history.ActionType;
 import com.tbank.tevent.history.EventHistoryService;
@@ -21,8 +20,8 @@ public class PaymentCommandService {
 
     private final PaymentRepository paymentRepository;
     private final EventHistoryService historyService;
-    private final EventBalanceRepository redisRepository;
     private final EventAccessGuard eventAccessGuard;
+
 
     public void markAsSent(UUID eventId, UUID paymentId, UUID currentUserId) {
         Payment payment = getPaymentForEvent(eventId, paymentId, currentUserId);
@@ -35,8 +34,6 @@ public class PaymentCommandService {
         }
 
         payment.setStatus(PaymentStatus.SENT);
-
-        redisRepository.clearCalculatedDebts(payment.getEventId());
 
         historyService.log(
                 payment.getEventId(),
@@ -57,10 +54,6 @@ public class PaymentCommandService {
         }
 
         payment.setStatus(PaymentStatus.FAILED);
-
-        paymentRepository.deleteAllByEventIdAndStatus(payment.getEventId(), PaymentStatus.ACTIVE);
-
-        redisRepository.clearCalculatedDebts(payment.getEventId());
 
         historyService.log(
                 payment.getEventId(),
@@ -84,11 +77,6 @@ public class PaymentCommandService {
         payment.setConfirmedAt(LocalDateTime.now());
 
 
-        paymentRepository.deleteAllByEventIdAndStatus(payment.getEventId(), PaymentStatus.ACTIVE);
-
-        
-        redisRepository.clearCalculatedDebts(payment.getEventId());
-
         historyService.log(
                 payment.getEventId(),
                 currentUserId,
@@ -97,11 +85,6 @@ public class PaymentCommandService {
         );
     }
 
-    /**
-     * Загружает платёж и проверяет: (1) вызывающий — участник события,
-     * (2) платёж реально принадлежит этому событию (защита от IDOR:
-     * нельзя дёргать чужой paymentId через произвольный eventId в path).
-     */
     private Payment getPaymentForEvent(UUID eventId, UUID paymentId, UUID currentUserId) {
         eventAccessGuard.requireMember(eventId, currentUserId);
         Payment payment = paymentRepository.findById(paymentId)

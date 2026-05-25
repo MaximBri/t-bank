@@ -65,7 +65,7 @@ public class ExpenseQueryService {
                 .toList();
 
         BigDecimal totalEventSum = expenses.stream()
-                .filter(e -> "CONFIRMED".equals(e.getStatus()))
+                .filter(e -> "ACTIVE".equals(e.getStatus()))
                 .map(Expense::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 

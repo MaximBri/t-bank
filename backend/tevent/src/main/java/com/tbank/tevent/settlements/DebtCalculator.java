@@ -1,7 +1,7 @@
 package com.tbank.tevent.settlements;
 
-import com.tbank.tevent.EventBalanceRepository;
 import com.tbank.tevent.repo.ExpenseRepository;
+import com.tbank.tevent.repo.ExpenseSplitRepository;
 import com.tbank.tevent.settlements.dto.SettlementStep;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,15 +15,16 @@ import java.util.*;
 @Slf4j
 public class DebtCalculator {
     private final ExpenseRepository expenseRepository;
+    private final ExpenseSplitRepository expenseSplitRepository;
 
     public List<SettlementStep> calculateOptimalDebts(UUID eventId) {
         log.debug("Calculating optimal debts for event: {}", eventId);
         
-        List<Object[]> rawBalances = expenseRepository.findRawBalancesForEvent(eventId);
-        log.debug("Raw balances query returned {} rows", rawBalances.size());
+        List<Object[]> rawBalances = expenseSplitRepository.findNetBalancesByEventId(eventId);
+        log.debug("Net balances query returned {} rows", rawBalances.size());
         
         if (rawBalances.isEmpty()) {
-            log.info("No raw balances found for event: {} - either no confirmed expenses or all balances are zero", eventId);
+            log.info("No net balances found for event: {} - either no confirmed expenses or all balances are zero", eventId);
         }
 
         List<UserBalance> debtors = new ArrayList<>();

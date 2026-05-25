@@ -16,33 +16,47 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
     Optional<Expense> findByIdAndEventId(UUID id, UUID eventId);
     List<Expense> findAllByEventIdOrderByCreatedAtDesc(UUID eventId);
     @Query(value = """
-    SELECT user_id, SUM(delta) AS net_balance 
+
+            SELECT user_id, SUM(delta) AS net_balance\s
     FROM (
-        SELECT e.payer_id AS user_id, e.amount AS delta 
-        FROM expense e 
-        WHERE e.event_id = :eventId AND e.status = 'ACTIVE'   
-        
+        -- 1. Плательщик получает полную сумму расхода
+        SELECT e.payer_id AS user_id, e.amount AS delta\s
+        FROM expense e\s
+        WHERE e.event_id = :eventId AND e.status = 'ACTIVE'  \s
+    
         UNION ALL
-        
-        SELECT es.user_id AS user_id, -es.amount AS delta 
+    
+        -- 2. Каждый участник (из expense_split) должен свою часть
+        SELECT es.user_id AS user_id, -es.amount AS delta\s
         FROM expense_split es
         JOIN expense e ON es.expense_id = e.id
-        WHERE e.event_id = :eventId AND e.status = 'ACTIVE'   
-        
+        WHERE e.event_id = :eventId AND e.status = 'ACTIVE'  \s
+    
         UNION ALL
-        
-        SELECT p.from_user_id AS user_id, p.amount AS delta 
+    
+        -- 3. Плательщик ТОЖЕ должен свою равную долю
+        -- Вычисляем ее как общую сумму расхода, деленную на (количество участников + 1)
+        SELECT e.payer_id AS user_id, -(e.amount / (COUNT(es.user_id) + 1)) AS delta
+        FROM expense e
+        JOIN expense_split es ON es.expense_id = e.id
+        WHERE e.event_id = :eventId AND e.status = 'ACTIVE'
+        GROUP BY e.id, e.payer_id, e.amount
+    
+        UNION ALL
+    
+        -- ... остальная часть с платежами (payment) ...
+        SELECT p.from_user_id AS user_id, p.amount AS delta\s
         FROM payment p
         WHERE p.event_id = :eventId AND p.status IN ('SENT', 'COMPLETED')
-        
+    
         UNION ALL
-        
-        SELECT p.to_user_id AS user_id, -p.amount AS delta 
+    
+        SELECT p.to_user_id AS user_id, -p.amount AS delta\s
         FROM payment p
         WHERE p.event_id = :eventId AND p.status IN ('SENT', 'COMPLETED')
-    ) as historical_ledger 
+    ) as historical_ledger\s
     GROUP BY user_id
-    HAVING SUM(delta) != 0
+    HAVING SUM(delta) != 0;
     """, nativeQuery = true)
     List<Object[]> findRawBalancesForEvent(@Param("eventId") UUID eventId);
 }

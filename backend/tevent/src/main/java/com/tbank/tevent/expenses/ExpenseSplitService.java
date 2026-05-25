@@ -1,7 +1,10 @@
 package com.tbank.tevent.expenses;
 
 import com.tbank.tevent.notifications.NotificationService;
+import com.tbank.tevent.repo.EventRepository;
+import com.tbank.tevent.repo.ExpenseRepository;
 import com.tbank.tevent.repo.ExpenseSplitRepository;
+import com.tbank.tevent.repo.entity.Event;
 import com.tbank.tevent.repo.entity.Expense;
 import com.tbank.tevent.repo.entity.ExpenseSplit;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,10 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -26,8 +26,21 @@ public class ExpenseSplitService {
 
     private final ExpenseSplitRepository splitRepository;
     private final NotificationService notificationService;
+    private final ExpenseRepository expenseRepository;
+    private final EventRepository eventRepository;
+
+    private void checkEventNotCompleted(UUID expenseId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new EntityNotFoundException("Расход не найден"));
+        Event event = eventRepository.findById(expense.getEventId())
+                .orElseThrow(() -> new EntityNotFoundException("Событие не найдено"));
+        if (Boolean.TRUE.equals(event.getIsCompleted())) {
+            throw new IllegalStateException("Событие уже завершено, модификация расходов невозможна");
+        }
+    }
 
     public void createEqualSplits(UUID expenseId, List<UUID> participantIds, BigDecimal totalAmount) {
+        checkEventNotCompleted(expenseId);
         validateParticipants(participantIds);
 
         Map<UUID, BigDecimal> calculatedAmounts = calculateEqualAmountsMap(participantIds, totalAmount);
@@ -45,6 +58,7 @@ public class ExpenseSplitService {
     }
 
     public void processEqualSplitsDelta(Expense expense, List<UUID> newParticipantIds, BigDecimal newTotalAmount) {
+        checkEventNotCompleted(expense.getId());
         validateParticipants(newParticipantIds);
 
         List<ExpenseSplit> oldSplits = splitRepository.findAllByExpenseId(expense.getId());
@@ -60,6 +74,7 @@ public class ExpenseSplitService {
     }
 
     public void confirm(UUID expenseId, UUID userId) {
+        checkEventNotCompleted(expenseId);
         ExpenseSplit split = splitRepository.findByExpenseIdAndUserId(expenseId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Доля в расходе для данного пользователя не найдена"));
 
@@ -75,6 +90,7 @@ public class ExpenseSplitService {
     }
 
     public void deleteSplitsByExpense(UUID expenseId) {
+        checkEventNotCompleted(expenseId);
         splitRepository.deleteByExpenseId(expenseId);
     }
 
@@ -103,11 +119,24 @@ public class ExpenseSplitService {
     }
 
     private Map<UUID, BigDecimal> calculateEqualAmountsMap(List<UUID> participantIds, BigDecimal totalAmount) {
-        int size = participantIds.size();
-        BigDecimal baseAmount = totalAmount.divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_UP);
-        BigDecimal remainder = totalAmount.subtract(baseAmount.multiply(BigDecimal.valueOf(size)));
+        if (participantIds == null || participantIds.isEmpty() || totalAmount == null) {
+            return Collections.emptyMap();
+        }
 
-        return IntStream.range(0, size).boxed()
+        int debtorsCount = participantIds.size();
+
+        BigDecimal totalPeople = BigDecimal.valueOf(debtorsCount + 1);
+
+        BigDecimal singleShare = totalAmount.divide(totalPeople, 2, RoundingMode.HALF_UP);
+
+        BigDecimal amountToDivide = totalAmount.subtract(singleShare);
+
+        BigDecimal debtorsCountBD = BigDecimal.valueOf(debtorsCount);
+        BigDecimal baseAmount = amountToDivide.divide(debtorsCountBD, 2, RoundingMode.DOWN);
+
+        BigDecimal remainder = amountToDivide.subtract(baseAmount.multiply(debtorsCountBD));
+
+        return IntStream.range(0, debtorsCount).boxed()
                 .collect(Collectors.toMap(
                         participantIds::get,
                         i -> (i == 0) ? baseAmount.add(remainder) : baseAmount

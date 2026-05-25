@@ -1,6 +1,5 @@
 package com.tbank.tevent.expenses;
 
-import com.tbank.tevent.EventBalanceRepository;
 import com.tbank.tevent.history.EventHistoryService;
 import com.tbank.tevent.repo.EventRepository;
 import com.tbank.tevent.repo.ExpenseRepository;

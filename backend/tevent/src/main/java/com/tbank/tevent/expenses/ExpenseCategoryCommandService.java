@@ -19,13 +19,16 @@ public class ExpenseCategoryCommandService {
     private final ExpenseCategoryRepository expenseCategoryRepository;
     private final CategoryRepository categoryRepository;
 
-    public void syncCategories(UUID expenseId, List<String> names) {
+    public void syncCategories(UUID expenseId, List<String> names, UUID userId) {
         if (names == null || names.isEmpty()) return;
 
         for (String name : names) {
-            Category category = categoryRepository.findByName(name)
+            Category category = categoryRepository.findByNameAndUserId(name, userId)
                     .orElseGet(() -> categoryRepository.save(
-                            Category.builder().name(name).build()
+                            Category.builder()
+                                    .name(name)
+                                    .userId(userId)
+                                    .build()
                     ));
 
             ExpenseCategory ec = new ExpenseCategory();

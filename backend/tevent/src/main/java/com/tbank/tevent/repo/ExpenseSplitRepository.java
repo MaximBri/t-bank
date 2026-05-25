@@ -36,6 +36,35 @@ public interface ExpenseSplitRepository extends JpaRepository<ExpenseSplit, UUID
         """)
     boolean existsSplitForUserInEvent(@Param("eventId") UUID eventId, @Param("userId") UUID userId);
 
+    @Query(value = """
+        SELECT user_id, SUM(delta) AS net_balance
+        FROM (
+            -- 1. Payer receives full expense amount
+            SELECT e.payer_id AS user_id, e.amount AS delta
+            FROM expense e
+            WHERE e.event_id = :eventId AND e.status = 'ACTIVE'
+            
+            UNION ALL
+            
+            -- 2. Each participant (from expense_split) owes their share
+            SELECT es.user_id AS user_id, -es.amount AS delta
+            FROM expense_split es
+            JOIN expense e ON es.expense_id = e.id
+            WHERE e.event_id = :eventId AND e.status = 'ACTIVE' AND es.is_confirmed = true
+            
+            UNION ALL
+            
+            -- 3. Payer also owes their equal share
+            SELECT e.payer_id AS user_id, -(e.amount / (COUNT(es.user_id) + 1)) AS delta
+            FROM expense e
+            JOIN expense_split es ON es.expense_id = e.id
+            WHERE e.event_id = :eventId AND e.status = 'ACTIVE' AND es.is_confirmed = true
+            GROUP BY e.id, e.payer_id, e.amount
+        ) AS ledger
+        GROUP BY user_id
+        HAVING SUM(delta) != 0
+        """, nativeQuery = true)
+    List<Object[]> findNetBalancesByEventId(@Param("eventId") UUID eventId);
 
     void deleteByExpenseId(UUID expenseId);
 

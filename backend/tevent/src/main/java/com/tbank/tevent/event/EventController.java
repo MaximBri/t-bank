@@ -4,6 +4,7 @@ import com.tbank.tevent.event.dto.EventPreviewResponse;
 import com.tbank.tevent.event.dto.EventRequest;
 import com.tbank.tevent.invite_token.EventTokenResponse;
 import com.tbank.tevent.invite_token.InviteTokenService;
+import com.tbank.tevent.settlements.dto.SettlementItemDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
