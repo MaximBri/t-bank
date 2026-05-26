@@ -13,6 +13,7 @@ import {
   eventDefaultSection,
   eventSections,
 } from '@/widgets/event-sections-nav/model/contstants.ts'
+import {SettlementStatus} from "@/entities/settlement/model/types.ts";
 
 export const EventPage = () => {
   const { eventId } = useParams<{ eventId: string }>()
@@ -45,7 +46,7 @@ export const EventPage = () => {
       </main>
 
       <LeaveEventModal
-        hasSettlements={settlementsForLeave.length > 0}
+        hasSettlements={settlementsForLeave.filter( (settlement) => settlement.status !== SettlementStatus.Completed ).length > 0}
         isOpen={isLeaveEventModalOpen}
         onClose={() => setLeaveEventModalOpen(false)}
         onNavigateToSettlements={() => handleSectionChange(EventSection.settlements)}

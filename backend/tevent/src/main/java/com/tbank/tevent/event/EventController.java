@@ -58,6 +58,7 @@ public class EventController {
 
     @GetMapping("/user/events")
     public ResponseEntity<EventsResponse> getUserEvents(
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) String state,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
@@ -65,7 +66,7 @@ public class EventController {
             @RequestParam(required = false) Integer maxParticipants) {
 
         EventsResponse events = eventService.getUserEvents(
-                state, startDate, endDate, minParticipants, maxParticipants);
+                search, state, startDate, endDate, minParticipants, maxParticipants);
         return ResponseEntity.ok(events);
     }
 

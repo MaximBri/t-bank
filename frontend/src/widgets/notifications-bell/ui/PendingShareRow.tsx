@@ -1,14 +1,13 @@
 import CheckIcon from '@/shared/assets/icons/check.svg?react'
 
-import type { ParticipantInboxItemDto } from '@/entities/expense'
+import type { ListInboxItemResponseDto } from '@/entities/expense'
 import { formatPrice } from '@/shared/lib/number/format-price.ts'
 import { Text } from '@/shared/ui/text/Text.tsx'
 
-import { formatNotificationDate } from '@/widgets/notifications-bell/lib/format-notification-date.ts'
 import { BellRow } from '@/widgets/notifications-bell/ui/BellRow.tsx'
 
 type PendingShareRowProps = {
-  item: ParticipantInboxItemDto
+  item: ListInboxItemResponseDto
   isPending: boolean
   onConfirm: () => void
 }
@@ -21,10 +20,10 @@ export const PendingShareRow = ({ item, isPending, onConfirm }: PendingShareRowP
           Подтвердите вашу долю
         </Text>
         <Text variant="body" className="text-muted truncate">
-          {item.description}
+          {item.expenseTitle}
         </Text>
         <Text variant="body" className="text-muted">
-          {formatPrice(item.amountToPay)} · {formatNotificationDate(item.createdAt)}
+          {formatPrice(item.amountToPay)}
         </Text>
       </div>
       <button

@@ -33,7 +33,8 @@ public class S3Service {
             "image/jpeg", "jpg",
             "image/jpg", "jpg",
             "image/png", "png",
-            "image/webp", "webp"
+            "image/webp", "webp",
+            "application/pdf", "pdf"
     );
 
     private final S3Template s3Template;
@@ -144,7 +145,6 @@ public class S3Service {
             return;
         }
 
-        //validateOwnership(userId, s3Key);
         enforceFileSizeLimit(s3Key);
 
         try {

@@ -7,9 +7,8 @@ export type {
   CreateExpenseDto,
   ExpenseResponseDto,
   EventExpensesResponseDto,
-  ParticipantInboxItemDto,
-  AuthorInboxItemDto,
-  ParticipantInboxResponseDto,
+  ListInboxResponseDto,
+  ListInboxItemResponseDto,
 } from './model/types'
 export { ExpenseResponseStatus } from './model/types'
 export { expensesApi } from './api/expensesApi.ts'

@@ -126,7 +126,7 @@ export const useCreateExpenseForm = ({
     if (!isOpen || !currentUserId) return
     const current = getValues('participants') || []
     if (!current.includes(currentUserId)) {
-      setValue('participants', [...current, currentUserId], { shouldValidate: true })
+      setValue('participants', [...current, currentUserId])
     }
   }, [isOpen, currentUserId, getValues, setValue])
 

@@ -1,6 +1,6 @@
 export enum SettlementStatus {
   Pending = 'pending',
-  Completed = 'completed',
+  Completed = 'COMPLETED',
   WaitingConfirmation = 'waiting_confirmation',
 }
 

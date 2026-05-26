@@ -216,7 +216,6 @@ public class EventService {
 
         eventRepository.saveAndFlush(event);
 
-        // Sync categories if provided
         if (request.categories() != null) {
             categoryService.syncCategoriesWithEvent(eventId, request.categories());
         }
@@ -226,32 +225,19 @@ public class EventService {
 
     @Transactional
     public EventResponse completeEvent(UUID eventId) {
-        // Проверяем, что событие существует и пользователь — владелец
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EventNotFoundException("Event not found"));
-
-        UUID currentUserId = SecurityUtils.getCurrentUserId();
-        if (!event.getOwnerId().equals(currentUserId)) {
-            throw new AccessDeniedException("Only owner can complete event");
-        }
-
-        if (Boolean.TRUE.equals(event.getIsCompleted())) {
-            return getEvent(eventId);
-        }
-
-
         eventCompletionService.completeEvent(eventId);
-
         return getEvent(eventId);
     }
 
 
     @Transactional(readOnly = true)
-    public EventsResponse getUserEvents(String state,
-                                        LocalDate startDate,
-                                        LocalDate endDate,
-                                        Integer minParticipants,
-                                        Integer maxParticipants) {
+    public EventsResponse getUserEvents(
+            String search,
+            String state,
+            LocalDate startDate,
+            LocalDate endDate,
+            Integer minParticipants,
+            Integer maxParticipants) {
         if (state != null && !Set.of("PLANNED", "ACTIVE", "COMPLETED").contains(state)) {
             throw new ValidationException("Invalid state value. Allowed values: PLANNED, ACTIVE, COMPLETED");
         }
@@ -260,6 +246,7 @@ public class EventService {
 
         List<Event> events = eventRepository.findUserEventsWithFilters(
                 currentUserId,
+                search,
                 state,
                 startDate != null ? startDate.atStartOfDay() : null,
                 endDate != null ? endDate.atTime(23, 59, 59) : null,

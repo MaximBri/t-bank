@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -43,6 +44,8 @@ public class EventCompletionService {
         }
 
         event.setIsCompleted(true);
+        event.setEndDate(LocalDateTime.now().isBefore(event.getStartDate()) ? event.getStartDate() : LocalDateTime.now());
+
         eventRepository.save(event);
 
         List<SettlementStep> settlements = debtCalculator.calculateOptimalDebts(eventId);

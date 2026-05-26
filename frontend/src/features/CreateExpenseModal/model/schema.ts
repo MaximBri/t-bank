@@ -23,7 +23,7 @@ export const createExpenseSchema = createFormSchema({
     .array(z.string(), {
       required_error: 'Выберите хотя бы одного участника',
     })
-    .min(1, 'Выберите хотя бы одного участника'),
+    .min(2, "Для создания расхода необходимо выбрать хотя бы 2 участника"),
   comment: z.string().optional(),
   checkImage: z
     .instanceof(File, { message: 'Поле обязательно' })
