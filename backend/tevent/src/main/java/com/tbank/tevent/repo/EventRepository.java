@@ -42,13 +42,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 
     Optional<Event> findByInviteTokenId(UUID inviteTokenId);
 
-    @Query("SELECT e FROM Event e WHERE e.inviteTokenId = :inviteTokenId")
-    Optional<Event> findByInviteTokenIdQuery(@Param("inviteTokenId") UUID inviteTokenId);
-
     Optional<Event> findById(@Param("id") UUID id);
 
-    @Query("SELECT e FROM Event e WHERE e.endDate < :now AND e.isCompleted = false")
-    List<Event> findByEndDateBeforeAndIsCompletedFalse(@Param("now") LocalDateTime now);
     List<Event> findByIsCompletedFalseAndEndDateBefore(LocalDateTime dateTime);
 }
-

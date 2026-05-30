@@ -1,5 +1,9 @@
 package com.tbank.tevent.expenses;
 
+import com.tbank.tevent.expenses.dto.CreateExpenseRequest;
+import com.tbank.tevent.expenses.exception.ExpenseEventCompletedException;
+import com.tbank.tevent.expenses.exception.ExpenseNotFoundException;
+import com.tbank.tevent.expenses.exception.ExpensePayerInParticipantsException;
 import com.tbank.tevent.history.ActionType;
 import com.tbank.tevent.history.EventHistoryService;
 import com.tbank.tevent.repo.EventRepository;
@@ -9,6 +13,7 @@ import com.tbank.tevent.repo.entity.Expense;
 import com.tbank.tevent.s3.S3Service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +24,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ExpenseCommandService {
     private final EventRepository eventRepository;
     private final ExpenseRepository expenseRepository;
@@ -28,15 +34,16 @@ public class ExpenseCommandService {
     private final S3Service s3Service;
 
     public UUID create(UUID payerId, UUID eventId, CreateExpenseRequest request) {
+        log.info("Creating expense, payerId={}, eventId={}", payerId, eventId);
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Событие не найдено"));
         
         if (Boolean.TRUE.equals(event.getIsCompleted())) {
-            throw new IllegalStateException("Невозможно создать расход для завершенного события");
+            throw new ExpenseEventCompletedException();
         }
 
         if (request.participantIds() != null && request.participantIds().contains(payerId)) {
-            throw new IllegalArgumentException("Плательщик не должен быть явно указан в списке участников.");
+            throw new ExpensePayerInParticipantsException();
         }
 
         Expense expense = Expense.builder()
@@ -52,19 +59,21 @@ public class ExpenseCommandService {
         Expense savedExpense = expenseRepository.save(expense);
 
         if (request.imageKey() != null && !request.imageKey().isBlank()) {
-            s3Service.useKey(expense.getId(), request.imageKey());
+            s3Service.useKey(request.imageKey());
         }
 
         splitService.createEqualSplits(savedExpense.getId(), request.participantIds(), request.totalAmount());
-        categoryCommandService.syncCategories(savedExpense.getId(), request.categories(), payerId);
+        categoryCommandService.syncCategories(savedExpense.getId(), eventId, request.categories());
 
         String logMessage = String.format("Создан расход '%s' на сумму %s", request.title(), request.totalAmount());
         historyService.log(eventId, payerId, ActionType.EXPENSE_CREATED, logMessage);
 
+        log.info("Expense created, expenseId={}", savedExpense.getId());
         return savedExpense.getId();
     }
 
     public void update(UUID expenseId, UUID authorId, CreateExpenseRequest request) {
+        log.info("Updating expense, expenseId={}, authorId={}", expenseId, authorId);
         Expense expense = getVerifiedExpense(expenseId, authorId);
         checkEventNotCompleted(expense.getEventId());
 
@@ -76,7 +85,7 @@ public class ExpenseCommandService {
         expense.setUpdatedAt(LocalDateTime.now());
 
         if (request.imageKey() != null && !request.imageKey().isBlank()) {
-            s3Service.useKey(expenseId, request.imageKey());
+            s3Service.useKey(request.imageKey());
         }
 
         expenseRepository.save(expense);
@@ -84,13 +93,15 @@ public class ExpenseCommandService {
         splitService.processEqualSplitsDelta(expense, request.participantIds(), request.totalAmount());
 
         categoryCommandService.deleteByExpenseId(expenseId);
-        categoryCommandService.syncCategories(expenseId, request.categories(), authorId);
+        categoryCommandService.syncCategories(expenseId, expense.getEventId(), request.categories());
 
         String logMessage = String.format("Отредактирован расход '%s'. Новая сумма: %s", request.title(), request.totalAmount());
         historyService.log(expense.getEventId(), authorId, ActionType.EXPENSE_UPDATED, logMessage);
+        log.info("Expense updated, expenseId={}", expenseId);
     }
 
     public void delete(UUID expenseId, UUID authorId) {
+        log.info("Deleting expense, expenseId={}, authorId={}", expenseId, authorId);
         Expense expense = getVerifiedExpense(expenseId, authorId);
         checkEventNotCompleted(expense.getEventId());
 
@@ -102,11 +113,12 @@ public class ExpenseCommandService {
 
         String logMessage = String.format("Удален расход '%s' пользователем %s", expense.getTitle(), authorId);
         historyService.log(expense.getEventId(), authorId, ActionType.EXPENSE_DELETED, logMessage);
+        log.info("Expense deleted, expenseId={}", expenseId);
     }
 
     public void confirmSplit(UUID expenseId, UUID userId) {
         Expense expense = expenseRepository.findById(expenseId)
-                .orElseThrow(() -> new IllegalArgumentException("Расход не найден"));
+                .orElseThrow(ExpenseNotFoundException::new);
         checkEventNotCompleted(expense.getEventId());
 
         splitService.confirm(expenseId, userId);
@@ -121,11 +133,12 @@ public class ExpenseCommandService {
             String activeMessage = String.format("Расход '%s' успешно подтвержден всеми и активирован.", expense.getTitle());
             historyService.log(expense.getEventId(), userId, ActionType.EXPENSE_ACTIVATED, activeMessage);
         }
+        log.info("Expense split confirmed, expenseId={}, userId={}", expenseId, userId);
     }
 
-    public void rejectExpense(UUID expenseId, UUID userId) {
+    public void rejectSplit(UUID expenseId, UUID userId) {
         Expense expense = expenseRepository.findById(expenseId)
-                .orElseThrow(() -> new IllegalArgumentException("Расход не найден"));
+                .orElseThrow(ExpenseNotFoundException::new);
         checkEventNotCompleted(expense.getEventId());
 
         expense.reject();
@@ -133,22 +146,23 @@ public class ExpenseCommandService {
 
         String rejectMessage = String.format("Расход '%s' отклонен", expense.getTitle());
         historyService.log(expense.getEventId(), userId, ActionType.EXPENSE_REJECTED, rejectMessage);
+        log.info("Expense rejected, expenseId={}, userId={}", expenseId, userId);
     }
 
     private void checkEventNotCompleted(UUID eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EntityNotFoundException("Событие не найдено"));
+                .orElseThrow(() -> new EntityNotFoundException("Event not found"));
         if (Boolean.TRUE.equals(event.getIsCompleted())) {
-            throw new IllegalStateException("Событие уже завершено, модификация расходов невозможна");
+            throw new ExpenseEventCompletedException();
         }
     }
 
     private Expense getVerifiedExpense(UUID expenseId, UUID authorId) {
         Expense expense = expenseRepository.findById(expenseId)
-                .orElseThrow(() -> new IllegalArgumentException("Расход не найден"));
+                .orElseThrow(ExpenseNotFoundException::new);
 
         if (!expense.getPayerId().equals(authorId)) {
-            throw new AccessDeniedException("У вас нет прав на модификацию этого расхода.");
+            throw new AccessDeniedException("You do not have the rights to modify this expense");
         }
         return expense;
     }

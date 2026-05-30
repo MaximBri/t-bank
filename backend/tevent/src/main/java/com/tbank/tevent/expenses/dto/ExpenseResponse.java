@@ -1,4 +1,4 @@
-package com.tbank.tevent.expenses;
+package com.tbank.tevent.expenses.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
