@@ -1,12 +1,14 @@
 package com.tbank.tevent.auth;
 
 import com.tbank.tevent.config.JwtProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
 @Service
+@Slf4j
 public class AuthCookieService {
     public static final String ACCESS_TOKEN_COOKIE = "accessToken";
     public static final String REFRESH_TOKEN_COOKIE = "refreshToken";
@@ -17,47 +19,54 @@ public class AuthCookieService {
         this.jwtProperties = jwtProperties;
     }
 
+    // Make cookie for access token
     public ResponseCookie createAccessTokenCookie(String accessToken) {
-        return ResponseCookie.from(ACCESS_TOKEN_COOKIE)
+        log.debug("Creating access token cookie");
+        return baseCookie(ACCESS_TOKEN_COOKIE)
                 .value(accessToken)
-                .httpOnly(true)
-                .secure(false)
                 .sameSite("Lax")
                 .path("/")
                 .maxAge(Duration.ofMinutes(jwtProperties.getAccessTokenExpirationMinutes()))
                 .build();
     }
 
+    // Make cookie for refresh token
     public ResponseCookie createRefreshTokenCookie(String refreshToken) {
-        return baseCookie()
+        log.debug("Creating refresh token cookie");
+        return baseCookie(REFRESH_TOKEN_COOKIE)
                 .value(refreshToken)
+                .sameSite("Strict")
+                .path("/auth/refresh")
                 .maxAge(Duration.ofDays(jwtProperties.getRefreshTokenExpirationDays()))
                 .build();
     }
 
-    public ResponseCookie clearRefreshTokenCookie() {
-        return baseCookie()
-                .value("")
-                .maxAge(Duration.ZERO)
-                .build();
-    }
-
+    // Clear access token cookie
     public ResponseCookie clearAccessTokenCookie() {
-        return ResponseCookie.from(ACCESS_TOKEN_COOKIE)
+        log.debug("Clearing access token cookie");
+        return baseCookie(ACCESS_TOKEN_COOKIE)
                 .value("")
-                .httpOnly(true)
-                .secure(jwtProperties.isCookieSecure())
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .path("/")
                 .maxAge(Duration.ZERO)
                 .build();
     }
 
-    private ResponseCookie.ResponseCookieBuilder baseCookie() {
-        return ResponseCookie.from(REFRESH_TOKEN_COOKIE)
-                .httpOnly(true)
-                .secure(jwtProperties.isCookieSecure())
+    // Clear refresh token cookie
+    public ResponseCookie clearRefreshTokenCookie() {
+        log.debug("Clearing refresh token cookie");
+        return baseCookie(REFRESH_TOKEN_COOKIE)
+                .value("")
                 .sameSite("Strict")
-                .path("/auth/refresh");
+                .path("/auth/refresh")
+                .maxAge(Duration.ZERO)
+                .build();
+    }
+
+    // Base for cookies
+    private ResponseCookie.ResponseCookieBuilder baseCookie(String name) {
+        return ResponseCookie.from(name)
+                .httpOnly(true)
+                .secure(jwtProperties.isCookieSecure());
     }
 }
