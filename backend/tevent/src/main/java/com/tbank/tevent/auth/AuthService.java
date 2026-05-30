@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,9 +31,8 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final InviteService inviteService;
 
-    // Register + add token pair
     @Transactional
-    public AuthTokens register(RegisterRequest request) {
+    public RegisterResult register(RegisterRequest request) {
         try {
             User user = User.builder()
                     .login(request.login().trim())
@@ -44,10 +44,13 @@ public class AuthService {
                     .build();
             User savedUser = userRepository.saveAndFlush(user);
 
+            UUID joinedGroupId = null;
             if (request.inviteToken() != null && !request.inviteToken().isBlank()) {
-                inviteService.applyToken(user, request.inviteToken());
+                joinedGroupId = inviteService.applyToken(savedUser, request.inviteToken());
             }
-            return generateTokens(savedUser);
+
+            AuthTokens tokens = generateTokens(savedUser);
+            return new RegisterResult(tokens, joinedGroupId);
 
         } catch (DataIntegrityViolationException ex) {
             log.info("Registration failed: login already exists");
@@ -77,7 +80,6 @@ public class AuthService {
         return generateTokens(user);
     }
 
-    // Update access/refresh tokens
     @Transactional
     public AuthTokens refresh(String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank() || !jwtService.isRefreshToken(refreshToken)) {
@@ -119,7 +121,6 @@ public class AuthService {
         return tokens;
     }
 
-    // Token generate + save in DB
     private AuthTokens generateTokens(User user) {
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -136,5 +137,8 @@ public class AuthService {
 
     private String hashToken(String token) {
         return DigestUtils.sha256Hex(token);
+    }
+
+    public record RegisterResult(AuthTokens tokens, UUID joinedGroupId) {
     }
 }

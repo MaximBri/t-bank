@@ -40,10 +40,11 @@ public class AuthController {
             @ApiResponse(responseCode = "409", description = "Пользователь уже существует")
     })
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
-        AuthTokens tokens = authService.register(request);
+        AuthService.RegisterResult registerResult = authService.register(request);
+        AuthTokens tokens = registerResult.tokens();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .headers(createAuthCookieHeaders(tokens))
-                .body(new RegisterResponse(tokens.userId(), null));
+                .body(new RegisterResponse(tokens.userId(), registerResult.joinedGroupId()));
     }
 
     @PostMapping("/login")
