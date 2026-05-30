@@ -24,6 +24,7 @@ public class CategoryService {
     @Transactional
     public void syncCategoriesWithEvent(UUID eventId, List<String> categoryNames) {
         categoryEventRepository.deleteAllByEventId(eventId);
+        categoryEventRepository.flush();
 
         if (categoryNames == null || categoryNames.isEmpty()) {
             return;
@@ -53,6 +54,7 @@ public class CategoryService {
         }
 
         List<CategoryEvent> relations = nameToIdMap.values().stream()
+                .distinct()
                 .map(catId -> CategoryEvent.builder()
                         .eventId(eventId)
                         .categoryId(catId)
