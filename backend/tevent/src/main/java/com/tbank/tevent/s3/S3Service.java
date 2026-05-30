@@ -1,5 +1,6 @@
 package com.tbank.tevent.s3;
 
+import com.tbank.tevent.s3.dto.PresignedUpload;
 import com.tbank.tevent.s3.exception.ImageAccessDeniedException;
 import com.tbank.tevent.s3.exception.ImageNotFoundException;
 import com.tbank.tevent.s3.exception.InvalidImageRequestException;
@@ -56,21 +57,14 @@ public class S3Service {
     @Value("${app.s3.max-file-size-bytes:3145728}")
     private long maxFileSizeBytes;
 
-    public PresignedUpload generateUploadUrl(UUID userId, String fileName, String contentType, Long fileSizeBytes) {
-        cleanupExpiredPendingUploadsSafe();
-
+    // Создание presigned URL на загрузку + регистрация ключа в Redis
+    public PresignedUpload generateUploadUrl(UUID userId, String contentType, Long fileSizeBytes) {
         validateExpectedFileSize(fileSizeBytes);
 
         String normalizedContentType = normalizeContentType(contentType);
-        // fileName is still validated to reject malformed requests early, even though it is
-        // no longer embedded into the presigned PUT signature (see note below).
-        normalizeFileName(fileName);
         String extension = ALLOWED_CONTENT_TYPES.get(normalizedContentType);
         String key = String.format("receipts/%s/%s.%s", userId, UUID.randomUUID(), extension);
 
-        // Only content-type is signed. Signing content-disposition would force every client
-        // to replay that exact header on the PUT, which browsers/uploaders cannot reliably do
-        // and which MinIO rejects with AccessDenied ("headers present which were not signed").
         ObjectMetadata objectMetadata = ObjectMetadata.builder()
                 .contentType(normalizedContentType)
                 .build();
@@ -92,29 +86,8 @@ public class S3Service {
         return new PresignedUpload(key, url.toString(), presignTtlMinutes * 60);
     }
 
-    public String generateDownloadUrl(UUID userId, String s3Key) {
-        //validateOwnership(userId, s3Key);
-        if (!s3Template.objectExists(bucketName, s3Key)) {
-            throw new ImageNotFoundException();
-        }
-
-        URL url = s3Template.createSignedGetURL(
-                bucketName,
-                s3Key,
-                Duration.ofMinutes(presignTtlMinutes)
-        );
-
-        log.info("Generated presigned download URL, userId={}, key={}", userId, s3Key);
-        return url.toString();
-    }
-
-    /**
-     * Presigned GET без проверки владельца — для публично-показываемых
-     * объектов (обложка события в invite-превью, открывается до входа).
-     * Возвращает null, если ключ пуст или объект отсутствует, чтобы
-     * превью не падало из-за отсутствующей картинки.
-     */
-    public String generatePublicUrl(String s3Key) {
+    // Создаение presigned URL на скачивание файла
+    public String generateDownloadUrl(String s3Key) {
         if (s3Key == null || s3Key.isBlank()) {
             return null;
         }
@@ -129,14 +102,16 @@ public class S3Service {
         return url.toString();
     }
 
+    // Удаление объекта из хранилища и из pending-индекса Redis
     public void deleteFile(UUID userId, String s3Key) {
-        //validateOwnership(userId, s3Key);
+        validateOwnership(userId, s3Key);
         s3Template.deleteObject(bucketName, s3Key);
         removePendingUpload(s3Key);
         log.info("Deleted object from s3, userId={}, key={}", userId, s3Key);
     }
 
-    public void useKey(UUID userId, String s3Key) {
+    // Помечает ключ как использованный и убирает из pending-индекса
+    public void useKey(String s3Key) {
         if (s3Key == null || s3Key.isBlank()) {
             return;
         }
@@ -153,9 +128,10 @@ public class S3Service {
             log.warn("Failed to use image key in redis, key={}", s3Key, ex);
         }
 
-        log.info("Image key marked as used, userId={}, key={}", userId, s3Key);
+        log.info("Image key marked as used, key={}", s3Key);
     }
 
+    // Предвалидация ожидаемого размера файла
     private void validateExpectedFileSize(Long fileSizeBytes) {
         if (fileSizeBytes == null) {
             return;
@@ -164,10 +140,11 @@ public class S3Service {
             throw new InvalidImageRequestException("file_size_bytes must be greater than zero");
         }
         if (fileSizeBytes > maxFileSizeBytes) {
-            throw new InvalidImageRequestException("File size exceeds 3MB limit");
+            throw new InvalidImageRequestException("File size exceeds configured limit");
         }
     }
 
+    // Валидация реального размера уже загруженного файла
     private void enforceFileSizeLimit(String s3Key) {
         try {
             Long objectSize = s3Client.headObject(
@@ -180,7 +157,7 @@ public class S3Service {
             if (objectSize != null && objectSize > maxFileSizeBytes) {
                 s3Template.deleteObject(bucketName, s3Key);
                 removePendingUpload(s3Key);
-                throw new InvalidImageRequestException("File size exceeds 3MB limit");
+                throw new InvalidImageRequestException("File size exceeds configured limit");
             }
         } catch (NoSuchKeyException ex) {
             throw new ImageNotFoundException();
@@ -192,6 +169,7 @@ public class S3Service {
         }
     }
 
+    // Нормализация + валидация content-type
     private String normalizeContentType(String contentType) {
         if (contentType == null || contentType.isBlank()) {
             throw new InvalidImageRequestException("contentType is required");
@@ -204,39 +182,25 @@ public class S3Service {
         return normalized;
     }
 
-    private String normalizeFileName(String fileName) {
-        if (fileName == null || fileName.isBlank()) {
-            throw new InvalidImageRequestException("fileName is required");
-        }
-
-        String normalized = fileName.trim()
-                .replace("\\", "_")
-                .replace("/", "_");
-
-        if (normalized.length() > 255) {
-            normalized = normalized.substring(0, 255);
-        }
-
-        return normalized;
-    }
-
-    private void validateOwnership(UUID userId, String s3Key) {
-        if (s3Key == null || s3Key.isBlank()) {
-            throw new InvalidImageRequestException("key is required");
-        }
-
-        String keyPrefix = "receipts/" + userId + "/";
-        if (!s3Key.startsWith(keyPrefix)) {
-            throw new ImageAccessDeniedException();
-        }
-    }
-
+    // Сохранение ключа в Redis как ожидающий подтверждения
     private void savePendingUpload(String s3Key) {
         Duration ttl = Duration.ofHours(pendingUploadTtlHours);
         long expiresAtEpochSecond = Instant.now().plus(ttl).getEpochSecond();
         redisTemplate.opsForZSet().add(PENDING_UPLOAD_INDEX_KEY, s3Key, expiresAtEpochSecond);
     }
 
+    //Валидация автора
+    private void validateOwnership(UUID userId, String s3Key) {
+        if (s3Key == null || s3Key.isBlank()) {
+            throw new InvalidImageRequestException("key is required");
+        }
+        String keyPrefix = "receipts/" + userId + "/";
+        if (!s3Key.startsWith(keyPrefix)) {
+            throw new ImageAccessDeniedException();
+        }
+    }
+
+    // Удаление просроченных и неиспользованных ключей из Redis и MinIO
     private void cleanupExpiredPendingUploads() {
         long nowEpochSecond = Instant.now().getEpochSecond();
         Set<String> expiredKeys = redisTemplate.opsForZSet().rangeByScore(
@@ -265,6 +229,7 @@ public class S3Service {
         }
     }
 
+    // Безопасный запуск cleanup без проброса исключений наружу
     public void cleanupExpiredPendingUploadsSafe() {
         try {
             cleanupExpiredPendingUploads();
@@ -273,14 +238,12 @@ public class S3Service {
         }
     }
 
+    // Удаление ключа из pending-индекса Redis
     private void removePendingUpload(String s3Key) {
         try {
             redisTemplate.opsForZSet().remove(PENDING_UPLOAD_INDEX_KEY, s3Key);
         } catch (Exception ex) {
             log.warn("Failed to remove pending upload key={}", s3Key, ex);
         }
-    }
-
-    public record PresignedUpload(String imageKey, String uploadUrl, long expiresInSeconds) {
     }
 }

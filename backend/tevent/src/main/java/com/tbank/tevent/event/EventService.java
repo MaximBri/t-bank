@@ -72,7 +72,7 @@ public class EventService {
         event = eventRepository.saveAndFlush(event);
 
         if (request.imageKey() != null && !request.imageKey().isBlank()) {
-            s3Service.useKey(currentUserId, request.imageKey());
+            s3Service.useKey(request.imageKey());
         }
 
         EventUser eventUser = new EventUser();
@@ -134,7 +134,7 @@ public class EventService {
         return new EventPreviewResponse(
                 event.getId(),
                 event.getTitle(),
-                s3Service.generatePublicUrl(event.getImageKey()),
+                s3Service.generateDownloadUrl(event.getImageKey()),
                 participantCount,
                 event.getStartDate(),
                 event.getEndDate(),
@@ -210,7 +210,7 @@ public class EventService {
         if (request.imageKey() != null) {
             event.setImageKey(request.imageKey());
             if (!request.imageKey().isBlank()) {
-                s3Service.useKey(currentUserId, request.imageKey());
+                s3Service.useKey(request.imageKey());
             }
         }
 
