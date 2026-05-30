@@ -8,38 +8,37 @@ import com.tbank.tevent.profile.dto.UserProfileDto;
 import com.tbank.tevent.s3.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Service s3Service;
 
+    // Change current password
     @Transactional
-    public void updateUserPassword(PasswordChangeRequest request) {
+    public void updateUserPassword(UUID userId, PasswordChangeRequest request) {
         log.debug("Attempt to update password for authenticated user");
-        User currentUser = getCurrentUser();
+        User currentUser = getUserById(userId);
         log.debug("User found: userId={}", currentUser.getId());
 
         if (!passwordEncoder.matches(request.currentPassword(), currentUser.getPasswordHash())) {
             log.warn("Password update failed - invalid current password for userId={}", currentUser.getId());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный текущий пароль");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect current password");
         }
 
         if (passwordEncoder.matches(request.newPassword(), currentUser.getPasswordHash())) {
             log.warn("Password update failed - new password matches old password for userId={}", currentUser.getId());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Новый пароль должен отличаться от текущего");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new password must be different from the current one");
         }
 
         currentUser.setPasswordHash(passwordEncoder.encode(request.newPassword()));
@@ -49,20 +48,11 @@ public class UserService {
         log.info("Password updated successfully for userId={}", currentUser.getId());
     }
 
-    public UserProfileDto getUserData() {
-        log.debug("Fetching user profile data");
-
-        User currentUser = getCurrentUser();
-        UserProfileDto userProfile = mapToUserProfileDto(currentUser);
-
-        log.debug("User profile fetched successfully for userId={}", currentUser.getId());
-        return userProfile;
-    }
-
+    // Update user data
     @Transactional
-    public UserProfileDto updateUser(UpdateProfileRequest request) {
+    public UserProfileDto updateUser(UUID userId, UpdateProfileRequest request) {
         log.debug("Attempt to update user profile");
-        User currentUser = getCurrentUser();
+        User currentUser = getUserById(userId);
         log.debug("User found: userId={}", currentUser.getId());
 
         if (request.login() != null && !request.login().isBlank()) {
@@ -89,7 +79,7 @@ public class UserService {
             currentUser.setSecondName(request.secondName());
         }
         if (request.avatarUrl() != null && !request.avatarUrl().isBlank()) {
-            s3Service.useKey(currentUser.getId(), request.avatarUrl());
+            s3Service.useKey(request.avatarUrl());
             currentUser.setAvatarUrl(request.avatarUrl());
         }
 
@@ -100,28 +90,12 @@ public class UserService {
         return mapToUserProfileDto(currentUser);
     }
 
-    private User getCurrentUser() {
-        log.debug("Retrieving current authenticated user");
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            log.warn("Authentication failed - no authenticated user found");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Не выполнена аутентификация");
-        }
-
-        Object principal = authentication.getPrincipal();
-        if (!(principal instanceof User)) {
-            log.error("Invalid principal type: expected User but got {}",
-                    principal != null ? principal.getClass().getSimpleName() : "null");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Неверные данные пользователя");
-        }
-
-        User user = (User) principal;
-        log.debug("Current user retrieved: userId={}, login={}", user.getId(), user.getLogin());
-        return user;
+    private User getUserById(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
+    // entity -> DTO
     private UserProfileDto mapToUserProfileDto(User user) {
         return new UserProfileDto(
                 user.getId(),

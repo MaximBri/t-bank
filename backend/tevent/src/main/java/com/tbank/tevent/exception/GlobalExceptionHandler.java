@@ -21,6 +21,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -103,7 +104,8 @@ public class GlobalExceptionHandler {
             IllegalArgumentException.class,
             ValidationException.class,
             InvalidImageRequestException.class,
-            org.springframework.http.converter.HttpMessageNotReadableException.class
+            org.springframework.http.converter.HttpMessageNotReadableException.class,
+            MissingServletRequestParameterException.class
     })
     public ResponseEntity<ApiError> handleBadRequest(Exception ex) {
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage());

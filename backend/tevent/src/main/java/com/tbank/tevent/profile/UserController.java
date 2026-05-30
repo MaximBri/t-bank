@@ -1,5 +1,6 @@
 package com.tbank.tevent.profile;
 
+import com.tbank.tevent.SecurityUtils;
 import com.tbank.tevent.profile.dto.PasswordChangeRequest;
 import com.tbank.tevent.profile.dto.UpdateProfileRequest;
 import com.tbank.tevent.profile.dto.UserProfileDto;
@@ -13,23 +14,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/me")
 @RequiredArgsConstructor
 @Tag(name = "Profile", description = "Управление профилем пользователя")
 public class UserController {
     private final UserService userService;
-
-    @GetMapping
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Профиль успешно получен"),
-            @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован")
-    })
-    @Operation(summary = "Получить профиль текущего пользователя")
-    public ResponseEntity<UserProfileDto> getUser() {
-        return ResponseEntity.ok(userService.getUserData());
-    }
-
 
     @PatchMapping
     @ApiResponses(value = {
@@ -40,7 +32,8 @@ public class UserController {
     })
     @Operation(summary = "Обновить данные текущего пользователя")
     public ResponseEntity<UserProfileDto> updateUser(@Valid @RequestBody UpdateProfileRequest request) {
-        return ResponseEntity.ok(userService.updateUser(request));
+        UUID userId = SecurityUtils.getCurrentUserId();
+        return ResponseEntity.ok(userService.updateUser(userId, request));
     }
 
     @PostMapping("/password")
@@ -52,6 +45,8 @@ public class UserController {
     @Operation(summary = "Обновить пароль текущего пользователя")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updatePassword(@Valid @RequestBody PasswordChangeRequest request) {
-        userService.updateUserPassword(request);
+        UUID userId = SecurityUtils.getCurrentUserId();
+        userService.updateUserPassword(userId, request);
     }
+
 }
