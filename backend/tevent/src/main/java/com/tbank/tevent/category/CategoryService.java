@@ -1,14 +1,14 @@
 package com.tbank.tevent.category;
 
-import com.tbank.tevent.SecurityUtils;
 import com.tbank.tevent.category.dto.CategoryResponse;
+import com.tbank.tevent.repo.CategoryEventRepository;
+import com.tbank.tevent.repo.CategoryRepository;
 import com.tbank.tevent.repo.entity.Category;
 import com.tbank.tevent.repo.entity.CategoryEvent;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,9 +23,8 @@ public class CategoryService {
 
     @Transactional
     public void syncCategoriesWithEvent(UUID eventId, List<String> categoryNames) {
-        // Delete existing relations for this event
         categoryEventRepository.deleteAllByEventId(eventId);
-        
+
         if (categoryNames == null || categoryNames.isEmpty()) {
             return;
         }
@@ -36,19 +35,15 @@ public class CategoryService {
                 .distinct()
                 .toList();
 
-        UUID currentUserId = SecurityUtils.getCurrentUserId();
-        List<Category> existingCategories = categoryRepository.findAllByUserIdAndNameIn(currentUserId, cleanNames);
+        List<Category> existingCategories = categoryRepository.findAllByNameIn(cleanNames);
 
         Map<String, UUID> nameToIdMap = existingCategories.stream()
-                .collect(Collectors.toMap(Category::getName, Category::getId));
+                .collect(Collectors.toMap(Category::getName, Category::getId, (left, right) -> left));
 
-        LocalDateTime now = LocalDateTime.now();
         List<Category> newCategories = cleanNames.stream()
                 .filter(name -> !nameToIdMap.containsKey(name))
                 .map(name -> Category.builder()
                         .name(name)
-                        .userId(currentUserId)
-                        .createdAt(now)
                         .build())
                 .toList();
 

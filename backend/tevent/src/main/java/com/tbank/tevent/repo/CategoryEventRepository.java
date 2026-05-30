@@ -1,4 +1,4 @@
-package com.tbank.tevent.category;
+package com.tbank.tevent.repo;
 
 import com.tbank.tevent.repo.entity.CategoryEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
