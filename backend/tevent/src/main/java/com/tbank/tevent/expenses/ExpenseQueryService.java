@@ -2,6 +2,7 @@ package com.tbank.tevent.expenses;
 
 import com.tbank.tevent.expenses.dto.EventExpensesResponse;
 import com.tbank.tevent.expenses.dto.ExpenseResponse;
+import com.tbank.tevent.repo.ExpenseParticipantView;
 import com.tbank.tevent.repo.ExpenseRepository;
 import com.tbank.tevent.repo.ExpenseSplitRepository;
 import com.tbank.tevent.repo.entity.Expense;

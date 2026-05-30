@@ -1,6 +1,4 @@
 package com.tbank.tevent.repo;
-
-import com.tbank.tevent.expenses.ExpenseParticipantView;
 import com.tbank.tevent.repo.entity.ExpenseSplit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
