@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { useGetEventSettlements } from '@/entities/settlement'
+import { useGetEvent } from '@/entities/event/api/hooks/useGetEvent'
 import { useLeaveEvent } from '@/entities/event/api/hooks/useLeaveEvent'
 import { LeaveEventModal } from '@/features/LeaveEventModal'
 import { renderActiveWidget } from '@/pages/event/lib/renderActiveWidget.tsx'
@@ -22,7 +23,8 @@ export const EventPage = () => {
     defaultSection: eventDefaultSection,
   })
   const [isLeaveEventModalOpen, setLeaveEventModalOpen] = useState(false)
-  const { data: settlementsForLeave = [] } = useGetEventSettlements(eventId, true)
+  const { data: event } = useGetEvent(eventId)
+  const { data: settlementsForLeave = [] } = useGetEventSettlements(eventId, event?.isCompleted)
   const { mutate: leaveEvent } = useLeaveEvent(eventId ?? '')
 
   const handleLeaveSubmit = () => {

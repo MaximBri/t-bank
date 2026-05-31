@@ -28,7 +28,7 @@ public class EventCompletionScheduler {
         for (Event event : expiredEvents) {
             try {
                 log.info("Auto-completing event: {}", event.getId());
-                eventCompletionService.completeEvent(event.getId());
+                eventCompletionService.completeEventByScheduler(event.getId());
                 log.info("Event {} completed successfully", event.getId());
             } catch (Exception e) {
                 log.error("Failed to auto-complete event {}: {}", event.getId(), e.getMessage(), e);
