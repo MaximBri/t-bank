@@ -41,7 +41,7 @@ class InboxQueryServiceTest {
     // Проверка: если pending split нет, inbox пустой
     void returnsEmptyInboxWhenNoPendingSplits() {
         UUID userId = UUID.randomUUID();
-        when(splitRepository.findAllByUserIdAndIsConfirmedFalse(userId)).thenReturn(List.of());
+        when(splitRepository.findPendingInboxSplits(userId)).thenReturn(List.of());
 
         ListInboxItemDTO result = service.getUserInbox(userId);
 
@@ -63,7 +63,7 @@ class InboxQueryServiceTest {
                 .isConfirmed(false)
                 .build();
 
-        when(splitRepository.findAllByUserIdAndIsConfirmedFalse(userId)).thenReturn(List.of(split));
+        when(splitRepository.findPendingInboxSplits(userId)).thenReturn(List.of(split));
         when(expenseRepository.findAllById(List.of(expenseId))).thenReturn(List.of());
 
         assertThatThrownBy(() -> service.getUserInbox(userId))
@@ -90,7 +90,7 @@ class InboxQueryServiceTest {
                 .status("PENDING")
                 .build();
 
-        when(splitRepository.findAllByUserIdAndIsConfirmedFalse(userId)).thenReturn(List.of(split));
+        when(splitRepository.findPendingInboxSplits(userId)).thenReturn(List.of(split));
         when(expenseRepository.findAllById(List.of(expenseId))).thenReturn(List.of(expense));
 
         ListInboxItemDTO result = service.getUserInbox(userId);
