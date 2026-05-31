@@ -2,12 +2,14 @@ import { z } from 'zod'
 
 import { expenseCategoriesAddSchema } from '@/entities/expense'
 import { createFormSchema, requiredString } from '@/shared/lib/forms'
+import { MAX_UPLOAD_FILE_SIZE_BYTES, maxUploadFileSizeErrorMessage } from '@/shared/config/upload'
 
 export const createEventSchema = (isEdit = false) =>
   createFormSchema({
     avatar: z
       .instanceof(File)
       .refine((file) => file.type.startsWith('image/'), 'Допустимы только изображения')
+      .refine((file) => file.size <= MAX_UPLOAD_FILE_SIZE_BYTES, maxUploadFileSizeErrorMessage)
       .optional(),
     categories: expenseCategoriesAddSchema,
     description: z

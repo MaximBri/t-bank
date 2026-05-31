@@ -119,6 +119,18 @@ describe('createEventSchema', () => {
     expect(result.success).toBe(true)
   })
 
+  it('не проходит валидацию когда avatar превышает 3 МБ', () => {
+    const largeImageFile = new File([new ArrayBuffer(4 * 1024 * 1024)], 'large-photo.jpg', {
+      type: 'image/jpeg',
+    })
+    const result = createEventSchema().safeParse({ ...validBase, avatar: largeImageFile })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const errors = result.error.flatten().fieldErrors.avatar
+      expect(errors![0]).toBe('Размер файла должен быть не больше 3 МБ')
+    }
+  })
+
   it('проходит валидацию когда avatar не задан (необязательное поле)', () => {
     const result = createEventSchema().safeParse({ ...validBase, avatar: undefined })
     expect(result.success).toBe(true)
