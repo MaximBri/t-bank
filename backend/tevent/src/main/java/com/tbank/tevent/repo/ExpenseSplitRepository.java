@@ -1,7 +1,4 @@
 package com.tbank.tevent.repo;
-
-import com.tbank.tevent.expenses.ExpenseParticipantView;
-import com.tbank.tevent.repo.entity.Expense;
 import com.tbank.tevent.repo.entity.ExpenseSplit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,20 +10,7 @@ import java.util.UUID;
 
 public interface ExpenseSplitRepository extends JpaRepository<ExpenseSplit, UUID> {
     List<ExpenseSplit> findAllByExpenseId(UUID expenseId);
-    List<ExpenseSplit> findAllByExpenseIdIn(List<UUID> expenseIds);
     Optional<ExpenseSplit> findByExpenseIdAndUserId(UUID expenseId, UUID userId);
-    void deleteAllByExpenseId(UUID expenseId);
-    boolean existsByExpenseIdAndUserId(UUID expenseId, UUID userId);
-    long countByExpenseIdAndIsConfirmedFalse(UUID expenseId);
-
-    @Query("SELECT es FROM ExpenseSplit es JOIN Expense e ON es.expenseId = e.id WHERE es.userId = :userId AND es.isConfirmed = false AND e.status = 'PLANNED'")
-    List<ExpenseSplit> findAllPendingIncomes(@Param("userId") UUID userId);
-
-    @Query("SELECT s FROM ExpenseSplit s JOIN Expense e ON s.expenseId = e.id WHERE s.userId = :userId AND e.status IN ('PLANNED', 'PENDING') AND s.isConfirmed = false")
-    List<ExpenseSplit> findAllPendingSplitsWithExpense(@Param("userId") UUID userId);
-
-    @Query("SELECT s FROM ExpenseSplit s JOIN Expense e ON s.expenseId = e.id WHERE e.eventId = :eventId AND s.isConfirmed = true")
-    List<ExpenseSplit> findAllConfirmedByEventId(@Param("eventId") UUID eventId);
 
     // Есть ли у пользователя доля в любом неудалённом расходе события
     // (защита от удаления/выхода участника с висящими split — рвёт расчёт долгов).
@@ -36,6 +20,33 @@ public interface ExpenseSplitRepository extends JpaRepository<ExpenseSplit, UUID
         """)
     boolean existsSplitForUserInEvent(@Param("eventId") UUID eventId, @Param("userId") UUID userId);
 
+    @Query(value = """
+        SELECT user_id, SUM(delta) AS net_balance
+        FROM (
+
+            SELECT e.payer_id AS user_id, e.amount AS delta
+            FROM expense e
+            WHERE e.event_id = :eventId AND e.status = 'ACTIVE'
+            
+            UNION ALL
+            
+            SELECT es.user_id AS user_id, -es.amount AS delta
+            FROM expense_split es
+            JOIN expense e ON es.expense_id = e.id
+            WHERE e.event_id = :eventId AND e.status = 'ACTIVE' AND es.is_confirmed = true
+            
+            UNION ALL
+
+            SELECT e.payer_id AS user_id, -(e.amount / (COUNT(es.user_id) + 1)) AS delta
+            FROM expense e
+            JOIN expense_split es ON es.expense_id = e.id
+            WHERE e.event_id = :eventId AND e.status = 'ACTIVE' AND es.is_confirmed = true
+            GROUP BY e.id, e.payer_id, e.amount
+        ) AS ledger
+        GROUP BY user_id
+        HAVING SUM(delta) != 0
+        """, nativeQuery = true)
+    List<Object[]> findNetBalancesByEventId(@Param("eventId") UUID eventId);
 
     void deleteByExpenseId(UUID expenseId);
 
@@ -47,4 +58,16 @@ public interface ExpenseSplitRepository extends JpaRepository<ExpenseSplit, UUID
     List<ExpenseParticipantView> findAllParticipantsByExpenseIds(@Param("expenseIds") List<UUID> expenseIds);
 
     List<ExpenseSplit> findAllByUserIdAndIsConfirmedFalse(UUID userId);
+
+    @Query("""
+        SELECT s
+        FROM ExpenseSplit s
+        JOIN Expense e ON e.id = s.expenseId
+        JOIN Event ev ON ev.id = e.eventId
+        WHERE s.userId = :userId
+          AND s.isConfirmed = false
+          AND e.status = 'PENDING'
+          AND ev.isCompleted = false
+        """)
+    List<ExpenseSplit> findPendingInboxSplits(@Param("userId") UUID userId);
 }

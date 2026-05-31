@@ -28,6 +28,9 @@ export function formatDateRange(start: string, end?: string): string {
   const e = parse(end)
 
   if (s.year === e.year && s.month === e.month) {
+    if (s.day === e.day) {
+      return `${s.day} ${months[s.month - 1]} ${s.year}`
+    }
     return `${s.day} - ${e.day} ${months[e.month - 1]} ${e.year}`
   }
 

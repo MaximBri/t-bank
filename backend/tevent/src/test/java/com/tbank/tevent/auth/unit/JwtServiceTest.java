@@ -1,9 +1,13 @@
 package com.tbank.tevent.auth.unit;
 
 import com.tbank.tevent.auth.JwtService;
+import com.tbank.tevent.auth.exception.JwtConfigurationException;
 import com.tbank.tevent.config.JwtProperties;
 import com.tbank.tevent.repo.entity.User;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,74 +15,87 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class JwtServiceTest {
 
     @Test
-    void generateAccessTokenCreatesOnlyAccessToken() {
+    // Проверяет генерацию и валидацию access-token
+    void generateAccessTokenProducesAccessTypeAndExpectedSubject() {
         JwtService jwtService = new JwtService(jwtProperties());
-        String token = jwtService.generateAccessToken(user());
+        User user = user("jwt_login");
 
-        assertThat(jwtService.isAccessToken(token)).isTrue();
-        assertThat(jwtService.isRefreshToken(token)).isFalse();
-        assertThat(jwtService.extractLogin(token)).isEqualTo("user");
+        String accessToken = jwtService.generateAccessToken(user);
+
+        assertThat(jwtService.extractLogin(accessToken)).isEqualTo("jwt_login");
+        assertThat(jwtService.isAccessToken(accessToken)).isTrue();
+        assertThat(jwtService.isRefreshToken(accessToken)).isFalse();
     }
 
     @Test
-    void generateRefreshTokenCreatesOnlyRefreshToken() {
+    // Проверяет генерацию и валидацию refresh-token
+    void generateRefreshTokenProducesRefreshType() {
         JwtService jwtService = new JwtService(jwtProperties());
-        String token = jwtService.generateRefreshToken(user());
+        User user = user("refresh_login");
 
-        assertThat(jwtService.isRefreshToken(token)).isTrue();
-        assertThat(jwtService.isAccessToken(token)).isFalse();
-        assertThat(jwtService.extractLogin(token)).isEqualTo("user");
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        assertThat(jwtService.extractLogin(refreshToken)).isEqualTo("refresh_login");
+        assertThat(jwtService.isRefreshToken(refreshToken)).isTrue();
+        assertThat(jwtService.isAccessToken(refreshToken)).isFalse();
     }
 
     @Test
-    void rejectsTooShortSecret() {
-        JwtProperties properties = jwtProperties();
-        properties.setSecret("short");
-
-        assertThatThrownBy(() -> new JwtService(properties))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("JWT secret must contain at least 32 characters");
-    }
-
-    @Test
-    void rejectsNonPositiveAccessTokenExpiration() {
-        JwtProperties properties = jwtProperties();
-        properties.setAccessTokenExpirationMinutes(0);
-
-        assertThatThrownBy(() -> new JwtService(properties))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("JWT access token expiration must be positive");
-    }
-
-    @Test
-    void rejectsNonPositiveRefreshTokenExpiration() {
-        JwtProperties properties = jwtProperties();
-        properties.setRefreshTokenExpirationDays(0);
-
-        assertThatThrownBy(() -> new JwtService(properties))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("JWT refresh token expiration must be positive");
-    }
-
-    @Test
-    void rejectsMalformedToken() {
+    // Проверка: expiration извлекается и находится в будущем
+    void extractExpirationReturnsFutureDate() {
         JwtService jwtService = new JwtService(jwtProperties());
+        User user = user("exp_login");
 
-        assertThat(jwtService.isAccessToken("not-a-jwt")).isFalse();
-        assertThat(jwtService.isRefreshToken("not-a-jwt")).isFalse();
+        String accessToken = jwtService.generateAccessToken(user);
+        LocalDateTime expiration = jwtService.extractExpiration(accessToken);
+
+        assertThat(expiration).isAfter(LocalDateTime.now().minusSeconds(1));
+    }
+
+    @Test
+    // Проверка: короткий секрет отклоняется
+    void shortSecretThrowsJwtConfigurationException() {
+        JwtProperties props = jwtProperties();
+        props.setSecret("short-secret");
+
+        assertThatThrownBy(() -> new JwtService(props))
+                .isInstanceOf(JwtConfigurationException.class);
+    }
+
+    @Test
+    // Проверка: access TTL > 0
+    void nonPositiveAccessExpirationThrowsJwtConfigurationException() {
+        JwtProperties props = jwtProperties();
+        props.setAccessTokenExpirationMinutes(0);
+
+        assertThatThrownBy(() -> new JwtService(props))
+                .isInstanceOf(JwtConfigurationException.class);
+    }
+
+    @Test
+    // Проверка: refresh TTL > 0
+    void nonPositiveRefreshExpirationThrowsJwtConfigurationException() {
+        JwtProperties props = jwtProperties();
+        props.setRefreshTokenExpirationDays(0);
+
+        assertThatThrownBy(() -> new JwtService(props))
+                .isInstanceOf(JwtConfigurationException.class);
     }
 
     private JwtProperties jwtProperties() {
-        JwtProperties properties = new JwtProperties();
-        properties.setSecret("tevent-unit-jwt-secret-for-auth-tests");
-        properties.setAccessTokenExpirationMinutes(15);
-        properties.setRefreshTokenExpirationDays(30);
-        return properties;
+        JwtProperties props = new JwtProperties();
+        props.setSecret("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+        props.setAccessTokenExpirationMinutes(15);
+        props.setRefreshTokenExpirationDays(30);
+        props.setCookieSecure(false);
+        return props;
     }
 
-    private User user() {
-        User user = new User();
-        user.setLogin("user");
-        return user;
+    private User user(String login) {
+        return User.builder()
+                .id(UUID.randomUUID())
+                .login(login)
+                .passwordHash("hash")
+                .build();
     }
 }

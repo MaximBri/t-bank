@@ -15,6 +15,8 @@ export const useConfirmExpenseShare = () => {
       expensesApi.confirmAsParticipant(expenseId),
     onSuccess: (_data, { eventId }) => {
       queryClient.invalidateQueries({ queryKey: ['expenses', 'participant', 'inbox'] })
+      queryClient.invalidateQueries({ queryKey: ['event', 'expenses'] })
+      queryClient.invalidateQueries({ queryKey: ['event', 'settlements'] })
       if (eventId) {
         queryClient.invalidateQueries({ queryKey: ['event', 'expenses', eventId] })
         queryClient.invalidateQueries({ queryKey: ['event', 'settlements', eventId] })

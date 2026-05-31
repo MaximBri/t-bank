@@ -1,10 +1,14 @@
 package com.tbank.tevent.expenses;
 
+import com.tbank.tevent.expenses.dto.InboxItemDTO;
+import com.tbank.tevent.expenses.dto.ListInboxItemDTO;
+import com.tbank.tevent.expenses.exception.ExpenseSplitIntegrityException;
 import com.tbank.tevent.repo.ExpenseRepository;
 import com.tbank.tevent.repo.ExpenseSplitRepository;
 import com.tbank.tevent.repo.entity.Expense;
 import com.tbank.tevent.repo.entity.ExpenseSplit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,13 +19,16 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InboxQueryService {
 
     private final ExpenseSplitRepository splitRepository;
     private final ExpenseRepository expenseRepository;
 
+    // Список неподтвержденных расходов для участника
     public ListInboxItemDTO getUserInbox(UUID userId) {
-        List<ExpenseSplit> pendingSplits = splitRepository.findAllByUserIdAndIsConfirmedFalse(userId);
+        log.debug("Loading expense inbox for userId={}", userId);
+        List<ExpenseSplit> pendingSplits = splitRepository.findPendingInboxSplits(userId);
 
         if (pendingSplits.isEmpty()) {
             return new ListInboxItemDTO(List.of());
@@ -39,7 +46,7 @@ public class InboxQueryService {
                     Expense expense = expensesMap.get(split.getExpenseId());
 
                     if (expense == null) {
-                        throw new IllegalStateException("Нарушена целостность данных: расход не найден для сплита с ID: " + split.getId());
+                        throw new ExpenseSplitIntegrityException(split.getId().toString());
                     }
 
                     return new InboxItemDTO(
@@ -50,6 +57,7 @@ public class InboxQueryService {
                     );
                 })
                 .toList();
+        log.debug("Expense inbox loaded, userId={}, size={}", userId, list.size());
         return new ListInboxItemDTO(list);
     }
 }

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import CalendarIcon from '@/shared/assets/icons/calendar.svg?react'
 import UsersIcon from '@/shared/assets/icons/users.svg?react'
-import { eventStatusMap, formatDateRange } from '@/entities/event'
+import {EventStatus, eventStatusMap, formatDateRange} from '@/entities/event'
 import { formatParticipantsCount } from '@/shared/lib/formatParticipantsCount.ts'
 import { buildEventRoute } from '@/shared/routes'
 
@@ -31,9 +31,11 @@ export const EventListCard = ({ item }: EventListCardProps) => (
       </Text>
 
       <Text
-        className={clsx('rounded-lg px-[13px] text-body', eventStatusMap[item.status].background)}
+        className={clsx('rounded-lg px-[13px] text-body',
+            eventStatusMap[item.isCompleted ? EventStatus.Completed : item.status].background)
+      }
       >
-        {eventStatusMap[item.status].label}
+        {eventStatusMap[item.isCompleted ? EventStatus.Completed : item.status].label}
       </Text>
     </div>
 

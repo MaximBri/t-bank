@@ -4,7 +4,7 @@ import type {
   CreateExpenseDto,
   EventExpensesResponseDto,
   ExpenseResponseDto,
-  ParticipantInboxResponseDto,
+  ListInboxResponseDto,
 } from '@/entities/expense/model/types.ts'
 
 const toRequestBody = (payload: CreateExpenseDto) => {
@@ -62,11 +62,15 @@ export const expensesApi = {
   },
 
   getParticipantInbox: async () => {
-    const { data } = await api.get<ParticipantInboxResponseDto>('/expenses/participant/inbox')
-    return data
+    const { data } = await api.get<ListInboxResponseDto>('/expenses/participant/inbox')
+    return data.listInbox
   },
 
   confirmAsParticipant: async (expenseId: string) => {
     await api.post<void>(`/expenses/participant/${expenseId}/confirm`)
+  },
+
+  rejectAsParticipant: async (expenseId: string) => {
+    await api.post<void>(`/expenses/participant/${expenseId}/leave`)
   },
 }

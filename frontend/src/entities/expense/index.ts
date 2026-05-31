@@ -7,9 +7,8 @@ export type {
   CreateExpenseDto,
   ExpenseResponseDto,
   EventExpensesResponseDto,
-  ParticipantInboxItemDto,
-  AuthorInboxItemDto,
-  ParticipantInboxResponseDto,
+  ListInboxResponseDto,
+  ListInboxItemResponseDto,
 } from './model/types'
 export { ExpenseResponseStatus } from './model/types'
 export { expensesApi } from './api/expensesApi.ts'
@@ -21,3 +20,4 @@ export { useApproveExpense } from './api/hooks/useApproveExpense.ts'
 export { useRejectExpense } from './api/hooks/useRejectExpense.ts'
 export { useGetParticipantInbox } from './api/hooks/useGetParticipantInbox.ts'
 export { useConfirmExpenseShare } from './api/hooks/useConfirmExpenseShare.ts'
+export { useRejectExpenseShare } from './api/hooks/useRejectExpenseShare.ts'

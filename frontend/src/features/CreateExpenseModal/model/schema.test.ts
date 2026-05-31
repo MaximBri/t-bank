@@ -22,7 +22,7 @@ describe('createExpenseSchema', () => {
       title: 'Обед',
       amount: 500,
       category: 'Питание',
-      participants: ['user1'],
+      participants: ['user1', 'user2'],
       comment: 'Ресторан',
       checkImage: makeFile('image/jpeg'),
     })
@@ -82,7 +82,7 @@ describe('createExpenseSchema', () => {
       title: 'Обед',
       amount: '250',
       category: 'Питание',
-      participants: ['user1'],
+      participants: ['user1', 'user2'],
     })
     expect(result.success).toBe(true)
     if (result.success) {
@@ -114,7 +114,7 @@ describe('createExpenseSchema', () => {
     expect(result.success).toBe(false)
     if (!result.success) {
       const errors = result.error.flatten().fieldErrors.participants
-      expect(errors![0]).toBe('Выберите хотя бы одного участника')
+      expect(errors![0]).toBe('Для создания расхода необходимо выбрать хотя бы 2 участника')
     }
   })
 
@@ -133,7 +133,7 @@ describe('createExpenseSchema', () => {
     }
   })
 
-  it('не проходит валидацию когда checkImage превышает 5 МБ', () => {
+  it('не проходит валидацию когда checkImage превышает 3 МБ', () => {
     const result = createExpenseSchema.safeParse({
       title: 'Обед',
       amount: 500,
@@ -144,7 +144,7 @@ describe('createExpenseSchema', () => {
     expect(result.success).toBe(false)
     if (!result.success) {
       const errors = result.error.flatten().fieldErrors.checkImage
-      expect(errors![0]).toBe('Размер файла должен быть не больше 5 МБ')
+      expect(errors![0]).toBe('Размер файла должен быть не больше 3 МБ')
     }
   })
 
@@ -153,7 +153,7 @@ describe('createExpenseSchema', () => {
       title: 'Обед',
       amount: 500,
       category: 'Питание',
-      participants: ['user1'],
+      participants: ['user1', 'user2'],
       checkImage: undefined,
     })
     expect(result.success).toBe(true)

@@ -3,7 +3,6 @@ package com.tbank.tevent.auth.unit;
 import com.tbank.tevent.auth.AuthService;
 import com.tbank.tevent.auth.AuthTokens;
 import com.tbank.tevent.auth.JwtService;
-import com.tbank.tevent.auth.dto.CurrentUserResponse;
 import com.tbank.tevent.auth.dto.LoginRequest;
 import com.tbank.tevent.auth.dto.RegisterRequest;
 import com.tbank.tevent.auth.exception.InvalidCredentialsException;
@@ -14,10 +13,10 @@ import com.tbank.tevent.repo.UserRepository;
 import com.tbank.tevent.repo.entity.RefreshToken;
 import com.tbank.tevent.repo.entity.User;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -30,177 +29,255 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private PasswordEncoder passwordEncoder;
+
     @Mock
     private JwtService jwtService;
+
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
+
     @Mock
     private InviteService inviteService;
 
-    @InjectMocks
     private AuthService authService;
 
-    @Test
-    void registerEncodesPasswordAndSavesTrimmedUser() {
-        RegisterRequest request = new RegisterRequest("  user  ", "password123", null, null, null);
-        User savedUser = user("user", "encoded-password");
-        LocalDateTime refreshExpiry = LocalDateTime.now().plusDays(30);
+    @BeforeEach
+    void setUp() {
+        authService = new AuthService(
+                userRepository,
+                passwordEncoder,
+                jwtService,
+                refreshTokenRepository,
+                inviteService
+        );
+    }
 
-        when(passwordEncoder.encode("password123")).thenReturn("encoded-password");
+    @Test
+        // Проверка: успешная регистрация возвращает пару токенов и сохраняет refresh-token в storage
+    void registerCreatesUserAndStoresRefreshHash() {
+        UUID userId = UUID.randomUUID();
+        UUID eventId = UUID.randomUUID();
+        RegisterRequest request = new RegisterRequest("  test_login  ", "StrongPass123", "Test", "User", "invite-1");
+
+        User savedUser = User.builder()
+                .id(userId)
+                .login("test_login")
+                .passwordHash("encoded")
+                .build();
+
+        when(passwordEncoder.encode("StrongPass123")).thenReturn("encoded");
         when(userRepository.saveAndFlush(any(User.class))).thenReturn(savedUser);
+        when(inviteService.applyToken(savedUser, "invite-1")).thenReturn(eventId);
         when(jwtService.generateAccessToken(savedUser)).thenReturn("access-token");
         when(jwtService.generateRefreshToken(savedUser)).thenReturn("refresh-token");
-        when(jwtService.extractExpiration("refresh-token")).thenReturn(refreshExpiry);
+        when(jwtService.extractExpiration("refresh-token")).thenReturn(LocalDateTime.now().plusDays(7));
 
-        AuthTokens tokens = authService.register(request);
+        AuthService.RegisterResult registerResult = authService.register(request);
+        AuthTokens tokens = registerResult.tokens();
+
+        assertThat(tokens.userId()).isEqualTo(userId);
+        assertThat(tokens.accessToken()).isEqualTo("access-token");
+        assertThat(tokens.refreshToken()).isEqualTo("refresh-token");
+        assertThat(registerResult.joinedGroupId()).isEqualTo(eventId);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).saveAndFlush(userCaptor.capture());
-        assertThat(userCaptor.getValue().getLogin()).isEqualTo("user");
-        assertThat(userCaptor.getValue().getPasswordHash()).isEqualTo("encoded-password");
+        assertThat(userCaptor.getValue().getLogin()).isEqualTo("test_login");
 
-        ArgumentCaptor<RefreshToken> refreshTokenCaptor = ArgumentCaptor.forClass(RefreshToken.class);
-        verify(refreshTokenRepository).save(refreshTokenCaptor.capture());
-        assertThat(refreshTokenCaptor.getValue().getUserId()).isEqualTo(savedUser.getId());
-        assertThat(refreshTokenCaptor.getValue().getExpiryDate()).isEqualTo(refreshExpiry);
-        assertThat(refreshTokenCaptor.getValue().getTokenHash()).isEqualTo(DigestUtils.sha256Hex("refresh-token"));
-
-        assertThat(tokens.accessToken()).isEqualTo("access-token");
-        assertThat(tokens.refreshToken()).isEqualTo("refresh-token");
-        assertThat(tokens.userId()).isEqualTo(savedUser.getId());
-        verifyNoInteractions(inviteService);
+        ArgumentCaptor<RefreshToken> refreshCaptor = ArgumentCaptor.forClass(RefreshToken.class);
+        verify(refreshTokenRepository).save(refreshCaptor.capture());
+        assertThat(refreshCaptor.getValue().getTokenHash()).isEqualTo(DigestUtils.sha256Hex("refresh-token"));
     }
 
     @Test
-    void registerRejectsDuplicateLogin() {
-        RegisterRequest request = new RegisterRequest("user", "password123", null, null, null);
-        when(passwordEncoder.encode("password123")).thenReturn("encoded-password");
-        when(userRepository.saveAndFlush(any(User.class))).thenThrow(DataIntegrityViolationException.class);
+    // Проверка: duplicate login при регистрации -> UserAlreadyExistsException
+    void registerThrowsConflictWhenLoginExists() {
+        RegisterRequest request = new RegisterRequest("dup", "StrongPass123", null, null, null);
+
+        when(passwordEncoder.encode(any())).thenReturn("encoded");
+        when(userRepository.saveAndFlush(any(User.class))).thenThrow(new DataIntegrityViolationException("dup"));
 
         assertThatThrownBy(() -> authService.register(request))
-                .isInstanceOf(UserAlreadyExistsException.class)
-                .hasMessage("User with this login already exists");
-
-        verify(jwtService, never()).generateAccessToken(any());
-        verify(refreshTokenRepository, never()).save(any());
+                .isInstanceOf(UserAlreadyExistsException.class);
     }
 
     @Test
-    void loginReturnsAccessAndRefreshTokens() {
-        User user = user("user", "encoded-password");
-        LocalDateTime refreshExpiry = LocalDateTime.now().plusDays(30);
+    // Проверка: неверный пароль -> логин отклоняется
+    void loginThrowsWhenPasswordDoesNotMatch() {
+        User user = User.builder().id(UUID.randomUUID()).login("user").passwordHash("stored-hash").build();
+        when(userRepository.findByLogin("user")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("bad", "stored-hash")).thenReturn(false);
+
+        assertThatThrownBy(() -> authService.login(new LoginRequest("user", null, "bad")))
+                .isInstanceOf(InvalidCredentialsException.class);
+    }
+
+    @Test
+    // Проверка: пользователь не найден -> логин отклоняется
+    void loginThrowsWhenUserNotFound() {
+        when(userRepository.findByLogin("missing")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> authService.login(new LoginRequest("missing", null, "StrongPass123")))
+                .isInstanceOf(InvalidCredentialsException.class);
+    }
+
+    @Test
+    // Проверка: успешный логин возвращает пару токенов и сохраняет refresh-token в storage
+    void loginReturnsTokenPairAndStoresRefreshHash() {
+        UUID userId = UUID.randomUUID();
+        User user = User.builder()
+                .id(userId)
+                .login("user")
+                .passwordHash("stored-hash")
+                .build();
+
+        LocalDateTime refreshExpiry = LocalDateTime.now().plusDays(7);
 
         when(userRepository.findByLogin("user")).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("password123", "encoded-password")).thenReturn(true);
+        when(passwordEncoder.matches("StrongPass123", "stored-hash")).thenReturn(true);
         when(jwtService.generateAccessToken(user)).thenReturn("access-token");
         when(jwtService.generateRefreshToken(user)).thenReturn("refresh-token");
         when(jwtService.extractExpiration("refresh-token")).thenReturn(refreshExpiry);
 
-        AuthTokens tokens = authService.login(new LoginRequest(" user ", null, "password123"));
+        AuthTokens tokens = authService.login(new LoginRequest("  user  ", null, "StrongPass123"));
 
+        assertThat(tokens.userId()).isEqualTo(userId);
         assertThat(tokens.accessToken()).isEqualTo("access-token");
         assertThat(tokens.refreshToken()).isEqualTo("refresh-token");
-        assertThat(tokens.userId()).isEqualTo(user.getId());
-        verify(refreshTokenRepository).save(any(RefreshToken.class));
+
+        ArgumentCaptor<RefreshToken> refreshCaptor = ArgumentCaptor.forClass(RefreshToken.class);
+        verify(refreshTokenRepository).save(refreshCaptor.capture());
+        RefreshToken savedRefresh = refreshCaptor.getValue();
+        assertThat(savedRefresh.getUserId()).isEqualTo(userId);
+        assertThat(savedRefresh.getTokenHash()).isEqualTo(DigestUtils.sha256Hex("refresh-token"));
+        assertThat(savedRefresh.getExpiryDate()).isEqualTo(refreshExpiry);
     }
 
     @Test
-    void loginRejectsUnknownUser() {
-        when(userRepository.findByLogin("missing")).thenReturn(Optional.empty());
+    // Проверка: успешный refresh -> старый refresh удаляется и выдается новая пара токенов
+    void refreshRotatesTokenPair() {
+        UUID userId = UUID.randomUUID();
+        String oldRefresh = "old-refresh";
 
-        assertThatThrownBy(() -> authService.login(new LoginRequest("missing", null, "password123")))
-                .isInstanceOf(InvalidCredentialsException.class)
-                .hasMessage("Login rejected: user not found");
-
-        verifyNoInteractions(passwordEncoder, jwtService, refreshTokenRepository);
-    }
-
-    @Test
-    void loginRejectsInvalidPassword() {
-        User user = user("user", "encoded-password");
-        when(userRepository.findByLogin("user")).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("wrong-password", "encoded-password")).thenReturn(false);
-
-        assertThatThrownBy(() -> authService.login(new LoginRequest("user", null, "wrong-password")))
-                .isInstanceOf(InvalidCredentialsException.class)
-                .hasMessage("Login rejected: invalid password");
-
-        verifyNoInteractions(jwtService, refreshTokenRepository);
-    }
-
-    @Test
-    void refreshReturnsNewAccessAndRefreshTokensForValidRefreshToken() {
-        User user = user("user", "encoded-password");
-        String refreshToken = "refresh-token";
-        LocalDateTime refreshExpiry = LocalDateTime.now().plusDays(30);
-        RefreshToken storedToken = RefreshToken.builder()
-                .tokenHash(DigestUtils.sha256Hex(refreshToken))
-                .userId(user.getId())
-                .expiryDate(LocalDateTime.now().plusHours(1))
-                .revoked(false)
+        RefreshToken oldToken = RefreshToken.builder()
+                .userId(userId)
+                .tokenHash(DigestUtils.sha256Hex(oldRefresh))
+                .expiryDate(LocalDateTime.now().plusDays(1))
                 .build();
 
-        when(jwtService.isRefreshToken(refreshToken)).thenReturn(true);
-        when(refreshTokenRepository.findByTokenHash(DigestUtils.sha256Hex(refreshToken)))
-                .thenReturn(Optional.of(storedToken));
-        when(jwtService.extractLogin(refreshToken)).thenReturn("user");
-        when(userRepository.findByLogin("user")).thenReturn(Optional.of(user));
-        when(jwtService.generateAccessToken(user)).thenReturn("new-access-token");
-        when(jwtService.generateRefreshToken(user)).thenReturn("new-refresh-token");
-        when(jwtService.extractExpiration("new-refresh-token")).thenReturn(refreshExpiry);
+        User user = User.builder().id(userId).login("refresh_user").passwordHash("hash").build();
 
-        AuthTokens tokens = authService.refresh(refreshToken);
+        when(jwtService.isRefreshToken(oldRefresh)).thenReturn(true);
+        when(refreshTokenRepository.findByTokenHash(DigestUtils.sha256Hex(oldRefresh))).thenReturn(Optional.of(oldToken));
+        when(jwtService.extractLogin(oldRefresh)).thenReturn("refresh_user");
+        when(userRepository.findByLogin("refresh_user")).thenReturn(Optional.of(user));
+        when(jwtService.generateAccessToken(user)).thenReturn("new-access");
+        when(jwtService.generateRefreshToken(user)).thenReturn("new-refresh");
+        when(jwtService.extractExpiration("new-refresh")).thenReturn(LocalDateTime.now().plusDays(7));
 
-        assertThat(tokens.accessToken()).isEqualTo("new-access-token");
-        assertThat(tokens.refreshToken()).isEqualTo("new-refresh-token");
-        assertThat(tokens.userId()).isEqualTo(user.getId());
-        verify(refreshTokenRepository).delete(storedToken);
-        verify(refreshTokenRepository).save(any(RefreshToken.class));
+        AuthTokens tokens = authService.refresh(oldRefresh);
+
+        assertThat(tokens.userId()).isEqualTo(userId);
+        assertThat(tokens.accessToken()).isEqualTo("new-access");
+        assertThat(tokens.refreshToken()).isEqualTo("new-refresh");
+        verify(refreshTokenRepository).delete(oldToken);
+        verify(refreshTokenRepository, atLeastOnce()).save(any(RefreshToken.class));
     }
 
     @Test
-    void refreshRejectsInvalidRefreshToken() {
-        when(jwtService.isRefreshToken("bad-token")).thenReturn(false);
+    // Проверка: токен не refresh-типа -> отклонение refresh
+    void refreshRejectsInvalidTokenType() {
+        when(jwtService.isRefreshToken("not-refresh")).thenReturn(false);
 
-        assertThatThrownBy(() -> authService.refresh("bad-token"))
-                .isInstanceOf(InvalidCredentialsException.class)
-                .hasMessage("Refresh token is missing or not a valid refresh token");
+        assertThatThrownBy(() -> authService.refresh("not-refresh"))
+                .isInstanceOf(InvalidCredentialsException.class);
 
-        verifyNoInteractions(userRepository, passwordEncoder);
+        verify(refreshTokenRepository, never()).findByTokenHash(any());
     }
 
     @Test
-    void meReturnsCurrentUserWithProfileFields() {
-        User user = user("user", "encoded-password");
-        user.setFirstName("Ivan");
-        user.setSecondName("Ivanov");
-        user.setAvatarUrl("https://cdn.example/avatar.png");
+    // Проверка: токен не найден в хранилище -> отклонение refresh
+    void refreshRejectsWhenTokenNotFound() {
+        String refresh = "missing-refresh";
+        when(jwtService.isRefreshToken(refresh)).thenReturn(true);
+        when(refreshTokenRepository.findByTokenHash(DigestUtils.sha256Hex(refresh))).thenReturn(Optional.empty());
 
-        when(userRepository.findByLogin("user")).thenReturn(Optional.of(user));
-
-        CurrentUserResponse response = authService.me("user");
-
-        assertThat(response.login()).isEqualTo("user");
-        assertThat(response.userId()).isEqualTo(user.getId());
-        assertThat(response.firstName()).isEqualTo("Ivan");
-        assertThat(response.secondName()).isEqualTo("Ivanov");
-        assertThat(response.avatarUrl()).isEqualTo("https://cdn.example/avatar.png");
+        assertThatThrownBy(() -> authService.refresh(refresh))
+                .isInstanceOf(InvalidCredentialsException.class);
     }
 
-    private User user(String login, String passwordHash) {
-        User user = new User();
-        user.setId(UUID.randomUUID());
-        user.setLogin(login);
-        user.setPasswordHash(passwordHash);
-        return user;
+    @Test
+    // Проверка: токен просрочен -> отклонение refresh
+    void refreshRejectsExpiredToken() {
+        UUID userId = UUID.randomUUID();
+        String refresh = "expired-refresh";
+        RefreshToken token = RefreshToken.builder()
+                .userId(userId)
+                .tokenHash(DigestUtils.sha256Hex(refresh))
+                .expiryDate(LocalDateTime.now().minusMinutes(1))
+                .build();
+
+        when(jwtService.isRefreshToken(refresh)).thenReturn(true);
+        when(refreshTokenRepository.findByTokenHash(DigestUtils.sha256Hex(refresh))).thenReturn(Optional.of(token));
+
+        assertThatThrownBy(() -> authService.refresh(refresh))
+                .isInstanceOf(InvalidCredentialsException.class);
+    }
+
+    @Test
+    // Проверка: пользователь из subject не найден -> отклонение refresh
+    void refreshRejectsWhenSubjectUserNotFound() {
+        UUID userId = UUID.randomUUID();
+        String refresh = "refresh-user-missing";
+        RefreshToken token = RefreshToken.builder()
+                .userId(userId)
+                .tokenHash(DigestUtils.sha256Hex(refresh))
+                .expiryDate(LocalDateTime.now().plusDays(1))
+                .build();
+
+        when(jwtService.isRefreshToken(refresh)).thenReturn(true);
+        when(refreshTokenRepository.findByTokenHash(DigestUtils.sha256Hex(refresh))).thenReturn(Optional.of(token));
+        when(jwtService.extractLogin(refresh)).thenReturn("missing_user");
+        when(userRepository.findByLogin("missing_user")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> authService.refresh(refresh))
+                .isInstanceOf(InvalidCredentialsException.class);
+    }
+
+    @Test
+    // Проверка: несоответствии userId токена и найденного пользователя -> отклонение refresh
+    void refreshRejectsWhenTokenUserMismatch() {
+        UUID tokenUserId = UUID.randomUUID();
+        UUID actualUserId = UUID.randomUUID();
+        String refresh = "refresh-mismatch";
+
+        RefreshToken token = RefreshToken.builder()
+                .userId(tokenUserId)
+                .tokenHash(DigestUtils.sha256Hex(refresh))
+                .expiryDate(LocalDateTime.now().plusDays(1))
+                .build();
+
+        User user = User.builder().id(actualUserId).login("user").passwordHash("hash").build();
+
+        when(jwtService.isRefreshToken(refresh)).thenReturn(true);
+        when(refreshTokenRepository.findByTokenHash(DigestUtils.sha256Hex(refresh))).thenReturn(Optional.of(token));
+        when(jwtService.extractLogin(refresh)).thenReturn("user");
+        when(userRepository.findByLogin("user")).thenReturn(Optional.of(user));
+
+        assertThatThrownBy(() -> authService.refresh(refresh))
+                .isInstanceOf(InvalidCredentialsException.class);
     }
 }

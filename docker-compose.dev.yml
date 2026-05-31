@@ -24,13 +24,12 @@ services:
       SPRING_DATA_REDIS_PORT: 6379
       JWT_SECRET: local_dev_jwt_secret_change_me_please_32chars
       JWT_COOKIE_SECURE: "false"
-      SPRING_CLOUD_AWS_S3_ENDPOINT: http://host.docker.internal:9000
+      SPRING_CLOUD_AWS_S3_ENDPOINT: http://minio:9000
+      APP_S3_PUBLIC_ENDPOINT: http://localhost:9000
       SPRING_CLOUD_AWS_S3_BUCKET_NAME: tbank-receipts
       SPRING_CLOUD_AWS_CREDENTIALS_ACCESS_KEY: minioadmin
       SPRING_CLOUD_AWS_CREDENTIALS_SECRET_KEY: minioadmin123
       SPRING_CLOUD_AWS_REGION_STATIC: us-east-1
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_started

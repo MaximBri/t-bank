@@ -1,6 +1,7 @@
 import { createFormSchema, requiredString } from '@/shared/lib/forms'
 import { z } from 'zod'
 import { parseNumberValue } from '@/shared/lib/number/parseNumber.ts'
+import { MAX_UPLOAD_FILE_SIZE_BYTES, maxUploadFileSizeErrorMessage } from '@/shared/config/upload'
 
 const allowedMimeTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
 
@@ -23,11 +24,11 @@ export const createExpenseSchema = createFormSchema({
     .array(z.string(), {
       required_error: 'Выберите хотя бы одного участника',
     })
-    .min(1, 'Выберите хотя бы одного участника'),
+    .min(2, "Для создания расхода необходимо выбрать хотя бы 2 участника"),
   comment: z.string().optional(),
   checkImage: z
     .instanceof(File, { message: 'Поле обязательно' })
     .refine((file) => allowedMimeTypes.includes(file.type), 'Недопустимый формат файла')
-    .refine((file) => file.size <= 5 * 1024 * 1024, 'Размер файла должен быть не больше 5 МБ')
+    .refine((file) => file.size <= MAX_UPLOAD_FILE_SIZE_BYTES, maxUploadFileSizeErrorMessage)
     .optional(),
 })

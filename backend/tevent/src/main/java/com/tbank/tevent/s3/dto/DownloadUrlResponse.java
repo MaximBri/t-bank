@@ -1,3 +1,7 @@
 package com.tbank.tevent.s3.dto;
 
-public record DownloadUrlResponse(String downloadUrl) {}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record DownloadUrlResponse(
+        @JsonProperty("download_url") String downloadUrl
+) {}

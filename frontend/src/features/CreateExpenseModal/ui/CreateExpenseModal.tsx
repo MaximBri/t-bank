@@ -88,8 +88,12 @@ export const CreateExpenseModal = ({ isOpen, onClose, expense }: CreateExpenseMo
             </div>
 
             <div className="mb-[5px] flex flex-col sm:flex-row sm:gap-[23px]">
-              {renderFormField(commentField)}
-              {renderFormField(checkImageField)}
+              <div className="w-full sm:basis-1/2 sm:max-w-1/2 sm:min-w-0">
+                {renderFormField(commentField)}
+              </div>
+              <div className="w-full sm:basis-1/2 sm:max-w-1/2 sm:min-w-0">
+                {renderFormField(checkImageField)}
+              </div>
             </div>
 
             <div className="flex flex-col gap-[15px]">

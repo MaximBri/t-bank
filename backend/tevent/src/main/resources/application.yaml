@@ -1,7 +1,6 @@
 spring:
   application:
     name: tevent
-
   datasource:
     url: jdbc:postgresql://localhost:5432/tbank
     username: tbank

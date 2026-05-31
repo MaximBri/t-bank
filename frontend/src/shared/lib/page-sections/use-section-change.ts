@@ -34,8 +34,10 @@ export const useSectionChange = <TSection>({
     if (isValidSection(sectionFromQuery)) {
       return
     }
-    handleSectionChange(defaultSection)
-  }, [defaultSection, sectionFromQuery, searchParams, setSearchParams])
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.set(queryKey, defaultSection as string)
+    setSearchParams(nextParams, { replace: true })
+  }, [defaultSection, sectionFromQuery])
 
   return {
     activeSection,

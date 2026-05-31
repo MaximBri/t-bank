@@ -1,6 +1,5 @@
 package com.tbank.tevent.auth;
 
-import com.tbank.tevent.auth.dto.CurrentUserResponse;
 import com.tbank.tevent.auth.dto.LoginRequest;
 import com.tbank.tevent.auth.dto.RegisterRequest;
 import com.tbank.tevent.auth.exception.InvalidCredentialsException;
@@ -12,19 +11,19 @@ import com.tbank.tevent.repo.entity.RefreshToken;
 import com.tbank.tevent.repo.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
-    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -33,7 +32,7 @@ public class AuthService {
     private final InviteService inviteService;
 
     @Transactional
-    public AuthTokens register(RegisterRequest request) {
+    public RegisterResult register(RegisterRequest request) {
         try {
             User user = User.builder()
                     .login(request.login().trim())
@@ -45,10 +44,13 @@ public class AuthService {
                     .build();
             User savedUser = userRepository.saveAndFlush(user);
 
+            UUID joinedGroupId = null;
             if (request.inviteToken() != null && !request.inviteToken().isBlank()) {
-                inviteService.applyToken(user, request.inviteToken());
+                joinedGroupId = inviteService.applyToken(savedUser, request.inviteToken());
             }
-            return generateTokens(savedUser);
+
+            AuthTokens tokens = generateTokens(savedUser);
+            return new RegisterResult(tokens, joinedGroupId);
 
         } catch (DataIntegrityViolationException ex) {
             log.info("Registration failed: login already exists");
@@ -92,11 +94,6 @@ public class AuthService {
                     return new InvalidCredentialsException("Refresh token not recognized");
                 });
 
-        if (oldTokenEntity.isRevoked()) {
-            log.info("Refresh rejected: token already revoked");
-            throw new InvalidCredentialsException("Refresh token has been revoked");
-        }
-
         if (oldTokenEntity.getExpiryDate().isBefore(LocalDateTime.now())) {
             log.info("Refresh rejected: token expired at {}", oldTokenEntity.getExpiryDate());
             throw new InvalidCredentialsException("Refresh token expired");
@@ -116,29 +113,12 @@ public class AuthService {
         }
 
         refreshTokenRepository.delete(oldTokenEntity);
-        log.info("Old refresh token revoked and deleted for user {}", user.getId());
+        log.info("Old refresh token deleted for user {}", user.getId());
 
 
         AuthTokens tokens = generateTokens(user);
         log.info("Access token refreshed successfully, userId={}, login={}", user.getId(), user.getLogin());
         return tokens;
-    }
-
-    @Transactional
-    public CurrentUserResponse me(String login) {
-        User user = userRepository.findByLogin(login)
-                .orElseThrow(() -> {
-                    log.info("Current session rejected: user not found, login={}", login);
-                    return new InvalidCredentialsException("Current session rejected: user not found");
-                });
-
-        return new CurrentUserResponse(
-                user.getLogin(),
-                user.getId(),
-                user.getFirstName(),
-                user.getSecondName(),
-                user.getAvatarUrl()
-        );
     }
 
     private AuthTokens generateTokens(User user) {
@@ -149,7 +129,6 @@ public class AuthService {
                 .tokenHash(hashToken(refreshToken))
                 .userId(user.getId())
                 .expiryDate(jwtService.extractExpiration(refreshToken))
-                .revoked(false)
                 .build();
 
         refreshTokenRepository.save(newTokenEntity);
@@ -158,5 +137,8 @@ public class AuthService {
 
     private String hashToken(String token) {
         return DigestUtils.sha256Hex(token);
+    }
+
+    public record RegisterResult(AuthTokens tokens, UUID joinedGroupId) {
     }
 }

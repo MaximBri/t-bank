@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
-import { eventStatusMap, formatDateRange } from '@/entities/event'
+import {EventStatus, eventStatusMap, formatDateRange} from '@/entities/event'
 import { useGetEvent } from '@/entities/event/api/hooks/useGetEvent'
 import { useGetEventParticipants } from '@/entities/event/api/hooks/useGetEventParticipants'
 import { useCompleteEvent } from '@/entities/event/api/hooks/useCompleteEvent'
@@ -15,9 +15,9 @@ import { UserAvatarSizes } from '@/shared/ui/userAvatar/constants'
 import CalendarIcon from '@/shared/assets/icons/calendar.svg?react'
 import EditIcon from '@/shared/assets/icons/edit.svg?react'
 import ImageIcon from '@/shared/assets/icons/image-filled.svg?react'
-import ExitIcon from '@/shared/assets/icons/exit.svg?react'
+// import ExitIcon from '@/shared/assets/icons/exit.svg?react'
 import { Button } from '@/shared/ui/button/Button'
-import { ButtonEnum } from '@/shared/ui/button/constants'
+// import { ButtonEnum } from '@/shared/ui/button/constants'
 import { Text } from '@/shared/ui/text/Text'
 
 type EventHeaderWidgetProps = {
@@ -33,11 +33,12 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
   const { mutate: completeEvent, isPending: isCompleting } = useCompleteEvent(eventId ?? '')
 
   if (!event) return null
-
+  onLeaveEventClick
   const visibleParticipants = participants.slice(0, 5)
-  const status = eventStatusMap[event.status]
+  const status = eventStatusMap[event.isCompleted ? EventStatus.Completed : event.status]
   const isOwner = !!currentUserId && currentUserId === event.ownerId
   const isCompleted = event.isCompleted
+  const canCompleteEvent = isOwner && !isCompleted
 
   const handleComplete = () => {
     completeEvent(undefined, {
@@ -101,29 +102,31 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
                     <EditIcon className="h-[21px] w-[21px] lg:h-[28px] lg:w-[28px]" />
                     <Text className="font-normal text-body lg:text-h2-d">Редактировать</Text>
                   </Button>
-                  <Button
-                    type="button"
-                    disabled={isCompleting}
-                    onClick={handleComplete}
-                    className="whitespace-nowrap h-[30px] rounded-[10px] bg-yellow px-[12px] lg:h-[40px] lg:rounded-[16px] lg:px-[30px] disabled:opacity-60"
-                  >
-                    <Text className="font-normal text-body lg:text-h2-d">
-                      Завершить событие
-                    </Text>
-                  </Button>
                 </>
               )}
-              {!isOwner && (
+              {canCompleteEvent && (
                 <Button
                   type="button"
-                  variant={ButtonEnum.TertiaryLight}
-                  className="flex h-[30px] gap-[10px] rounded-[10px] px-[12px] lg:h-[40px] lg:rounded-[16px] lg:px-[30px]"
-                  onClick={onLeaveEventClick}
+                  disabled={isCompleting}
+                  onClick={handleComplete}
+                  className="whitespace-nowrap h-[30px] rounded-[10px] bg-yellow px-[12px] lg:h-[40px] lg:rounded-[16px] lg:px-[30px] disabled:opacity-60"
                 >
-                  <ExitIcon className="h-[18px] w-[18px] lg:h-[22px] lg:w-[22px] text-error" />
-                  <Text className="font-normal text-body lg:text-h2-d">Покинуть событие</Text>
+                  <Text className="font-normal text-body lg:text-h2-d">
+                    Завершить событие
+                  </Text>
                 </Button>
               )}
+              {/*{!isOwner && (*/}
+              {/*  <Button*/}
+              {/*    type="button"*/}
+              {/*    variant={ButtonEnum.TertiaryLight}*/}
+              {/*    className="flex h-[30px] gap-[10px] rounded-[10px] px-[12px] lg:h-[40px] lg:rounded-[16px] lg:px-[30px]"*/}
+              {/*    onClick={onLeaveEventClick}*/}
+              {/*  >*/}
+              {/*    <ExitIcon className="h-[18px] w-[18px] lg:h-[22px] lg:w-[22px] text-error" />*/}
+              {/*    <Text className="font-normal text-body lg:text-h2-d">Покинуть событие</Text>*/}
+              {/*  </Button>*/}
+              {/*)}*/}
             </div>
           </div>
         </div>

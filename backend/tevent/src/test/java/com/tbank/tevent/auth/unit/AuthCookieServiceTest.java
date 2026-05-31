@@ -12,68 +12,71 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AuthCookieServiceTest {
 
     @Test
-    void createAccessTokenCookieUsesAccessTokenSettings() {
-        AuthCookieService service = new AuthCookieService(jwtProperties(false));
+    // Проверяет, что access cookie формируется с корректными security-атрибутами
+    void createAccessTokenCookieBuildsExpectedCookie() {
+        AuthCookieService service = new AuthCookieService(jwtProperties(true, 15, 30));
 
         ResponseCookie cookie = service.createAccessTokenCookie("access-token");
 
         assertThat(cookie.getName()).isEqualTo(AuthCookieService.ACCESS_TOKEN_COOKIE);
         assertThat(cookie.getValue()).isEqualTo("access-token");
-        assertThat(cookie.isHttpOnly()).isTrue();
-        assertThat(cookie.isSecure()).isFalse();
-        assertThat(cookie.getSameSite()).isEqualTo("Lax");
         assertThat(cookie.getPath()).isEqualTo("/");
         assertThat(cookie.getMaxAge()).isEqualTo(Duration.ofMinutes(15));
+        assertThat(cookie.getSameSite()).isEqualTo("Lax");
+        assertThat(cookie.isHttpOnly()).isTrue();
+        assertThat(cookie.isSecure()).isTrue();
     }
 
     @Test
-    void createRefreshTokenCookieUsesRefreshTokenSettings() {
-        AuthCookieService service = new AuthCookieService(jwtProperties(true));
+    // Проверяет, что refresh cookie ограничена /auth/refresh и имеет Strict same-site
+    void createRefreshTokenCookieBuildsExpectedCookie() {
+        AuthCookieService service = new AuthCookieService(jwtProperties(true, 15, 30));
 
         ResponseCookie cookie = service.createRefreshTokenCookie("refresh-token");
 
         assertThat(cookie.getName()).isEqualTo(AuthCookieService.REFRESH_TOKEN_COOKIE);
         assertThat(cookie.getValue()).isEqualTo("refresh-token");
-        assertThat(cookie.isHttpOnly()).isTrue();
-        assertThat(cookie.isSecure()).isTrue();
-        assertThat(cookie.getSameSite()).isEqualTo("Strict");
         assertThat(cookie.getPath()).isEqualTo("/auth/refresh");
         assertThat(cookie.getMaxAge()).isEqualTo(Duration.ofDays(30));
+        assertThat(cookie.getSameSite()).isEqualTo("Strict");
+        assertThat(cookie.isHttpOnly()).isTrue();
+        assertThat(cookie.isSecure()).isTrue();
     }
 
     @Test
-    void clearAccessTokenCookieExpiresAccessCookie() {
-        AuthCookieService service = new AuthCookieService(jwtProperties(false));
+    // Проверка: очистка access cookie -> пустое значение и Max-Age=0
+    void clearAccessTokenCookieBuildsExpiredCookie() {
+        AuthCookieService service = new AuthCookieService(jwtProperties(false, 15, 30));
 
         ResponseCookie cookie = service.clearAccessTokenCookie();
 
         assertThat(cookie.getName()).isEqualTo(AuthCookieService.ACCESS_TOKEN_COOKIE);
         assertThat(cookie.getValue()).isEmpty();
-        assertThat(cookie.isHttpOnly()).isTrue();
-        assertThat(cookie.getSameSite()).isEqualTo("Strict");
         assertThat(cookie.getPath()).isEqualTo("/");
-        assertThat(cookie.getMaxAge()).isEqualTo(Duration.ZERO);
+        assertThat(cookie.getMaxAge()).isZero();
+        assertThat(cookie.getSameSite()).isEqualTo("Lax");
     }
 
     @Test
-    void clearRefreshTokenCookieExpiresRefreshCookie() {
-        AuthCookieService service = new AuthCookieService(jwtProperties(false));
+    // Проверка: очистка refresh cookie -> пустое значение и Max-Age=0
+    void clearRefreshTokenCookieBuildsExpiredCookie() {
+        AuthCookieService service = new AuthCookieService(jwtProperties(false, 15, 30));
 
         ResponseCookie cookie = service.clearRefreshTokenCookie();
 
         assertThat(cookie.getName()).isEqualTo(AuthCookieService.REFRESH_TOKEN_COOKIE);
         assertThat(cookie.getValue()).isEmpty();
-        assertThat(cookie.isHttpOnly()).isTrue();
-        assertThat(cookie.getSameSite()).isEqualTo("Strict");
         assertThat(cookie.getPath()).isEqualTo("/auth/refresh");
-        assertThat(cookie.getMaxAge()).isEqualTo(Duration.ZERO);
+        assertThat(cookie.getMaxAge()).isZero();
+        assertThat(cookie.getSameSite()).isEqualTo("Strict");
     }
 
-    private JwtProperties jwtProperties(boolean secureCookie) {
-        JwtProperties properties = new JwtProperties();
-        properties.setAccessTokenExpirationMinutes(15);
-        properties.setRefreshTokenExpirationDays(30);
-        properties.setCookieSecure(secureCookie);
-        return properties;
+    private JwtProperties jwtProperties(boolean cookieSecure, long accessMinutes, long refreshDays) {
+        JwtProperties props = new JwtProperties();
+        props.setSecret("test-secret-abcdefghijklmnopqrstuvwxyz123456");
+        props.setCookieSecure(cookieSecure);
+        props.setAccessTokenExpirationMinutes(accessMinutes);
+        props.setRefreshTokenExpirationDays(refreshDays);
+        return props;
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class InviteService {
     private final EventUserRepository eventUserRepository;
 
     @Transactional
-    public void applyToken(User user, String tokenValue) {
+    public UUID applyToken(User user, String tokenValue) {
 
         InviteToken inviteToken = tokenRepository.findByToken(tokenValue)
                 .orElseThrow(() -> new EntityNotFoundException("Invalid invite token"));
@@ -38,12 +39,12 @@ public class InviteService {
                 .orElseThrow(() -> new EntityNotFoundException("Event not found for this token"));
 
         if (eventUserRepository.existsByEventIdAndUserId(event.getId(), user.getId())) {
-            return;
+            return event.getId();
         }
 
         boolean alreadyInvited = invitationRepository.existsByEventIdAndUserId(event.getId(), user.getId());
         if (alreadyInvited) {
-            return;
+            return event.getId();
         }
 
         EventInvitation invitation = EventInvitation.builder()
@@ -56,5 +57,6 @@ public class InviteService {
                 .build();
 
         invitationRepository.save(invitation);
+        return event.getId();
     }
 }

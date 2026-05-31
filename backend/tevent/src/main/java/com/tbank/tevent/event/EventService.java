@@ -45,6 +45,7 @@ public class EventService {
     private final InvitationRepository invitationRepository;
     private final EventMapper eventMapper;
     private final S3Service s3Service;
+    private final EventCompletionService eventCompletionService;
 
     @Transactional
     public EventResponse createEvent(EventRequest request) {
@@ -71,7 +72,7 @@ public class EventService {
         event = eventRepository.saveAndFlush(event);
 
         if (request.imageKey() != null && !request.imageKey().isBlank()) {
-            s3Service.useKey(currentUserId, request.imageKey());
+            s3Service.useKey(request.imageKey());
         }
 
         EventUser eventUser = new EventUser();
@@ -133,7 +134,7 @@ public class EventService {
         return new EventPreviewResponse(
                 event.getId(),
                 event.getTitle(),
-                s3Service.generatePublicUrl(event.getImageKey()),
+                s3Service.generateDownloadUrl(event.getImageKey()),
                 participantCount,
                 event.getStartDate(),
                 event.getEndDate(),
@@ -199,6 +200,9 @@ public class EventService {
 
         checkIfEventIsCompleted(event);
 
+        // Запоминаем старую дату окончания для перепланирования
+        LocalDateTime oldEndDate = event.getEndDate();
+        
         if (request.title() != null) event.setTitle(request.title());
         if (request.description() != null) event.setDescription(request.description());
         if (request.startDate() != null) event.setStartDate(request.startDate());
@@ -206,13 +210,12 @@ public class EventService {
         if (request.imageKey() != null) {
             event.setImageKey(request.imageKey());
             if (!request.imageKey().isBlank()) {
-                s3Service.useKey(currentUserId, request.imageKey());
+                s3Service.useKey(request.imageKey());
             }
         }
 
         eventRepository.saveAndFlush(event);
 
-        // Sync categories if provided
         if (request.categories() != null) {
             categoryService.syncCategoriesWithEvent(eventId, request.categories());
         }
@@ -222,32 +225,19 @@ public class EventService {
 
     @Transactional
     public EventResponse completeEvent(UUID eventId) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EventNotFoundException("Event not found"));
-
-        UUID currentUserId = SecurityUtils.getCurrentUserId();
-        if (!event.getOwnerId().equals(currentUserId)) {
-            throw new AccessDeniedException("Only owner can complete event");
-        }
-
-        // Идемпотентность: повторный complete не ошибка, возвращаем
-        // текущее состояние (операция уже выполнена).
-        if (Boolean.TRUE.equals(event.getIsCompleted())) {
-            return getEvent(eventId);
-        }
-
-        event.setIsCompleted(true);
-        eventRepository.saveAndFlush(event);
-
+        eventCompletionService.completeEvent(eventId);
         return getEvent(eventId);
     }
 
+
     @Transactional(readOnly = true)
-    public EventsResponse getUserEvents(String state,
-                                        LocalDate startDate,
-                                        LocalDate endDate,
-                                        Integer minParticipants,
-                                        Integer maxParticipants) {
+    public EventsResponse getUserEvents(
+            String search,
+            String state,
+            LocalDate startDate,
+            LocalDate endDate,
+            Integer minParticipants,
+            Integer maxParticipants) {
         if (state != null && !Set.of("PLANNED", "ACTIVE", "COMPLETED").contains(state)) {
             throw new ValidationException("Invalid state value. Allowed values: PLANNED, ACTIVE, COMPLETED");
         }
@@ -256,6 +246,7 @@ public class EventService {
 
         List<Event> events = eventRepository.findUserEventsWithFilters(
                 currentUserId,
+                search,
                 state,
                 startDate != null ? startDate.atStartOfDay() : null,
                 endDate != null ? endDate.atTime(23, 59, 59) : null,
@@ -313,6 +304,7 @@ public class EventService {
 
         return new EventsResponse(responseList);
     }
+
 
     private void checkIfEventIsCompleted(Event event) {
         if (Boolean.TRUE.equals(event.getIsCompleted())) {

@@ -4,6 +4,7 @@ import com.tbank.tevent.event.dto.EventPreviewResponse;
 import com.tbank.tevent.event.dto.EventRequest;
 import com.tbank.tevent.invite_token.EventTokenResponse;
 import com.tbank.tevent.invite_token.InviteTokenService;
+import com.tbank.tevent.settlements.dto.SettlementItemDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -57,6 +58,7 @@ public class EventController {
 
     @GetMapping("/user/events")
     public ResponseEntity<EventsResponse> getUserEvents(
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) String state,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
@@ -64,7 +66,7 @@ public class EventController {
             @RequestParam(required = false) Integer maxParticipants) {
 
         EventsResponse events = eventService.getUserEvents(
-                state, startDate, endDate, minParticipants, maxParticipants);
+                search, state, startDate, endDate, minParticipants, maxParticipants);
         return ResponseEntity.ok(events);
     }
 
