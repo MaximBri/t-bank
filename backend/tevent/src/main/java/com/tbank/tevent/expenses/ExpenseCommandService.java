@@ -72,9 +72,9 @@ public class ExpenseCommandService {
         return savedExpense.getId();
     }
 
-    public void update(UUID expenseId, UUID authorId, CreateExpenseRequest request) {
+    public void update(UUID eventId, UUID expenseId, UUID authorId, CreateExpenseRequest request) {
         log.info("Updating expense, expenseId={}, authorId={}", expenseId, authorId);
-        Expense expense = getVerifiedExpense(expenseId, authorId);
+        Expense expense = getVerifiedExpense(eventId, expenseId, authorId);
         checkEventNotCompleted(expense.getEventId());
 
         expense.setTitle(request.title());
@@ -100,9 +100,9 @@ public class ExpenseCommandService {
         log.info("Expense updated, expenseId={}", expenseId);
     }
 
-    public void delete(UUID expenseId, UUID authorId) {
+    public void delete(UUID eventId, UUID expenseId, UUID authorId) {
         log.info("Deleting expense, expenseId={}, authorId={}", expenseId, authorId);
-        Expense expense = getVerifiedExpense(expenseId, authorId);
+        Expense expense = getVerifiedExpense(eventId, expenseId, authorId);
         checkEventNotCompleted(expense.getEventId());
 
         splitService.notifyParticipantsAboutDeletion(expense);
@@ -157,9 +157,13 @@ public class ExpenseCommandService {
         }
     }
 
-    private Expense getVerifiedExpense(UUID expenseId, UUID authorId) {
+    private Expense getVerifiedExpense(UUID eventId, UUID expenseId, UUID authorId) {
         Expense expense = expenseRepository.findById(expenseId)
                 .orElseThrow(ExpenseNotFoundException::new);
+
+        if (!expense.getEventId().equals(eventId)) {
+            throw new ExpenseNotFoundException();
+        }
 
         if (!expense.getPayerId().equals(authorId)) {
             throw new AccessDeniedException("You do not have the rights to modify this expense");
