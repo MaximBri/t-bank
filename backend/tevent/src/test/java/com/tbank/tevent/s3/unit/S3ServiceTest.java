@@ -19,6 +19,11 @@ import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.net.URL;
 import java.util.Set;
@@ -51,13 +56,16 @@ class S3ServiceTest {
     private S3Client s3Client;
 
     @Mock
+    private S3Presigner s3Presigner;
+
+    @Mock
     private ZSetOperations<String, String> zSetOperations;
 
     private S3Service service;
 
     @BeforeEach
     void setUp() {
-        service = new S3Service(s3Template, redisTemplate, s3Client);
+        service = new S3Service(s3Template, redisTemplate, s3Client, s3Presigner);
         lenient().when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
 
         ReflectionTestUtils.setField(service, "bucketName", "test-bucket");
@@ -71,8 +79,9 @@ class S3ServiceTest {
     // Проверка: generateUploadUrl нормализует content-type, генерирует ключ и регистрирует pending key
     void generateUploadUrlBuildsPresignedUploadAndStoresPendingKey() throws Exception {
         UUID userId = UUID.randomUUID();
-        when(s3Template.createSignedPutURL(anyString(), anyString(), any(), any(), anyString()))
-                .thenReturn(new URL("https://example.com/upload"));
+        PresignedPutObjectRequest presignedPut = org.mockito.Mockito.mock(PresignedPutObjectRequest.class);
+        when(s3Presigner.presignPutObject(any(PutObjectPresignRequest.class))).thenReturn(presignedPut);
+        when(presignedPut.url()).thenReturn(new URL("https://example.com/upload"));
 
         PresignedUpload upload = service.generateUploadUrl(userId, "IMAGE/JPEG", 1024L);
 
@@ -81,7 +90,7 @@ class S3ServiceTest {
         assertThat(upload.imageKey()).startsWith("receipts/" + userId + "/");
         assertThat(upload.imageKey()).endsWith(".jpg");
 
-        verify(s3Template).createSignedPutURL(anyString(), anyString(), any(), any(), anyString());
+        verify(s3Presigner).presignPutObject(any(PutObjectPresignRequest.class));
         verify(zSetOperations).add(eq(PENDING_UPLOAD_INDEX_KEY), eq(upload.imageKey()), anyDouble());
     }
 
@@ -130,8 +139,9 @@ class S3ServiceTest {
     // Проверка: generateDownloadUrl возвращает URL для существующего объекта
     void generateDownloadUrlReturnsSignedUrlWhenObjectExists() throws Exception {
         when(s3Template.objectExists("test-bucket", "receipts/u/file.png")).thenReturn(true);
-        when(s3Template.createSignedGetURL(anyString(), anyString(), any()))
-                .thenReturn(new URL("https://example.com/download"));
+        PresignedGetObjectRequest presignedGet = org.mockito.Mockito.mock(PresignedGetObjectRequest.class);
+        when(s3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).thenReturn(presignedGet);
+        when(presignedGet.url()).thenReturn(new URL("https://example.com/download"));
 
         String url = service.generateDownloadUrl("receipts/u/file.png");
 
