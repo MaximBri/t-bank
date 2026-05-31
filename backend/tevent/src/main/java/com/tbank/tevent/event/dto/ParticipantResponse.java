@@ -1,6 +1,5 @@
-package com.tbank.tevent.event;
+package com.tbank.tevent.event.dto;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record ParticipantResponse(

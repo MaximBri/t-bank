@@ -1,6 +1,6 @@
 package com.tbank.tevent.repo;
 
-import com.tbank.tevent.event.ParticipantResponse;
+import com.tbank.tevent.event.dto.ParticipantResponse;
 import com.tbank.tevent.repo.entity.EventUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,10 +17,6 @@ public interface EventUserRepository extends JpaRepository<EventUser, UUID> {
     Optional<EventUser> findByEventIdAndUserId(UUID eventId, UUID userId);
 
     Long countByEventId(UUID eventId);
-
-    List<EventUser> findAllByEventId(UUID eventId);
-
-    boolean existsByEventIdAndUserIdAndRole(UUID eventId, UUID userId, String role);
 
     @Query("""
            SELECT new com.tbank.tevent.repo.EventParticipantCount(eu.eventId, COUNT(eu)) 

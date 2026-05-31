@@ -16,10 +16,8 @@ CREATE TABLE user_data (
 
 CREATE TABLE category (
       id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      name        VARCHAR(255) NOT NULL,
-      user_id     UUID NOT NULL REFERENCES user_data(id),
-      created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(name, user_id)
+      name        VARCHAR(255) NOT NULL UNIQUE,
+      created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 create table invite_token (
@@ -35,13 +33,13 @@ CREATE TABLE event (
        id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
        title                   VARCHAR(255) NOT NULL,
        description             VARCHAR(1000),
+       state                   VARCHAR(15) NOT NULL,
        start_date              TIMESTAMP NOT NULL,
        end_date                TIMESTAMP NOT NULL,
        image_key               VARCHAR(255),
        owner_id                UUID NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
        invite_token_id         UUID NOT NULL REFERENCES invite_token(id),
        created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-       version                 BIGINT NOT NULL DEFAULT 0,
        updated_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -88,8 +86,7 @@ CREATE TABLE expense (
      title VARCHAR(255),
      image_url VARCHAR(255),
      description VARCHAR(255),
-     status VARCHAR(30) NOT NULL DEFAULT 'PLANNED', -- PLANNED, PENDING, REJECTED, CONFIRMED, LOCKED
-     version BIGINT NOT NULL DEFAULT 0, -- Optimistic Lock
+     status VARCHAR(30) NOT NULL DEFAULT 'PLANNED',
      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

@@ -1,6 +1,7 @@
 package com.tbank.tevent.event;
 
 
+import com.tbank.tevent.event.dto.EventResponse;
 import com.tbank.tevent.repo.EventRepository;
 import com.tbank.tevent.repo.PaymentRepository;
 import com.tbank.tevent.repo.entity.Event;
@@ -39,12 +40,11 @@ public class EventCompletionService {
             throw new AccessDeniedException("Only owner can complete event");
         }
 
-        if (Boolean.TRUE.equals(event.getIsCompleted())) {
-            return null; // Уже завершено
+        if ("COMPLETED".equals(event.getState())) {
+            return null;
         }
 
-        event.setIsCompleted(true);
-        event.setEndDate(LocalDateTime.now().isBefore(event.getStartDate()) ? event.getStartDate() : LocalDateTime.now());
+        event.setState("COMPLETED");
 
         eventRepository.save(event);
 

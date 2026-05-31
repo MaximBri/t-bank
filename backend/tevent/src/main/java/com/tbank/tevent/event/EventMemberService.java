@@ -1,6 +1,7 @@
 package com.tbank.tevent.event;
 
 import com.tbank.tevent.SecurityUtils;
+import com.tbank.tevent.event.dto.ParticipantResponse;
 import com.tbank.tevent.history.ActionType;
 import com.tbank.tevent.history.EventHistoryService;
 import com.tbank.tevent.repo.EventRepository;
@@ -91,7 +92,7 @@ public class EventMemberService {
     }
     
     private void checkIfEventIsCompleted(Event event) {
-        if (Boolean.TRUE.equals(event.getIsCompleted())) {
+        if (event.getState().equals("COMPLETED")) {
             throw new ValidationException("Cannot modify a completed event");
         }
     }

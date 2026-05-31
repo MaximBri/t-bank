@@ -31,7 +31,7 @@ public class SettlementQueryService {
     public EventSettlementsResponse getEventSettlements(UUID eventId, UUID currentUserId) {
         eventAccessGuard.requireMember(eventId, currentUserId);
 
-        if(!eventRepository.findById(eventId).get().getIsCompleted()) {
+        if(!eventRepository.findById(eventId).get().getState().equals("COMPLETED")) {
             throw new IllegalArgumentException("Event is not completed");
         }
 

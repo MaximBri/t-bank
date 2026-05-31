@@ -17,7 +17,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@OptimisticLocking(type = OptimisticLockType.NONE)
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -53,9 +52,9 @@ public class Event {
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID inviteTokenId;
 
-    @Column(name = "is_completed")
+    @Column(name = "state")
     @Builder.Default
-    private Boolean isCompleted = false;
+    private String state = "PLANNED";
 
     @PrePersist
     protected void onCreate() {

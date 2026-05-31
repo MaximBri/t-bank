@@ -1,6 +1,4 @@
-package com.tbank.tevent.event;
-
-import com.tbank.tevent.event.dto.EventRequest;
+package com.tbank.tevent.event.dto;
 
 import java.util.List;
 

@@ -2,6 +2,7 @@ package com.tbank.tevent.event;
 
 import com.tbank.tevent.category.dto.CategoryResponse;
 import com.tbank.tevent.event.dto.CreatorInfo;
+import com.tbank.tevent.event.dto.EventResponse;
 import com.tbank.tevent.repo.entity.Event;
 import org.springframework.stereotype.Component;
 
@@ -21,18 +22,11 @@ public class EventMapper {
                 event.getStartDate(),
                 event.getEndDate(),
                 eventCategoryNames,
-                EventStatusCalculator.calculate(event.getStartDate(), event.getEndDate()),
+                event.getState(),
                 event.getImageKey(),
                 event.getOwnerId(),
                 count,
-                creatorInfo,
-                Boolean.TRUE.equals(event.getIsCompleted())
-        );
-    }
-    
-    public EventResponse mapToResponse(Event event, List<CategoryResponse> categories, Long count) {
-        // For backward compatibility, create empty creator info
-        return mapToResponse(event, categories, count,
-                CreatorInfo.from("", "", "", ""));
+                creatorInfo
+                );
     }
 }

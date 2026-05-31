@@ -40,7 +40,7 @@ public class ExpenseSplitService {
                 .orElseThrow(ExpenseNotFoundException::new);
         Event event = eventRepository.findById(expense.getEventId())
                 .orElseThrow(() -> new EntityNotFoundException("Событие не найдено"));
-        if (Boolean.TRUE.equals(event.getIsCompleted())) {
+        if (event.getState().equals("COMPLETED")) {
             throw new ExpenseEventCompletedException();
         }
     }

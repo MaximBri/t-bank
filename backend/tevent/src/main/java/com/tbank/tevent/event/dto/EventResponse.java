@@ -1,7 +1,6 @@
-package com.tbank.tevent.event;
+package com.tbank.tevent.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tbank.tevent.event.dto.CreatorInfo;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +18,5 @@ public record EventResponse (
     String imageUrl,
     UUID ownerId,
     Long countOfParticipants,
-    CreatorInfo creatorInfo,
-    boolean isCompleted
+    CreatorInfo creatorInfo
 ){}

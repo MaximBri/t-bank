@@ -3,9 +3,7 @@ package com.tbank.tevent.event;
 import com.tbank.tevent.SecurityUtils;
 import com.tbank.tevent.category.CategoryService;
 import com.tbank.tevent.category.dto.CategoryResponse;
-import com.tbank.tevent.event.dto.CreatorInfo;
-import com.tbank.tevent.event.dto.EventPreviewResponse;
-import com.tbank.tevent.event.dto.EventRequest;
+import com.tbank.tevent.event.dto.*;
 import com.tbank.tevent.invite_token.InviteTokenGenerator;
 import com.tbank.tevent.repo.EventParticipantCount;
 import com.tbank.tevent.repo.EventRepository;
@@ -293,12 +291,11 @@ public class EventService {
                         e.getStartDate(),
                         e.getEndDate(),
                         categoriesByEventId.getOrDefault(e.getId(), List.of()),
-                        EventStatusCalculator.calculate(e.getStartDate(), e.getEndDate()),
+                        e.getState(),
                         e.getImageKey(),
                         e.getOwnerId(),
                         countsByEventId.getOrDefault(e.getId(), 0L),
-                        creatorInfoByOwnerId.get(e.getOwnerId()),
-                        Boolean.TRUE.equals(e.getIsCompleted())
+                        creatorInfoByOwnerId.get(e.getOwnerId())
                 ))
                 .toList();
 
@@ -307,7 +304,7 @@ public class EventService {
 
 
     private void checkIfEventIsCompleted(Event event) {
-        if (Boolean.TRUE.equals(event.getIsCompleted())) {
+        if (event.getState().equals("COMPLETED")) {
             throw new ValidationException("Cannot modify a completed event");
         }
     }

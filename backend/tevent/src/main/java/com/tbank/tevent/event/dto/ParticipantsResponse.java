@@ -1,4 +1,4 @@
-package com.tbank.tevent.event;
+package com.tbank.tevent.event.dto;
 
 import java.util.List;
 

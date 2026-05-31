@@ -15,20 +15,13 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     SELECT e.* FROM event e
     JOIN event_user eu ON e.id = eu.event_id
     WHERE eu.user_id = :userId
-      AND (CAST(:search AS TEXT) IS NULL OR e.title LIKE '%' || CAST(:search AS TEXT) || '%')
-      AND (CAST(:startDate AS TIMESTAMP) IS NULL OR e.start_date >= CAST(:startDate AS TIMESTAMP))
-      AND (CAST(:endDate AS TIMESTAMP) IS NULL OR e.end_date <= CAST(:endDate AS TIMESTAMP))
-      AND (CAST(:state AS TEXT) IS NULL OR (
-            CASE  
-                WHEN CAST(:state AS TEXT) = 'PLANNED' THEN e.start_date > NOW()
-                WHEN CAST(:state AS TEXT) = 'ACTIVE' THEN e.start_date <= NOW() AND e.end_date >= NOW()
-                WHEN CAST(:state AS TEXT) = 'COMPLETED' THEN e.end_date < NOW()
-                ELSE TRUE
-            END
-      ))
+      AND (CAST(:search AS varchar) IS NULL OR e.title ILIKE '%' || :search || '%')
+      AND (CAST(:startDate AS timestamp) IS NULL OR e.start_date >= CAST(:startDate AS timestamp))
+      AND (CAST(:endDate AS timestamp) IS NULL OR e.end_date <= CAST(:endDate AS timestamp))
+      AND (CAST(:state AS varchar) IS NULL OR e.state = :state)
       AND (
         SELECT COUNT(*) FROM event_user eu2 WHERE eu2.event_id = e.id
-      ) BETWEEN COALESCE(:minPart, 0) AND COALESCE(:maxPart, 999999)
+      ) BETWEEN COALESCE(CAST(:minPart AS integer), 0) AND COALESCE(CAST(:maxPart AS integer), 999999)
     """, nativeQuery = true)
     List<Event> findUserEventsWithFilters(
             @Param("userId") UUID userId,
@@ -43,6 +36,4 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     Optional<Event> findByInviteTokenId(UUID inviteTokenId);
 
     Optional<Event> findById(@Param("id") UUID id);
-
-    List<Event> findByIsCompletedFalseAndEndDateBefore(LocalDateTime dateTime);
 }

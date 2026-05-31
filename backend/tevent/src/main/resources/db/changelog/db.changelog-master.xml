@@ -11,5 +11,4 @@
     <include file="db/changelog/migrations/03-add-history-name-columns.sql" relativeToChangelogFile="false"/>
     <include file="db/changelog/migrations/04-add-payment-expires-at-column.sql" relativeToChangelogFile="false"/>
     <include file="db/changelog/migrations/05-drop-refresh-token-revoked-column.sql" relativeToChangelogFile="false"/>
-    <include file="db/changelog/migrations/06-category-event-driven.sql" relativeToChangelogFile="false"/>
 </databaseChangeLog>

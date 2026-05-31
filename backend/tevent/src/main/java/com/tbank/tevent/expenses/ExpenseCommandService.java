@@ -1,5 +1,6 @@
 package com.tbank.tevent.expenses;
 
+import com.tbank.tevent.event.EventStateManager;
 import com.tbank.tevent.expenses.dto.CreateExpenseRequest;
 import com.tbank.tevent.expenses.exception.ExpenseEventCompletedException;
 import com.tbank.tevent.expenses.exception.ExpenseNotFoundException;
@@ -31,6 +32,7 @@ public class ExpenseCommandService {
     private final ExpenseSplitService splitService;
     private final EventHistoryService historyService;
     private final ExpenseCategoryCommandService categoryCommandService;
+    private final EventStateManager eventStateManager;
     private final S3Service s3Service;
 
     public UUID create(UUID payerId, UUID eventId, CreateExpenseRequest request) {
@@ -38,7 +40,7 @@ public class ExpenseCommandService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Событие не найдено"));
         
-        if (Boolean.TRUE.equals(event.getIsCompleted())) {
+        if (event.getState().equals("COMPLETED")){
             throw new ExpenseEventCompletedException();
         }
 
@@ -110,7 +112,7 @@ public class ExpenseCommandService {
         splitService.deleteSplitsByExpense(expenseId);
         categoryCommandService.deleteByExpenseId(expenseId);
         expenseRepository.delete(expense);
-
+        eventStateManager.defineEventState(expense.getEventId());
         String logMessage = String.format("Удален расход '%s' пользователем %s", expense.getTitle(), authorId);
         historyService.log(expense.getEventId(), authorId, ActionType.EXPENSE_DELETED, logMessage);
         log.info("Expense deleted, expenseId={}", expenseId);
@@ -130,6 +132,8 @@ public class ExpenseCommandService {
             expense.activate();
             expenseRepository.save(expense);
 
+            eventStateManager.defineEventState(expense.getEventId());
+
             String activeMessage = String.format("Расход '%s' успешно подтвержден всеми и активирован.", expense.getTitle());
             historyService.log(expense.getEventId(), userId, ActionType.EXPENSE_ACTIVATED, activeMessage);
         }
@@ -143,7 +147,7 @@ public class ExpenseCommandService {
 
         expense.reject();
         expenseRepository.save(expense);
-
+        eventStateManager.defineEventState(expense.getEventId());
         String rejectMessage = String.format("Расход '%s' отклонен", expense.getTitle());
         historyService.log(expense.getEventId(), userId, ActionType.EXPENSE_REJECTED, rejectMessage);
         log.info("Expense rejected, expenseId={}, userId={}", expenseId, userId);
@@ -152,7 +156,7 @@ public class ExpenseCommandService {
     private void checkEventNotCompleted(UUID eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Event not found"));
-        if (Boolean.TRUE.equals(event.getIsCompleted())) {
+        if (event.getState().equals("COMPLETED")) {
             throw new ExpenseEventCompletedException();
         }
     }
