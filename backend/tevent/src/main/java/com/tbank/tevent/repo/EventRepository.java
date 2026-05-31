@@ -20,9 +20,9 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
       AND (CAST(:endDate AS TIMESTAMP) IS NULL OR e.end_date <= CAST(:endDate AS TIMESTAMP))
       AND (CAST(:state AS TEXT) IS NULL OR (
             CASE  
-                WHEN CAST(:state AS TEXT) = 'PLANNED' THEN e.start_date > NOW()
-                WHEN CAST(:state AS TEXT) = 'ACTIVE' THEN e.start_date <= NOW() AND e.end_date >= NOW()
-                WHEN CAST(:state AS TEXT) = 'COMPLETED' THEN e.end_date < NOW()
+                WHEN CAST(:state AS TEXT) = 'PLANNED' THEN e.is_completed = false AND e.start_date > NOW()
+                WHEN CAST(:state AS TEXT) = 'ACTIVE' THEN e.is_completed = false AND e.start_date <= NOW() AND e.end_date >= NOW()
+                WHEN CAST(:state AS TEXT) = 'COMPLETED' THEN e.is_completed = true OR e.end_date < NOW()
                 ELSE TRUE
             END
       ))

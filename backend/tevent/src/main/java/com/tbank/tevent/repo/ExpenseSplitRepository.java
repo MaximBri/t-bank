@@ -58,4 +58,16 @@ public interface ExpenseSplitRepository extends JpaRepository<ExpenseSplit, UUID
     List<ExpenseParticipantView> findAllParticipantsByExpenseIds(@Param("expenseIds") List<UUID> expenseIds);
 
     List<ExpenseSplit> findAllByUserIdAndIsConfirmedFalse(UUID userId);
+
+    @Query("""
+        SELECT s
+        FROM ExpenseSplit s
+        JOIN Expense e ON e.id = s.expenseId
+        JOIN Event ev ON ev.id = e.eventId
+        WHERE s.userId = :userId
+          AND s.isConfirmed = false
+          AND e.status = 'PENDING'
+          AND ev.isCompleted = false
+        """)
+    List<ExpenseSplit> findPendingInboxSplits(@Param("userId") UUID userId);
 }

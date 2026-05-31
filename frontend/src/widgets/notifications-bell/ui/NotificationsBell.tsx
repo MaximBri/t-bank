@@ -2,7 +2,11 @@ import { useState } from 'react'
 
 import NotificationIcon from '@/shared/assets/icons/notification.svg?react'
 
-import { useConfirmExpenseShare, useGetParticipantInbox } from '@/entities/expense'
+import {
+  useConfirmExpenseShare,
+  useGetParticipantInbox,
+  useRejectExpenseShare,
+} from '@/entities/expense'
 import { useGetNotifications, useMarkNotificationRead } from '@/entities/notification'
 import { useUserStore } from '@/entities/user'
 import { Text } from '@/shared/ui/text/Text.tsx'
@@ -18,6 +22,7 @@ export const NotificationsBell = () => {
   const { data: inboxData } = useGetParticipantInbox(isAuthenticated)
   const markAsRead = useMarkNotificationRead()
   const confirmShare = useConfirmExpenseShare()
+  const rejectShare = useRejectExpenseShare()
 
   const notifications = notificationsData?.items ?? []
   const unreadCount = notificationsData?.unreadCount ?? 0
@@ -74,9 +79,14 @@ export const NotificationsBell = () => {
                   <PendingShareRow
                     key={item.expenseId}
                     item={item}
-                    isPending={confirmShare.isPending}
+                    isPending={confirmShare.isPending || rejectShare.isPending}
                     onConfirm={() =>
                       confirmShare.mutate({
+                        expenseId: item.expenseId,
+                      })
+                    }
+                    onReject={() =>
+                      rejectShare.mutate({
                         expenseId: item.expenseId,
                       })
                     }

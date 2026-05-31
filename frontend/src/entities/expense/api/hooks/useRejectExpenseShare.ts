@@ -2,17 +2,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { expensesApi } from '@/entities/expense/api/expensesApi.ts'
 
-type ConfirmShareVariables = {
+type RejectShareVariables = {
   expenseId: string
   eventId?: string
 }
 
-export const useConfirmExpenseShare = () => {
+export const useRejectExpenseShare = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ expenseId }: ConfirmShareVariables) =>
-      expensesApi.confirmAsParticipant(expenseId),
+    mutationFn: ({ expenseId }: RejectShareVariables) =>
+      expensesApi.rejectAsParticipant(expenseId),
     onSuccess: (_data, { eventId }) => {
       queryClient.invalidateQueries({ queryKey: ['expenses', 'participant', 'inbox'] })
       queryClient.invalidateQueries({ queryKey: ['event', 'expenses'] })

@@ -69,4 +69,8 @@ export const expensesApi = {
   confirmAsParticipant: async (expenseId: string) => {
     await api.post<void>(`/expenses/participant/${expenseId}/confirm`)
   },
+
+  rejectAsParticipant: async (expenseId: string) => {
+    await api.post<void>(`/expenses/participant/${expenseId}/leave`)
+  },
 }
