@@ -31,7 +31,8 @@ export const RegisterPage = () => {
 
       navigate(APP_ROUTES.HOME)
     } catch (error) {
-      toast.error('Не удалось зарегистрироваться')
+      const status = (error as { status?: number })?.status
+      toast.error(status === 409 ? 'Пользователь с таким логином уже существует' : 'Не удалось зарегистрироваться')
       throw error
     }
   }

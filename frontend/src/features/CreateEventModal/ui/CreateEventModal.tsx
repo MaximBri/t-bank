@@ -59,6 +59,7 @@ export const CreateEventModal = ({ isOpen, onClose, event }: CreateEventModalPro
     formState: { errors },
     handleSubmit,
     reset,
+    setError,
   } = methods
 
   useEffect(() => {
@@ -77,6 +78,22 @@ export const CreateEventModal = ({ isOpen, onClose, event }: CreateEventModalPro
   }
 
   const submitForm = handleSubmit(async (values) => {
+    const pendingCategory = categoryInput.trim()
+    let categories = values.categories
+
+    if (pendingCategory) {
+      if (pendingCategory.length > 32) {
+        setError('categories', {
+          message: 'Название категории не может быть длиннее 32 символов',
+        })
+        return
+      }
+
+      if (!categories.includes(pendingCategory)) {
+        categories = [...categories, pendingCategory]
+      }
+    }
+
     let imageKey = ''
     if (values.avatar) {
       try {
@@ -93,7 +110,7 @@ export const CreateEventModal = ({ isOpen, onClose, event }: CreateEventModalPro
       startDate: new Date(values.startDate).toISOString(),
       endDate: new Date(values.endDate).toISOString(),
       imageKey,
-      categories: values.categories,
+      categories,
     }
 
     if (isEdit) {
