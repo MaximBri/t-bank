@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { api } from './api.ts'
+import { MAX_UPLOAD_FILE_SIZE_BYTES, maxUploadFileSizeErrorMessage } from '@/shared/config/upload'
 
 type UploadUrlDto = {
   image_key: string
@@ -8,7 +9,8 @@ type UploadUrlDto = {
 }
 
 type DownloadUrlDto = {
-  downloadUrl: string
+  download_url?: string
+  downloadUrl?: string
 }
 
 const requestUploadUrl = async (file: File) => {
@@ -22,6 +24,10 @@ const requestUploadUrl = async (file: File) => {
 
 export const s3Api = {
   async uploadFile(file: File): Promise<string> {
+    if (file.size > MAX_UPLOAD_FILE_SIZE_BYTES) {
+      throw new Error(maxUploadFileSizeErrorMessage)
+    }
+
     const { image_key, upload_url } = await requestUploadUrl(file)
 
     await axios.put(upload_url, file, {
@@ -36,7 +42,11 @@ export const s3Api = {
     const { data } = await api.get<DownloadUrlDto>('/s3/download', {
       params: { key: imageKey },
     })
-    return data.downloadUrl
+    const url = data.download_url ?? data.downloadUrl
+    if (!url) {
+      throw new Error('Download URL is missing in response')
+    }
+    return url
   },
 
   async deleteFile(imageKey: string): Promise<void> {
