@@ -46,7 +46,7 @@ public class EventExpenseController {
     public ResponseEntity<Void> update(@PathVariable UUID eventId, @PathVariable UUID expenseId,
                                        @Valid @RequestBody CreateExpenseRequest request) {
         UUID authorId = SecurityUtils.getCurrentUserId();
-        commandService.update(expenseId, authorId, request);
+        commandService.update(eventId, expenseId, authorId, request);
         return ResponseEntity.noContent().build();
     }
 
@@ -59,7 +59,7 @@ public class EventExpenseController {
     })
     public ResponseEntity<Void> delete(@PathVariable UUID eventId, @PathVariable UUID expenseId) {
         UUID authorId = SecurityUtils.getCurrentUserId();
-        commandService.delete(expenseId, authorId);
+        commandService.delete(eventId, expenseId, authorId);
         return ResponseEntity.noContent().build();
     }
 
