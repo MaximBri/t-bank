@@ -8,6 +8,7 @@ import { HistoryRecordType } from '@/entities/historyRecord/model/type.ts'
 import { HistoryRecordTypeTranslation } from '@/entities/historyRecord/model/constants.ts'
 import { useGetEventHistory } from '@/entities/historyRecord/api/hooks/useGetEventHistory.ts'
 import clsx from 'clsx'
+import { parseServerDate } from '@/shared/lib/date/parse-server-date.ts'
 
 const ACTION_TYPE_MAP: Record<string, HistoryRecordType> = {
   EXPENSE_CREATED: HistoryRecordType.ExpenseCreated,
@@ -47,7 +48,7 @@ const FILTER_TYPES: Record<FilterKey, HistoryRecordType[] | null> = {
 
 const formatDate = (isoString: string) => {
   try {
-    const date = new Date(isoString)
+    const date = parseServerDate(isoString)
     return date.toLocaleString('ru-RU', {
       day: '2-digit',
       month: '2-digit',

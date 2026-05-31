@@ -31,11 +31,20 @@ public class EventCompletionService {
 
     @Transactional
     public EventResponse completeEvent(UUID eventId) {
+        UUID currentUserId = SecurityUtils.getCurrentUserId();
+        return completeEventInternal(eventId, currentUserId, true);
+    }
+
+    @Transactional
+    public EventResponse completeEventByScheduler(UUID eventId) {
+        return completeEventInternal(eventId, null, false);
+    }
+
+    private EventResponse completeEventInternal(UUID eventId, UUID actorUserId, boolean enforceOwnerCheck) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
-        UUID currentUserId = SecurityUtils.getCurrentUserId();
-        if (!event.getOwnerId().equals(currentUserId)) {
+        if (enforceOwnerCheck && (actorUserId == null || !event.getOwnerId().equals(actorUserId))) {
             throw new AccessDeniedException("Only owner can complete event");
         }
 

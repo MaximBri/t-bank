@@ -81,7 +81,7 @@ export const getCreateExpenseFormFields = ({
     name: 'checkImage',
     type: 'image',
     labelClassName: createExpenseFieldLabelClassName,
-    fieldClassName: 'sm:h-[150px] bg-secondary rounded-md border-dashed border-[2px]',
+    fieldClassName: 'w-full sm:h-[150px] bg-secondary rounded-md border-dashed border-[2px]',
     label: 'Чек или подтверждающий документ',
     accept: 'image/*,.pdf,application/pdf',
   })

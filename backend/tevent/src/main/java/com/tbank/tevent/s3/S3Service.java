@@ -12,11 +12,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
-import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
@@ -41,6 +45,7 @@ public class S3Service {
     private final S3Template s3Template;
     private final StringRedisTemplate redisTemplate;
     private final S3Client s3Client;
+    private final S3Presigner publicS3Presigner;
 
     @Value("${spring.cloud.aws.s3.bucket-name:tbank-receipts}")
     private String bucketName;
@@ -69,13 +74,18 @@ public class S3Service {
                 .contentType(normalizedContentType)
                 .build();
 
-        URL url = s3Template.createSignedPutURL(
-                bucketName,
-                key,
-                Duration.ofMinutes(presignTtlMinutes),
-                objectMetadata,
-                normalizedContentType
-        );
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .contentType(normalizedContentType)
+                .build();
+
+        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(presignTtlMinutes))
+                .putObjectRequest(putObjectRequest)
+                .build();
+
+        String uploadUrl = publicS3Presigner.presignPutObject(presignRequest).url().toString();
         try {
             savePendingUpload(key);
         } catch (Exception ex) {
@@ -83,7 +93,7 @@ public class S3Service {
         }
 
         log.info("Generated presigned upload URL, userId={}, key={}", userId, key);
-        return new PresignedUpload(key, url.toString(), presignTtlMinutes * 60);
+        return new PresignedUpload(key, uploadUrl, presignTtlMinutes * 60);
     }
 
     // Создаение presigned URL на скачивание файла
@@ -94,12 +104,16 @@ public class S3Service {
         if (!s3Template.objectExists(bucketName, s3Key)) {
             return null;
         }
-        URL url = s3Template.createSignedGetURL(
-                bucketName,
-                s3Key,
-                Duration.ofMinutes(presignTtlMinutes)
-        );
-        return url.toString();
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(s3Key)
+                .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(presignTtlMinutes))
+                .getObjectRequest(getObjectRequest)
+                .build();
+        return publicS3Presigner.presignGetObject(presignRequest).url().toString();
     }
 
     // Удаление объекта из хранилища и из pending-индекса Redis
@@ -246,4 +260,5 @@ public class S3Service {
             log.warn("Failed to remove pending upload key={}", s3Key, ex);
         }
     }
+
 }

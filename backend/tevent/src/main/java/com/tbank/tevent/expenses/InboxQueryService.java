@@ -28,7 +28,7 @@ public class InboxQueryService {
     // Список неподтвержденных расходов для участника
     public ListInboxItemDTO getUserInbox(UUID userId) {
         log.debug("Loading expense inbox for userId={}", userId);
-        List<ExpenseSplit> pendingSplits = splitRepository.findAllByUserIdAndIsConfirmedFalse(userId);
+        List<ExpenseSplit> pendingSplits = splitRepository.findPendingInboxSplits(userId);
 
         if (pendingSplits.isEmpty()) {
             return new ListInboxItemDTO(List.of());

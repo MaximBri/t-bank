@@ -11,6 +11,14 @@ import { changePasswordDefaultValues, getChangePasswordFields } from './constant
 import {useUserStore} from "@/entities/user";
 import {toast} from "sonner";
 
+const mapPasswordErrorMessage = (message: string) => {
+  if (message === 'Incorrect current password') {
+    return 'Неверно указан текущий пароль'
+  }
+
+  return message
+}
+
 export const ProfileSecurity = () => {
   const form = useForm<ChangePasswordValues>({
     resolver: zodResolver(changePasswordSchema),
@@ -32,7 +40,7 @@ export const ProfileSecurity = () => {
     }
     catch (error) {
       const message = error instanceof Error ? error.message : 'Неизвестная ошибка'
-      toast.error('Ошибка при изменении пароля: ' + message)
+      toast.error('Ошибка при изменении пароля: ' + mapPasswordErrorMessage(message))
     }
   })
 

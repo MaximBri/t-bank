@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { useEffect, useId, useRef, useState, type ChangeEvent } from 'react'
+import { toast } from 'sonner'
 import {
   Controller,
   useFormContext,
@@ -8,8 +9,10 @@ import {
   type FieldValues,
 } from 'react-hook-form'
 import ImageFilledIcon from '@/shared/assets/icons/image-filled.svg?react'
+import FileIcon from '@/shared/assets/icons/file.svg?react'
 
 import type { ImageFieldConfig } from '@/shared/lib/forms'
+import { MAX_UPLOAD_FILE_SIZE_BYTES, maxUploadFileSizeErrorMessage } from '@/shared/config/upload'
 
 type ImageFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -59,6 +62,16 @@ export const ImageField = <
       return
     }
 
+    if (!currentValue.type.startsWith('image/')) {
+      setPreviewUrl((currentPreviewUrl) => {
+        if (currentPreviewUrl) {
+          URL.revokeObjectURL(currentPreviewUrl)
+        }
+        return null
+      })
+      return
+    }
+
     const nextPreviewUrl = URL.createObjectURL(currentValue)
 
     setPreviewUrl((currentPreviewUrl) => {
@@ -84,12 +97,19 @@ export const ImageField = <
         const errorMessage = fieldState.error?.message
         const rawValue = field.value as unknown
         const currentFile = rawValue instanceof File ? rawValue : null
+        const isImageFile = !!currentFile?.type.startsWith('image/')
         const ariaDescribedBy = errorMessage ? `${id}-error` : undefined
 
         const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
           const nextFile = event.target.files?.[0]
 
           if (!nextFile) {
+            return
+          }
+
+          if (nextFile.size > MAX_UPLOAD_FILE_SIZE_BYTES) {
+            toast.error(maxUploadFileSizeErrorMessage)
+            event.target.value = ''
             return
           }
 
@@ -142,6 +162,13 @@ export const ImageField = <
                     alt={currentFile?.name ?? 'Предпросмотр изображения'}
                     className={clsx('h-full w-full object-cover', previewClassName)}
                   />
+                ) : currentFile && !isImageFile ? (
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-[8px]">
+                    <FileIcon className="h-[44px] w-[44px] text-placeholder" />
+                    <span className="max-w-[90%] truncate text-small text-placeholder">
+                      {currentFile.name}
+                    </span>
+                  </div>
                 ) : (
                   <ImageFilledIcon className="h-[55px] w-[55px] text-placeholder" />
                 )}

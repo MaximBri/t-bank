@@ -122,7 +122,7 @@ describe('reviseExpenseSchema', () => {
     }
   })
 
-  it('не проходит валидацию когда checkImage превышает 5 МБ', () => {
+  it('не проходит валидацию когда checkImage превышает 3 МБ', () => {
     const result = reviseExpenseSchema.safeParse({
       comment: 'Правильная сумма',
       amount: 100,
@@ -132,7 +132,7 @@ describe('reviseExpenseSchema', () => {
     expect(result.success).toBe(false)
     if (!result.success) {
       const errors = result.error.flatten().fieldErrors.checkImage
-      expect(errors![0]).toBe('Размер файла должен быть не больше 5 МБ')
+      expect(errors![0]).toBe('Размер файла должен быть не больше 3 МБ')
     }
   })
 

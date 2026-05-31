@@ -38,6 +38,7 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
   const status = eventStatusMap[event.isCompleted ? EventStatus.Completed : event.status]
   const isOwner = !!currentUserId && currentUserId === event.ownerId
   const isCompleted = event.isCompleted
+  const canCompleteEvent = isOwner && !isCompleted
 
   const handleComplete = () => {
     completeEvent(undefined, {
@@ -101,17 +102,19 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
                     <EditIcon className="h-[21px] w-[21px] lg:h-[28px] lg:w-[28px]" />
                     <Text className="font-normal text-body lg:text-h2-d">Редактировать</Text>
                   </Button>
-                  <Button
-                    type="button"
-                    disabled={isCompleting}
-                    onClick={handleComplete}
-                    className="whitespace-nowrap h-[30px] rounded-[10px] bg-yellow px-[12px] lg:h-[40px] lg:rounded-[16px] lg:px-[30px] disabled:opacity-60"
-                  >
-                    <Text className="font-normal text-body lg:text-h2-d">
-                      Завершить событие
-                    </Text>
-                  </Button>
                 </>
+              )}
+              {canCompleteEvent && (
+                <Button
+                  type="button"
+                  disabled={isCompleting}
+                  onClick={handleComplete}
+                  className="whitespace-nowrap h-[30px] rounded-[10px] bg-yellow px-[12px] lg:h-[40px] lg:rounded-[16px] lg:px-[30px] disabled:opacity-60"
+                >
+                  <Text className="font-normal text-body lg:text-h2-d">
+                    Завершить событие
+                  </Text>
+                </Button>
               )}
               {/*{!isOwner && (*/}
               {/*  <Button*/}

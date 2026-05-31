@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { type ChangeEvent, useRef } from 'react'
+import { toast } from 'sonner'
 import FileIcon from '@/shared/assets/icons/file.svg?react'
 
 import { type FieldPath, type FieldValues } from 'react-hook-form'
@@ -8,6 +9,7 @@ import { Text } from '@/shared/ui/text/Text'
 import { ReviseFieldConfig } from '@/features/ReviseExpenseModal/model/types.ts'
 import { BaseField } from '@/shared/ui/form-fields'
 import { FormFieldVariant } from '@/shared/lib/forms/types.ts'
+import { MAX_UPLOAD_FILE_SIZE_BYTES, maxUploadFileSizeErrorMessage } from '@/shared/config/upload'
 
 type CheckFieldProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -50,6 +52,12 @@ export const CheckField = <
           const nextFile = event.target.files?.[0]
 
           if (!nextFile) {
+            return
+          }
+
+          if (nextFile.size > MAX_UPLOAD_FILE_SIZE_BYTES) {
+            toast.error(maxUploadFileSizeErrorMessage)
+            event.target.value = ''
             return
           }
 

@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { Modal } from '@/shared/ui/modal'
 import { Text } from '@/shared/ui/text/Text'
 import ImageIcon from '@/shared/assets/icons/image-filled.svg?react'
+import FileIcon from '@/shared/assets/icons/file.svg?react'
 import CloseIcon from '@/shared/assets/icons/close.svg?react'
 
 import { type ExpenseResponseDto } from '@/entities/expense'
@@ -30,7 +31,8 @@ export const ExpensePreviewModal = ({
   const category = expense.categories[0]
   const totalPeople = expense.totalParticipantsCount + 1
   const perPerson = totalPeople > 0 ? expense.totalAmount / totalPeople : 0
-  const isPdf = expense.imageUrl ? expense.imageUrl.includes('.pdf') : false
+  const imageKey = expense.image_key ?? ''
+  const isPdf = imageKey.toLowerCase().endsWith('.pdf')
 
   return (
     <Modal
@@ -95,11 +97,20 @@ export const ExpensePreviewModal = ({
         <div className="flex h-[260px] w-full items-center justify-center overflow-hidden rounded-[12px] bg-primary">
           {expense.imageUrl ? (
             isPdf ? (
-              <iframe
-                src={expense.imageUrl}
-                title="Чек"
-                className="h-full w-full"
-              />
+              <div className="flex h-full w-full flex-col items-center justify-center gap-[10px] text-muted">
+                <FileIcon width={52} height={52} />
+                <Text variant="h3" className="font-normal">
+                  PDF-документ
+                </Text>
+                <a
+                  href={expense.imageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-md border border-primary px-[12px] py-[6px] text-body text-primary hover:bg-secondary"
+                >
+                  Открыть файл
+                </a>
+              </div>
             ) : (
               <img
                 src={expense.imageUrl}

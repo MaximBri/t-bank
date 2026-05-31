@@ -1,6 +1,7 @@
 import { createFormSchema, requiredString } from '@/shared/lib/forms'
 import { z } from 'zod'
 import { parseNumberValue } from '@/shared/lib/number/parseNumber.ts'
+import { MAX_UPLOAD_FILE_SIZE_BYTES, maxUploadFileSizeErrorMessage } from '@/shared/config/upload'
 
 const allowedMimeTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
 
@@ -28,6 +29,6 @@ export const createExpenseSchema = createFormSchema({
   checkImage: z
     .instanceof(File, { message: 'Поле обязательно' })
     .refine((file) => allowedMimeTypes.includes(file.type), 'Недопустимый формат файла')
-    .refine((file) => file.size <= 5 * 1024 * 1024, 'Размер файла должен быть не больше 5 МБ')
+    .refine((file) => file.size <= MAX_UPLOAD_FILE_SIZE_BYTES, maxUploadFileSizeErrorMessage)
     .optional(),
 })

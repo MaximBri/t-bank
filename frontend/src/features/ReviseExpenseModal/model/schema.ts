@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { requiredString } from '@/shared/lib/forms'
 import { reviseCommentMaxLength } from './constants.ts'
 import { parseNumberValue } from '@/shared/lib/number/parseNumber.ts'
+import { MAX_UPLOAD_FILE_SIZE_BYTES, maxUploadFileSizeErrorMessage } from '@/shared/config/upload'
 
 const allowedMimeTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
 
@@ -26,5 +27,5 @@ export const reviseExpenseSchema = z.object({
   checkImage: z
     .instanceof(File)
     .refine((file) => allowedMimeTypes.includes(file.type), 'Недопустимый формат файла')
-    .refine((file) => file.size <= 5 * 1024 * 1024, 'Размер файла должен быть не больше 5 МБ'),
+    .refine((file) => file.size <= MAX_UPLOAD_FILE_SIZE_BYTES, maxUploadFileSizeErrorMessage),
 })
