@@ -1,22 +1,22 @@
 package com.tbank.tevent.profile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tbank.tevent.SecurityUtils;
 import com.tbank.tevent.exception.GlobalExceptionHandler;
 import com.tbank.tevent.profile.dto.PasswordChangeRequest;
 import com.tbank.tevent.profile.dto.UpdateProfileRequest;
 import com.tbank.tevent.profile.dto.UserProfileDto;
+import com.tbank.tevent.repo.entity.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -49,21 +49,28 @@ class ProfileIntegrationTest {
         this.objectMapper = new ObjectMapper();
     }
 
+    @AfterEach
+    void clearSecurity() {
+        SecurityContextHolder.clearContext();
+    }
+
+    private void authenticate(UUID userId) {
+        User principal = User.builder().id(userId).build();
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(principal, null, java.util.List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
     @Test
     // Проверка: обновление профиля без авторизации -> 401
     void updateProfileWithoutAuthReturnsUnauthorized() throws Exception {
         String payload = objectMapper.writeValueAsString(Map.of("first_name", "Alex"));
 
-        try (MockedStatic<SecurityUtils> security = org.mockito.Mockito.mockStatic(SecurityUtils.class)) {
-            security.when(SecurityUtils::getCurrentUserId)
-                    .thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated"));
-
-            mockMvc.perform(patch("/me")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(payload))
-                    .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.message").value("User is not authenticated"));
-        }
+        mockMvc.perform(patch("/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("User is not authenticated"));
 
         verifyNoInteractions(userService);
     }
@@ -92,19 +99,17 @@ class ProfileIntegrationTest {
                 "login", "new_login"
         ));
 
-        try (MockedStatic<SecurityUtils> security = org.mockito.Mockito.mockStatic(SecurityUtils.class)) {
-            security.when(SecurityUtils::getCurrentUserId).thenReturn(userId);
+        authenticate(userId);
 
-            mockMvc.perform(patch("/me")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(payload))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(userId.toString()))
-                    .andExpect(jsonPath("$.login").value("new_login"))
-                    .andExpect(jsonPath("$.first_name").value("Alex"))
-                    .andExpect(jsonPath("$.second_name").value("Ivanov"))
-                    .andExpect(jsonPath("$.avatar_url").value("receipts/u/avatar.png"));
-        }
+        mockMvc.perform(patch("/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userId.toString()))
+                .andExpect(jsonPath("$.login").value("new_login"))
+                .andExpect(jsonPath("$.first_name").value("Alex"))
+                .andExpect(jsonPath("$.second_name").value("Ivanov"))
+                .andExpect(jsonPath("$.avatar_url").value("receipts/u/avatar.png"));
 
         verify(userService).updateUser(userId, request);
     }
@@ -113,21 +118,19 @@ class ProfileIntegrationTest {
     // Проверка: логин уже используется при обновлении профиля -> 409
     void updateProfileReturnsConflictWhenLoginTaken() throws Exception {
         UUID userId = UUID.randomUUID();
-        doThrow(new ResponseStatusException(HttpStatus.CONFLICT, "Логин уже используется"))
+        doThrow(new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT, "Логин уже используется"))
                 .when(userService)
                 .updateUser(org.mockito.ArgumentMatchers.eq(userId), org.mockito.ArgumentMatchers.any(UpdateProfileRequest.class));
 
         String payload = objectMapper.writeValueAsString(Map.of("login", "occupied"));
 
-        try (MockedStatic<SecurityUtils> security = org.mockito.Mockito.mockStatic(SecurityUtils.class)) {
-            security.when(SecurityUtils::getCurrentUserId).thenReturn(userId);
+        authenticate(userId);
 
-            mockMvc.perform(patch("/me")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(payload))
-                    .andExpect(status().isConflict())
-                    .andExpect(jsonPath("$.message").value("Логин уже используется"));
-        }
+        mockMvc.perform(patch("/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Логин уже используется"));
     }
 
     @Test
@@ -138,16 +141,11 @@ class ProfileIntegrationTest {
                 "new_password", "NewPass123"
         ));
 
-        try (MockedStatic<SecurityUtils> security = org.mockito.Mockito.mockStatic(SecurityUtils.class)) {
-            security.when(SecurityUtils::getCurrentUserId)
-                    .thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated"));
-
-            mockMvc.perform(post("/me/password")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(payload))
-                    .andExpect(status().isUnauthorized())
-                    .andExpect(jsonPath("$.message").value("User is not authenticated"));
-        }
+        mockMvc.perform(post("/me/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("User is not authenticated"));
 
         verifyNoInteractions(userService);
     }
@@ -179,14 +177,12 @@ class ProfileIntegrationTest {
                 "new_password", "NewPass123"
         ));
 
-        try (MockedStatic<SecurityUtils> security = org.mockito.Mockito.mockStatic(SecurityUtils.class)) {
-            security.when(SecurityUtils::getCurrentUserId).thenReturn(userId);
+        authenticate(userId);
 
-            mockMvc.perform(post("/me/password")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(payload))
-                    .andExpect(status().isNoContent());
-        }
+        mockMvc.perform(post("/me/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isNoContent());
 
         verify(userService).updateUserPassword(userId, request);
     }
@@ -196,7 +192,7 @@ class ProfileIntegrationTest {
     void updatePasswordReturnsBadRequestWhenCurrentPasswordInvalid() throws Exception {
         UUID userId = UUID.randomUUID();
 
-        doThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect current password"))
+        doThrow(new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Incorrect current password"))
                 .when(userService)
                 .updateUserPassword(org.mockito.ArgumentMatchers.eq(userId), org.mockito.ArgumentMatchers.any(PasswordChangeRequest.class));
 
@@ -205,14 +201,12 @@ class ProfileIntegrationTest {
                 "new_password", "NewPass123"
         ));
 
-        try (MockedStatic<SecurityUtils> security = org.mockito.Mockito.mockStatic(SecurityUtils.class)) {
-            security.when(SecurityUtils::getCurrentUserId).thenReturn(userId);
+        authenticate(userId);
 
-            mockMvc.perform(post("/me/password")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(payload))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.message").value("Incorrect current password"));
-        }
+        mockMvc.perform(post("/me/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Incorrect current password"));
     }
 }
