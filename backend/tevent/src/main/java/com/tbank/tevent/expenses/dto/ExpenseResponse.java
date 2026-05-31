@@ -11,12 +11,12 @@ public record ExpenseResponse(
         UUID id,
         String title,
         String description,
-        BigDecimal totalAmount,
-        UUID payerId,
+        @JsonProperty("total_amount") BigDecimal totalAmount,
+        @JsonProperty("payer_id") UUID payerId,
         String status,
         @JsonProperty("image_key") String imageKey,
         List<String> categories,
-        List<UUID> firstTenParticipants,
-        int totalParticipantsCount,
-        LocalDateTime createdAt
+        @JsonProperty("first_ten_participants") List<UUID> firstTenParticipants,
+        @JsonProperty("total_participants_count") int totalParticipantsCount,
+        @JsonProperty("created_at") LocalDateTime createdAt
 ) {}
