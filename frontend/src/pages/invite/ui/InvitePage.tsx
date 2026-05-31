@@ -176,30 +176,32 @@ export const InvitePage = () => {
           </Text>
         </div>
 
-        <div className="flex flex-col gap-[10px] sm:flex-row">
-          <Button
-            type="button"
-            onClick={handleAccept}
-            disabled={isApplying}
-            className="font-medium"
-          >
-            Присоединиться
-          </Button>
-          {!isAuthenticated && (
+        <div className="flex flex-col justify-center items-center gap-[20px]">
+          <div className="flex flex-col gap-[10px] sm:flex-row">
             <Button
               type="button"
-              variant={ButtonEnum.Tertiary}
-              onClick={handleRegister}
+              onClick={handleAccept}
+              disabled={isApplying}
               className="font-medium"
             >
-              Зарегистрироваться
+              Присоединиться
             </Button>
-          )}
+            {!isAuthenticated && (
+              <Button
+                type="button"
+                variant={ButtonEnum.Tertiary}
+                onClick={handleRegister}
+                className="font-medium"
+              >
+                Зарегистрироваться
+              </Button>
+            )}
+          </div>
           <Button
-            type="button"
-            variant={ButtonEnum.TertiaryLight}
-            onClick={handleDecline}
-            className="font-medium"
+              type="button"
+              variant={ButtonEnum.TertiaryLight}
+              onClick={handleDecline}
+              className="font-medium w-fit"
           >
             Отклонить приглашение
           </Button>

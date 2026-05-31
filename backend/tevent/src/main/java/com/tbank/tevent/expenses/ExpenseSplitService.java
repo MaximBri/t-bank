@@ -1,20 +1,24 @@
 package com.tbank.tevent.expenses;
 
+import com.tbank.tevent.expenses.exception.ExpenseEventCompletedException;
+import com.tbank.tevent.expenses.exception.ExpenseNotFoundException;
+import com.tbank.tevent.expenses.exception.ExpenseParticipantsRequiredException;
 import com.tbank.tevent.notifications.NotificationService;
+import com.tbank.tevent.repo.EventRepository;
+import com.tbank.tevent.repo.ExpenseRepository;
 import com.tbank.tevent.repo.ExpenseSplitRepository;
+import com.tbank.tevent.repo.entity.Event;
 import com.tbank.tevent.repo.entity.Expense;
 import com.tbank.tevent.repo.entity.ExpenseSplit;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -22,12 +26,29 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ExpenseSplitService {
 
     private final ExpenseSplitRepository splitRepository;
     private final NotificationService notificationService;
+    private final ExpenseRepository expenseRepository;
+    private final EventRepository eventRepository;
 
+    // Проверка: расход связан с незавершенным событием
+    private void checkEventNotCompleted(UUID expenseId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(ExpenseNotFoundException::new);
+        Event event = eventRepository.findById(expense.getEventId())
+                .orElseThrow(() -> new EntityNotFoundException("Событие не найдено"));
+        if (Boolean.TRUE.equals(event.getIsCompleted())) {
+            throw new ExpenseEventCompletedException();
+        }
+    }
+
+    // Создание равных долей для нового расхода
     public void createEqualSplits(UUID expenseId, List<UUID> participantIds, BigDecimal totalAmount) {
+        log.info("Creating equal splits, expenseId={}, participants={}", expenseId, participantIds != null ? participantIds.size() : 0);
+        checkEventNotCompleted(expenseId);
         validateParticipants(participantIds);
 
         Map<UUID, BigDecimal> calculatedAmounts = calculateEqualAmountsMap(participantIds, totalAmount);
@@ -44,7 +65,10 @@ public class ExpenseSplitService {
         splitRepository.saveAll(splits);
     }
 
+    // Пересчет долей при редактировании расхода
     public void processEqualSplitsDelta(Expense expense, List<UUID> newParticipantIds, BigDecimal newTotalAmount) {
+        log.info("Recalculating splits delta, expenseId={}", expense.getId());
+        checkEventNotCompleted(expense.getId());
         validateParticipants(newParticipantIds);
 
         List<ExpenseSplit> oldSplits = splitRepository.findAllByExpenseId(expense.getId());
@@ -53,13 +77,15 @@ public class ExpenseSplitService {
 
         Map<UUID, BigDecimal> targetAmountsMap = calculateEqualAmountsMap(newParticipantIds, newTotalAmount);
 
-
         executeRemovals(expense, oldSplitsMap, targetAmountsMap.keySet());
         executeAdditions(expense.getId(), oldSplitsMap.keySet(), targetAmountsMap);
         executeUpdates(oldSplitsMap, targetAmountsMap);
     }
 
+    // Подтверждение доли участником
     public void confirm(UUID expenseId, UUID userId) {
+        log.info("Confirming split, expenseId={}, userId={}", expenseId, userId);
+        checkEventNotCompleted(expenseId);
         ExpenseSplit split = splitRepository.findByExpenseIdAndUserId(expenseId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Доля в расходе для данного пользователя не найдена"));
 
@@ -67,6 +93,7 @@ public class ExpenseSplitService {
         splitRepository.save(split);
     }
 
+    // Проверяет, что все доли подтверждены
     @Transactional(readOnly = true)
     public boolean areAllSplitsConfirmed(UUID expenseId) {
         List<ExpenseSplit> splits = splitRepository.findAllByExpenseId(expenseId);
@@ -74,10 +101,14 @@ public class ExpenseSplitService {
                 .allMatch(split -> Boolean.TRUE.equals(split.getIsConfirmed()));
     }
 
+    // Удаляет все доли расхода
     public void deleteSplitsByExpense(UUID expenseId) {
+        log.info("Deleting splits by expense, expenseId={}", expenseId);
+        checkEventNotCompleted(expenseId);
         splitRepository.deleteByExpenseId(expenseId);
     }
 
+    // Отправляет уведомления участникам при удалении расхода
     @Transactional(readOnly = true)
     public void notifyParticipantsAboutDeletion(Expense expense) {
         List<UUID> participantIds = splitRepository.findAllByExpenseId(expense.getId()).stream()
@@ -96,25 +127,45 @@ public class ExpenseSplitService {
         );
     }
 
+    // Валидация списка участников расхода
     private void validateParticipants(List<UUID> participantIds) {
         if (participantIds == null || participantIds.isEmpty()) {
-            throw new IllegalArgumentException("Список участников чека не может быть пустым");
+            throw new ExpenseParticipantsRequiredException();
         }
     }
 
+    // Вычисляет суммы равных долей между участниками
     private Map<UUID, BigDecimal> calculateEqualAmountsMap(List<UUID> participantIds, BigDecimal totalAmount) {
-        int size = participantIds.size();
-        BigDecimal baseAmount = totalAmount.divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_UP);
-        BigDecimal remainder = totalAmount.subtract(baseAmount.multiply(BigDecimal.valueOf(size)));
+        if (participantIds == null || participantIds.isEmpty() || totalAmount == null) {
+            return Collections.emptyMap();
+        }
 
-        return IntStream.range(0, size).boxed()
+        int debtorsCount = participantIds.size();
+
+        BigDecimal totalPeople = BigDecimal.valueOf(debtorsCount + 1);
+
+        BigDecimal singleShare = totalAmount.divide(totalPeople, 2, RoundingMode.HALF_UP);
+
+        BigDecimal amountToDivide = totalAmount.subtract(singleShare);
+
+        BigDecimal debtorsCountBD = BigDecimal.valueOf(debtorsCount);
+        BigDecimal baseAmount = amountToDivide.divide(debtorsCountBD, 2, RoundingMode.DOWN);
+
+        BigDecimal remainder = amountToDivide.subtract(baseAmount.multiply(debtorsCountBD));
+
+        return IntStream.range(0, debtorsCount).boxed()
                 .collect(Collectors.toMap(
                         participantIds::get,
                         i -> (i == 0) ? baseAmount.add(remainder) : baseAmount
                 ));
     }
 
-    private void executeRemovals(Expense expense, Map<UUID, ExpenseSplit> oldSplitsMap, Set<UUID> targetUserIds) {
+    // Удаляет лишние доли и уведомляет исключенных участников
+    private void executeRemovals(
+            Expense expense,
+            Map<UUID, ExpenseSplit> oldSplitsMap,
+            Set<UUID> targetUserIds
+    ) {
         List<ExpenseSplit> splitsToDelete = oldSplitsMap.keySet().stream()
                 .filter(userId -> !targetUserIds.contains(userId))
                 .map(oldSplitsMap::get)
@@ -137,8 +188,14 @@ public class ExpenseSplitService {
         );
     }
 
-    private void executeAdditions(UUID expenseId, Set<UUID> oldUserIds, Map<UUID, BigDecimal> targetAmountsMap) {
-        targetAmountsMap.entrySet().stream()
+    // Добавляет новые доли для новых участников
+    private void executeAdditions(
+            UUID expenseId,
+            Set<UUID> oldUserIds,
+            Map<UUID, BigDecimal> targetAmountsMap
+    ) {
+
+        List<ExpenseSplit> newSplits = targetAmountsMap.entrySet().stream()
                 .filter(entry -> !oldUserIds.contains(entry.getKey()))
                 .map(entry -> ExpenseSplit.builder()
                         .expenseId(expenseId)
@@ -146,9 +203,14 @@ public class ExpenseSplitService {
                         .amount(entry.getValue())
                         .isConfirmed(false)
                         .build())
-                .forEach(splitRepository::save);
+                .toList();
+
+        if (newSplits.isEmpty()) return;
+
+        splitRepository.saveAll(newSplits);
     }
 
+    // Обновляет суммы существующих долей
     private void executeUpdates(Map<UUID, ExpenseSplit> oldSplitsMap, Map<UUID, BigDecimal> targetAmountsMap) {
         targetAmountsMap.entrySet().stream()
                 .filter(entry -> oldSplitsMap.containsKey(entry.getKey()))

@@ -86,10 +86,7 @@ public class EventMemberService {
             return true;
         }
 
-        // Участник любой доли (split) в расходах события. Раньше этот
-        // случай был заглушён ("return false") — участника со split-долгом
-        // можно было удалить/выпустить, оставив висящие записи и сломав
-        // расчёт долгов.
+
         return expenseSplitRepository.existsSplitForUserInEvent(eventId, userId);
     }
     

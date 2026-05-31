@@ -1,7 +1,6 @@
 package com.tbank.tevent.repo;
 
 import com.tbank.tevent.repo.entity.RefreshToken;
-import com.tbank.tevent.repo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

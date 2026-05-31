@@ -21,7 +21,7 @@ export const NotificationsBell = () => {
 
   const notifications = notificationsData?.items ?? []
   const unreadCount = notificationsData?.unreadCount ?? 0
-  const pendingShares = inboxData?.pendingConfirmations ?? []
+  const pendingShares = inboxData ?? []
 
   const badgeCount = unreadCount + pendingShares.length
 
@@ -72,13 +72,12 @@ export const NotificationsBell = () => {
               <div className="flex flex-col">
                 {pendingShares.map((item) => (
                   <PendingShareRow
-                    key={item.splitId}
+                    key={item.expenseId}
                     item={item}
                     isPending={confirmShare.isPending}
                     onConfirm={() =>
                       confirmShare.mutate({
                         expenseId: item.expenseId,
-                        eventId: item.eventId,
                       })
                     }
                   />

@@ -1,4 +1,4 @@
-package com.tbank.tevent.expenses;
+package com.tbank.tevent.expenses.dto;
 
 import java.math.BigDecimal;
 import java.util.List;

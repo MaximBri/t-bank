@@ -10,7 +10,6 @@ import java.util.UUID;
 
 public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory, UUID> {
     void deleteAllByExpenseId(UUID expenseId);
-    List<ExpenseCategory> findAllByExpenseIdIn(List<UUID> expenseIds);
     @Query("""
     SELECT ec.expenseId as expenseId, c.name as categoryName 
     FROM ExpenseCategory ec 

@@ -45,7 +45,7 @@ export type CreateExpenseDto = {
 
 export enum ExpenseResponseStatus {
   Pending = 'PENDING',
-  Confirmed = 'CONFIRMED',
+  Confirmed = 'ACTIVE',
   Rejected = 'REJECTED',
 }
 
@@ -69,26 +69,14 @@ export type EventExpensesResponseDto = {
   eventTotalSum: number
 }
 
-export type ParticipantInboxItemDto = {
-  splitId: string
+export type ListInboxItemResponseDto = {
   expenseId: string
-  eventId: string
-  description: string
   amountToPay: number
-  payerId: string
-  reason: string
-  createdAt: string
+  expenseTitle: string
+  expenseStatus: ExpenseStatus
 }
 
-export type AuthorInboxItemDto = {
-  expenseId: string
-  eventId: string
-  description: string
-  title: string
-  status: string
-}
 
-export type ParticipantInboxResponseDto = {
-  pendingConfirmations: ParticipantInboxItemDto[]
-  actionRequired: AuthorInboxItemDto[]
+export type ListInboxResponseDto = {
+  listInbox: ListInboxItemResponseDto[]
 }

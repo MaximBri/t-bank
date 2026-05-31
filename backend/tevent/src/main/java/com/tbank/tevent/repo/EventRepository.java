@@ -15,6 +15,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     SELECT e.* FROM event e
     JOIN event_user eu ON e.id = eu.event_id
     WHERE eu.user_id = :userId
+      AND (CAST(:search AS TEXT) IS NULL OR e.title LIKE '%' || CAST(:search AS TEXT) || '%')
       AND (CAST(:startDate AS TIMESTAMP) IS NULL OR e.start_date >= CAST(:startDate AS TIMESTAMP))
       AND (CAST(:endDate AS TIMESTAMP) IS NULL OR e.end_date <= CAST(:endDate AS TIMESTAMP))
       AND (CAST(:state AS TEXT) IS NULL OR (
@@ -31,6 +32,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     """, nativeQuery = true)
     List<Event> findUserEventsWithFilters(
             @Param("userId") UUID userId,
+            @Param("search") String search,
             @Param("state") String state,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
@@ -40,7 +42,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 
     Optional<Event> findByInviteTokenId(UUID inviteTokenId);
 
-    @Query("SELECT e FROM Event e WHERE e.inviteTokenId = :inviteTokenId")
-    Optional<Event> findByInviteTokenIdQuery(@Param("inviteTokenId") UUID inviteTokenId);
-}
+    Optional<Event> findById(@Param("id") UUID id);
 
+    List<Event> findByIsCompletedFalseAndEndDateBefore(LocalDateTime dateTime);
+}
