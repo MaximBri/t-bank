@@ -63,13 +63,14 @@ const mockExpense = {
   id: 'exp-1',
   title: 'Ужин в ресторане',
   description: 'Ресторан у моря',
-  totalAmount: 6000,
-  payerId: 'user-1',
+  total_amount: 6000,
+  payer_id: 'user-1',
   status: ExpenseResponseStatus.Pending,
+  image_key: null,
   categories: ['Питание'],
-  firstTenParticipants: ['user-1', 'user-2'],
-  totalParticipantsCount: 1,
-  createdAt: '2026-07-05T18:00:00Z',
+  first_ten_participants: ['user-1', 'user-2'],
+  total_participants_count: 1,
+  created_at: '2026-07-05T18:00:00Z',
 }
 
 const mockExpenseConfirmed = {
@@ -119,7 +120,7 @@ describe('EventExpensesWidget', () => {
   })
 
   it('показывает пустое состояние когда нет расходов', async () => {
-    mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, { expenses: [], eventTotalSum: 0 })
+    mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, { expenses: [], event_total_sum: 0 })
     mock.onGet(`/api/events/${EVENT_ID}`).reply(200, mockEvent)
     mock.onGet(`/api/events/${EVENT_ID}/participants`).reply(200, mockParticipants)
 
@@ -133,7 +134,7 @@ describe('EventExpensesWidget', () => {
   it('отображает список расходов', async () => {
     mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, {
       expenses: [mockExpense],
-      eventTotalSum: 6000,
+      event_total_sum: 6000,
     })
     mock.onGet(`/api/events/${EVENT_ID}`).reply(200, mockEvent)
     mock.onGet(`/api/events/${EVENT_ID}/participants`).reply(200, mockParticipants)
@@ -152,7 +153,7 @@ describe('EventExpensesWidget', () => {
   it('показывает счётчик расходов в заголовке', async () => {
     mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, {
       expenses: [mockExpense, mockExpenseConfirmed],
-      eventTotalSum: 12000,
+      event_total_sum: 12000,
     })
     mock.onGet(`/api/events/${EVENT_ID}`).reply(200, mockEvent)
     mock.onGet(`/api/events/${EVENT_ID}/participants`).reply(200, mockParticipants)
@@ -169,7 +170,7 @@ describe('EventExpensesWidget', () => {
   it('показывает статус "На проверке" для PENDING расхода', async () => {
     mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, {
       expenses: [mockExpense],
-      eventTotalSum: 6000,
+      event_total_sum: 6000,
     })
     mock.onGet(`/api/events/${EVENT_ID}`).reply(200, mockEvent)
     mock.onGet(`/api/events/${EVENT_ID}/participants`).reply(200, mockParticipants)
@@ -184,7 +185,7 @@ describe('EventExpensesWidget', () => {
   it('показывает статус "Подтверждён" для CONFIRMED расхода', async () => {
     mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, {
       expenses: [mockExpenseConfirmed],
-      eventTotalSum: 6000,
+      event_total_sum: 6000,
     })
     mock.onGet(`/api/events/${EVENT_ID}`).reply(200, mockEvent)
     mock.onGet(`/api/events/${EVENT_ID}/participants`).reply(200, mockParticipants)
@@ -199,7 +200,7 @@ describe('EventExpensesWidget', () => {
   it('показывает статус "Отклонён" для REJECTED расхода', async () => {
     mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, {
       expenses: [mockExpenseRejected],
-      eventTotalSum: 0,
+      event_total_sum: 0,
     })
     mock.onGet(`/api/events/${EVENT_ID}`).reply(200, mockEvent)
     mock.onGet(`/api/events/${EVENT_ID}/participants`).reply(200, mockParticipants)
@@ -218,7 +219,7 @@ describe('EventExpensesWidget', () => {
     // Плательщику-не-владельцу доступна только кнопка просмотра расхода.
     mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, {
       expenses: [mockExpense],
-      eventTotalSum: 6000,
+      event_total_sum: 6000,
     })
     mock.onGet(`/api/events/${EVENT_ID}`).reply(200, mockEvent)
     mock.onGet(`/api/events/${EVENT_ID}/participants`).reply(200, mockParticipants)
@@ -235,7 +236,7 @@ describe('EventExpensesWidget', () => {
     expect(screen.queryByRole('button', { name: /отклонить расход/i })).not.toBeInTheDocument()
   })
 
-  it('показывает кнопки подтверждения/отклонения для владельца события', async () => {
+  it('для владельца события остаётся кнопка просмотра расхода', async () => {
     useUserStore.setState({
       user: { id: 'user-owner', login: 'owner', firstName: 'Owner', lastName: null, avatarUrl: '' },
       isAuthenticated: true,
@@ -243,11 +244,11 @@ describe('EventExpensesWidget', () => {
       isLoading: false,
     })
 
-    const pendingExpenseByOther = { ...mockExpense, payerId: 'user-2' }
+    const pendingExpenseByOther = { ...mockExpense, payer_id: 'user-2' }
 
     mock.onGet(`/api/events/${EVENT_ID}/expenses`).reply(200, {
       expenses: [pendingExpenseByOther],
-      eventTotalSum: 6000,
+      event_total_sum: 6000,
     })
     mock.onGet(`/api/events/${EVENT_ID}`).reply(200, mockEvent)
     mock.onGet(`/api/events/${EVENT_ID}/participants`).reply(200, mockParticipants)
@@ -255,8 +256,7 @@ describe('EventExpensesWidget', () => {
     render(<EventExpensesWidget />, { wrapper })
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /подтвердить расход/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /отклонить расход/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /посмотреть расход/i })).toBeInTheDocument()
     })
   })
 })

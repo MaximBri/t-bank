@@ -2,14 +2,24 @@ import { api } from '@/shared/api/api.ts'
 import { s3Api } from '@/shared/api/s3Api.ts'
 import type {
   CreateExpenseDto,
+  CreateExpenseRequestDto,
   EventExpensesResponseDto,
+  EventExpensesResponseRawDto,
   ExpenseResponseDto,
-  ListInboxResponseDto,
+  ExpenseResponseRawDto,
+  ListInboxItemResponseDto,
+  ListInboxRawDto,
 } from '@/entities/expense/model/types.ts'
 
 const toRequestBody = (payload: CreateExpenseDto) => {
-  const { imageKey, ...rest } = payload
-  return { ...rest, image_key: imageKey }
+  const { totalAmount, participantIds, imageKey, ...rest } = payload
+
+  return {
+    ...rest,
+    total_amount: totalAmount,
+    participant_ids: participantIds,
+    image_key: imageKey,
+  } satisfies CreateExpenseRequestDto
 }
 
 const withResolvedImage = async (
@@ -24,6 +34,37 @@ const withResolvedImage = async (
     return { ...expense, imageUrl }
   } catch {
     return { ...expense, imageUrl: '' }
+  }
+}
+
+const toExpenseDto = (expense: ExpenseResponseRawDto): ExpenseResponseDto => {
+  return {
+    id: expense.id,
+    description: expense.description,
+    title: expense.title,
+    totalAmount: expense.total_amount,
+    payerId: expense.payer_id,
+    status: expense.status,
+    image_key: expense.image_key,
+    imageUrl: '',
+    categories: expense.categories,
+    firstTenParticipants: expense.first_ten_participants,
+    totalParticipantsCount: expense.total_participants_count,
+    createdAt: expense.created_at,
+  }
+}
+
+const toInboxItemDto = (item: {
+  expense_id: string
+  amount_to_pay: number
+  expense_title: string
+  expense_status: ListInboxItemResponseDto['expenseStatus']
+}): ListInboxItemResponseDto => {
+  return {
+    expenseId: item.expense_id,
+    amountToPay: item.amount_to_pay,
+    expenseTitle: item.expense_title,
+    expenseStatus: item.expense_status,
   }
 }
 
@@ -48,9 +89,12 @@ export const expensesApi = {
   },
 
   getAll: async (eventId: string) => {
-    const { data } = await api.get<EventExpensesResponseDto>(`/events/${eventId}/expenses`)
-    const expenses = await Promise.all(data.expenses.map(withResolvedImage))
-    return { ...data, expenses }
+    const { data } = await api.get<EventExpensesResponseRawDto>(`/events/${eventId}/expenses`)
+    const expenses = await Promise.all(data.expenses.map((item) => withResolvedImage(toExpenseDto(item))))
+    return {
+      expenses,
+      eventTotalSum: data.event_total_sum,
+    } satisfies EventExpensesResponseDto
   },
 
   approve: async (eventId: string, expenseId: string) => {
@@ -62,8 +106,8 @@ export const expensesApi = {
   },
 
   getParticipantInbox: async () => {
-    const { data } = await api.get<ListInboxResponseDto>('/expenses/participant/inbox')
-    return data.listInbox
+    const { data } = await api.get<ListInboxRawDto>('/expenses/participant/inbox')
+    return data.list_inbox.map(toInboxItemDto)
   },
 
   confirmAsParticipant: async (expenseId: string) => {

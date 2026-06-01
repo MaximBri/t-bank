@@ -18,13 +18,14 @@ const mockExpense = {
   id: 'exp-1',
   title: 'Ужин',
   description: 'Ресторан',
-  totalAmount: 3000,
-  payerId: 'user-1',
+  total_amount: 3000,
+  payer_id: 'user-1',
   status: ExpenseResponseStatus.Pending,
+  image_key: null,
   categories: ['food'],
-  firstTenParticipants: ['user-1', 'user-2'],
-  totalParticipantsCount: 2,
-  createdAt: '2026-06-01T12:00:00Z',
+  first_ten_participants: ['user-1', 'user-2'],
+  total_participants_count: 2,
+  created_at: '2026-06-01T12:00:00Z',
 }
 
 describe('useGetEventExpenses', () => {
@@ -35,7 +36,7 @@ describe('useGetEventExpenses', () => {
   it('возвращает список расходов', async () => {
     mock.onGet('/api/events/event-1/expenses').reply(200, {
       expenses: [mockExpense],
-      eventTotalSum: 3000,
+      event_total_sum: 3000,
     })
 
     const { result } = renderHook(() => useGetEventExpenses('event-1'), { wrapper })
@@ -52,7 +53,7 @@ describe('useGetEventExpenses', () => {
   })
 
   it('возвращает пустой массив расходов', async () => {
-    mock.onGet('/api/events/event-2/expenses').reply(200, { expenses: [], eventTotalSum: 0 })
+    mock.onGet('/api/events/event-2/expenses').reply(200, { expenses: [], event_total_sum: 0 })
 
     const { result } = renderHook(() => useGetEventExpenses('event-2'), { wrapper })
 

@@ -27,7 +27,7 @@ test.describe('API Расходы', () => {
     expect(response.status()).toBe(200)
     await expect(response.json()).resolves.toMatchObject({
       expenses: expect.any(Array),
-      eventTotalSum: expect.any(Number),
+      event_total_sum: expect.any(Number),
     })
   })
 
@@ -47,7 +47,10 @@ test.describe('API Расходы', () => {
     const { response } = await createExpenseViaApi(
       request,
       event.id,
-      buildCreateExpensePayload(expenseTestData.expensePrefixes.create),
+      {
+        ...buildCreateExpensePayload(expenseTestData.expensePrefixes.create),
+        participant_ids: [event.ownerId],
+      },
     )
 
     expect(response.status()).toBe(201)
