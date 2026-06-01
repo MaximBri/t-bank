@@ -57,8 +57,6 @@ public interface ExpenseSplitRepository extends JpaRepository<ExpenseSplit, UUID
         """)
     List<ExpenseParticipantView> findAllParticipantsByExpenseIds(@Param("expenseIds") List<UUID> expenseIds);
 
-    List<ExpenseSplit> findAllByUserIdAndIsConfirmedFalse(UUID userId);
-
     @Query("""
         SELECT s
         FROM ExpenseSplit s
