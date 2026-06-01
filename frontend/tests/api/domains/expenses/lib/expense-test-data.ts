@@ -12,9 +12,9 @@ export function buildCreateExpensePayload(prefix: string = expenseTestData.expen
   return {
     title: `${prefix}_${stamp}`,
     description: 'Автотестовый расход',
-    totalAmount: 1000,
-    imageUrl: '',
+    total_amount: 1000,
+    image_key: '',
     categories: ['Транспорт'],
-    participantIds: [],
+    participant_ids: ['00000000-0000-0000-0000-000000000000'],
   }
 }
