@@ -16,7 +16,7 @@ public class S3PresignerConfig {
 
     @Bean
     public S3Presigner publicS3Presigner(
-            @Value("${app.s3.public-endpoint}") String publicEndpoint,
+            @Value("${spring.cloud.aws.s3.endpoint}") String publicEndpoint,
             @Value("${spring.cloud.aws.credentials.access-key}") String accessKey,
             @Value("${spring.cloud.aws.credentials.secret-key}") String secretKey,
             @Value("${spring.cloud.aws.region.static}") String region
