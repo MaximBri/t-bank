@@ -10,13 +10,14 @@ const mockExpense = {
   id: 'exp-1',
   description: 'Dinner',
   title: 'Restaurant',
-  totalAmount: 3000,
-  payerId: 'u1',
+  total_amount: 3000,
+  payer_id: 'u1',
   status: ExpenseResponseStatus.Pending,
   categories: ['food'],
-  firstTenParticipants: ['u1', 'u2'],
-  totalParticipantsCount: 2,
-  createdAt: '2026-01-05T12:00:00Z',
+  image_key: null,
+  first_ten_participants: ['u1', 'u2'],
+  total_participants_count: 2,
+  created_at: '2026-01-05T12:00:00Z',
 }
 
 const createPayload = {
@@ -47,7 +48,7 @@ describe('expensesApi', () => {
     it('возвращает список расходов и общую сумму', async () => {
       mock.onGet('/api/events/ev1/expenses').reply(200, {
         expenses: [mockExpense],
-        eventTotalSum: 3000,
+        event_total_sum: 3000,
       })
       const result = await expensesApi.getAll('ev1')
       expect(result.expenses).toHaveLength(1)
@@ -56,7 +57,7 @@ describe('expensesApi', () => {
     })
 
     it('возвращает пустой список расходов', async () => {
-      mock.onGet('/api/events/ev1/expenses').reply(200, { expenses: [], eventTotalSum: 0 })
+      mock.onGet('/api/events/ev1/expenses').reply(200, { expenses: [], event_total_sum: 0 })
       const result = await expensesApi.getAll('ev1')
       expect(result.expenses).toEqual([])
       expect(result.eventTotalSum).toBe(0)
@@ -119,24 +120,19 @@ describe('expensesApi', () => {
   describe('getParticipantInbox', () => {
     it('возвращает данные входящих расходов', async () => {
       const inbox = {
-        pendingConfirmations: [
+        list_inbox: [
           {
-            splitId: 's1',
-            expenseId: 'exp-1',
-            eventId: 'ev1',
-            description: 'Dinner',
-            amountToPay: 1500,
-            payerId: 'u1',
-            reason: '',
-            createdAt: '2026-01-05T12:00:00Z',
+            expense_id: 'exp-1',
+            expense_title: 'Dinner',
+            amount_to_pay: 1500,
+            expense_status: 'pending',
           },
         ],
-        actionRequired: [],
       }
       mock.onGet('/api/expenses/participant/inbox').reply(200, inbox)
       const result = await expensesApi.getParticipantInbox()
-      expect(result.pendingConfirmations).toHaveLength(1)
-      expect(result.actionRequired).toHaveLength(0)
+      expect(result).toHaveLength(1)
+      expect(result[0].expenseId).toBe('exp-1')
     })
 
     it('выбрасывает ошибку при ошибке сервера', async () => {

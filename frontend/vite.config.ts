@@ -7,7 +7,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, fileURLToPath(new URL('.', import.meta.url)), '')
-  const backendTarget = `http://localhost:${env.VITE_BACKEND_PORT ?? '8080'}`
+  const backendTarget = `http://localhost:${env.VITE_BACKEND_PORT ?? '8081'}`
 
   return {
     plugins: [

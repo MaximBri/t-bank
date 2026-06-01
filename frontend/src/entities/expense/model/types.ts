@@ -80,3 +80,42 @@ export type ListInboxItemResponseDto = {
 export type ListInboxResponseDto = {
   listInbox: ListInboxItemResponseDto[]
 }
+
+export type CreateExpenseRequestDto = {
+  title: string
+  description?: string
+  total_amount: number
+  image_key?: string
+  categories: string[]
+  participant_ids: string[]
+}
+
+export type ExpenseResponseRawDto = {
+  id: string
+  description: string
+  title: string
+  total_amount: number
+  payer_id: string
+  status: ExpenseResponseStatus
+  image_key: string | null
+  categories: string[]
+  first_ten_participants: string[]
+  total_participants_count: number
+  created_at: string
+}
+
+export type EventExpensesResponseRawDto = {
+  expenses: ExpenseResponseRawDto[]
+  event_total_sum: number
+}
+
+export type ListInboxItemRawDto = {
+  expense_id: string
+  amount_to_pay: number
+  expense_title: string
+  expense_status: ExpenseStatus
+}
+
+export type ListInboxRawDto = {
+  list_inbox: ListInboxItemRawDto[]
+}

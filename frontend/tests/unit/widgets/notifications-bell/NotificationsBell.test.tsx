@@ -46,7 +46,7 @@ describe('NotificationsBell', () => {
 
   it('рендерит кнопку уведомлений', () => {
     mock.onGet('/api/notifications').reply(200, { items: [], unreadCount: 0 })
-    mock.onGet('/api/expenses/participant/inbox').reply(200, { pendingConfirmations: [], actionRequired: [] })
+    mock.onGet('/api/expenses/participant/inbox').reply(200, { list_inbox: [] })
 
     render(<NotificationsBell />, { wrapper })
     expect(screen.getByRole('button', { name: /уведомления/i })).toBeInTheDocument()
@@ -57,7 +57,7 @@ describe('NotificationsBell', () => {
       items: [{ id: 'n1', eventId: null, expenseId: null, title: 'Test', message: 'msg', isRead: false, createdAt: '2026-01-01' }],
       unreadCount: 1,
     })
-    mock.onGet('/api/expenses/participant/inbox').reply(200, { pendingConfirmations: [], actionRequired: [] })
+    mock.onGet('/api/expenses/participant/inbox').reply(200, { list_inbox: [] })
 
     render(<NotificationsBell />, { wrapper })
 
@@ -68,7 +68,7 @@ describe('NotificationsBell', () => {
 
   it('открывает список уведомлений при клике', async () => {
     mock.onGet('/api/notifications').reply(200, { items: [], unreadCount: 0 })
-    mock.onGet('/api/expenses/participant/inbox').reply(200, { pendingConfirmations: [], actionRequired: [] })
+    mock.onGet('/api/expenses/participant/inbox').reply(200, { list_inbox: [] })
 
     render(<NotificationsBell />, { wrapper })
     fireEvent.click(screen.getByRole('button', { name: /уведомления/i }))
@@ -80,7 +80,7 @@ describe('NotificationsBell', () => {
 
   it('показывает "Пока ничего нет" при пустом списке', async () => {
     mock.onGet('/api/notifications').reply(200, { items: [], unreadCount: 0 })
-    mock.onGet('/api/expenses/participant/inbox').reply(200, { pendingConfirmations: [], actionRequired: [] })
+    mock.onGet('/api/expenses/participant/inbox').reply(200, { list_inbox: [] })
 
     render(<NotificationsBell />, { wrapper })
     fireEvent.click(screen.getByRole('button', { name: /уведомления/i }))
