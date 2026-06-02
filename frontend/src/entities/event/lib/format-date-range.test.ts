@@ -38,7 +38,7 @@ describe('formatDateRange', () => {
 
     it('форматирует диапазон в одном дне', () => {
       const result = formatDateRange('2025-02-14T00:00:00', '2025-02-14T00:00:00')
-      expect(result).toBe('14 - 14 февраля 2025')
+      expect(result).toBe('14 февраля 2025')
     })
 
     it('форматирует диапазон в январе', () => {

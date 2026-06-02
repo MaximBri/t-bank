@@ -64,8 +64,10 @@ describe('HistoryRecordTypeTranslation', () => {
     expect(HistoryRecordTypeTranslation[HistoryRecordType.ExpenseDeleted]).toBe('Удаление расхода')
   })
 
-  it('имеет ровно 9 типов', () => {
-    expect(Object.keys(HistoryRecordTypeTranslation)).toHaveLength(9)
+  it('имеет перевод для каждого типа истории', () => {
+    expect(Object.keys(HistoryRecordTypeTranslation)).toHaveLength(
+      Object.keys(HistoryRecordType).length,
+    )
   })
 
   it('переводы уникальны или могут совпадать (исходя из дизайна)', () => {
