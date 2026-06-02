@@ -2,7 +2,6 @@ import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 
 import { useUserStore } from '@/entities/user'
-import { EventStatus } from '@/entities/event/model/types'
 import { InvitePage } from '@/pages/invite/ui/InvitePage'
 import { renderWithProviders } from '../utils/renderWithProviders.tsx'
 
@@ -16,7 +15,7 @@ vi.mock('@/shared/assets/icons/close.svg?react', () => ({ default: () => null })
 vi.mock('@/shared/assets/icons/image-filled.svg?react', () => ({ default: () => null }))
 vi.mock('@/shared/assets/icons/users.svg?react', () => ({ default: () => null }))
 
-vi.mock('@/entities/event/api/hooks/useGetEvent', () => ({ useGetEvent: vi.fn() }))
+vi.mock('@/entities/event/api/hooks/useGetEventPreview', () => ({ useGetEventPreview: vi.fn() }))
 
 vi.mock('@/shared/lib/pendingInvite', () => ({
   pendingInvite: { set: vi.fn(), clear: vi.fn() },
@@ -33,37 +32,40 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
-import { useGetEvent } from '@/entities/event/api/hooks/useGetEvent'
+import { useGetEventPreview } from '@/entities/event/api/hooks/useGetEventPreview'
 import { pendingInvite } from '@/shared/lib/pendingInvite'
 
 const mockEvent = {
-  id: 'event-1',
+  eventId: 'event-1',
   title: 'Поездка в горы',
   startDate: '2026-06-01',
   endDate: '2026-06-05',
-  countOfParticipants: 5,
-  categories: [],
-  status: EventStatus.Active,
+  participantCount: 5,
   imageUrl: '',
-  ownerId: 'owner-1',
+  creatorInfo: {
+    firstName: 'Антон',
+    secondName: 'Сидоров',
+    login: 'anton',
+    avatarUrl: '',
+  },
 }
 
 beforeEach(() => {
   vi.clearAllMocks()
   mockNavigate.mockReset()
   useUserStore.setState({ user: null, isAuthenticated: false })
-  vi.mocked(useGetEvent).mockReturnValue({ data: mockEvent, isLoading: false } as any)
+  vi.mocked(useGetEventPreview).mockReturnValue({ data: mockEvent, isLoading: false } as any)
 })
 
 describe('InvitePage', () => {
-  it('отображает заголовок "Приглашение в событие"', () => {
+  it('отображает заголовок приглашения', () => {
     renderWithProviders(<InvitePage />)
-    expect(screen.getByText('Приглашение в событие')).toBeInTheDocument()
+    expect(screen.getByText('Вас пригласили поучаствовать в событии')).toBeInTheDocument()
   })
 
-  it('отображает кнопку "Войти" когда пользователь не аутентифицирован', () => {
+  it('отображает кнопку "Присоединиться" когда пользователь не аутентифицирован', () => {
     renderWithProviders(<InvitePage />)
-    expect(screen.getByRole('button', { name: 'Войти' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Присоединиться' })).toBeInTheDocument()
   })
 
   it('отображает кнопку "Зарегистрироваться" когда пользователь не аутентифицирован', () => {
@@ -71,16 +73,16 @@ describe('InvitePage', () => {
     expect(screen.getByRole('button', { name: 'Зарегистрироваться' })).toBeInTheDocument()
   })
 
-  it('отображает кнопку "Отклонить"', () => {
+  it('отображает кнопку "Отклонить приглашение"', () => {
     renderWithProviders(<InvitePage />)
-    expect(screen.getByRole('button', { name: 'Отклонить' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Отклонить приглашение' })).toBeInTheDocument()
   })
 
-  it('отображает кнопку "Перезайти и присоединиться" когда аутентифицирован (без "Войти")', () => {
+  it('отображает кнопку "Присоединиться" когда аутентифицирован', () => {
     useUserStore.setState({ user: { id: 'user-1' } as any, isAuthenticated: true })
     renderWithProviders(<InvitePage />)
-    expect(screen.getByRole('button', { name: 'Перезайти и присоединиться' })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Войти' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Присоединиться' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Зарегистрироваться' })).not.toBeInTheDocument()
   })
 
   it('не отображает "Зарегистрироваться" когда пользователь аутентифицирован', () => {
@@ -94,20 +96,14 @@ describe('InvitePage', () => {
     expect(screen.getByText('Поездка в горы')).toBeInTheDocument()
   })
 
-  it('отображает текст для неаутентифицированного пользователя (содержит "Войдите или зарегистрируйтесь")', () => {
+  it('отображает текст о подтверждении организатора', () => {
     renderWithProviders(<InvitePage />)
-    expect(screen.getByText(/Войдите или зарегистрируйтесь/)).toBeInTheDocument()
-  })
-
-  it('отображает текст для аутентифицированного пользователя (содержит "нужно перезайти") когда isAuthenticated=true', () => {
-    useUserStore.setState({ user: { id: 'user-1' } as any, isAuthenticated: true })
-    renderWithProviders(<InvitePage />)
-    expect(screen.getByText(/нужно перезайти/)).toBeInTheDocument()
+    expect(screen.getByText(/После подтверждения организатора/)).toBeInTheDocument()
   })
 
   it('клик на "Отклонить" вызывает pendingInvite.clear и navigate', () => {
     renderWithProviders(<InvitePage />)
-    fireEvent.click(screen.getByRole('button', { name: 'Отклонить' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Отклонить приглашение' }))
     expect(vi.mocked(pendingInvite.clear)).toHaveBeenCalled()
     expect(mockNavigate).toHaveBeenCalled()
   })

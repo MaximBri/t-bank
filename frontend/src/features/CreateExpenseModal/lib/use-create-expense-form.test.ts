@@ -209,7 +209,7 @@ describe('useCreateExpenseForm', () => {
       result.current.methods.setValue('title', 'Новый расход')
       result.current.methods.setValue('amount', 500)
       result.current.methods.setValue('category', 'Питание')
-      result.current.methods.setValue('participants', ['user-1'])
+      result.current.methods.setValue('participants', ['user-1', 'user-2'])
     })
 
     await act(async () => {

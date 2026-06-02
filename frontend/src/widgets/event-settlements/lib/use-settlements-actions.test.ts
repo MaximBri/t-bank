@@ -1,19 +1,26 @@
 import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useSettlementsActions } from './use-settlements-actions'
-import { usePaySettlement } from '@/entities/settlement'
+import { useConfirmSettlement, usePaySettlement } from '@/entities/settlement'
 
 vi.mock('@/entities/settlement', () => ({
+  useConfirmSettlement: vi.fn(),
   usePaySettlement: vi.fn(),
 }))
 
 describe('useSettlementsActions', () => {
-  const mockMutate = vi.fn()
+  const mockPayMutate = vi.fn()
+  const mockConfirmMutate = vi.fn()
 
   beforeEach(() => {
-    mockMutate.mockClear()
+    mockPayMutate.mockClear()
+    mockConfirmMutate.mockClear()
     vi.mocked(usePaySettlement).mockReturnValue({
-      mutate: mockMutate,
+      mutate: mockPayMutate,
+      isPending: false,
+    } as any)
+    vi.mocked(useConfirmSettlement).mockReturnValue({
+      mutate: mockConfirmMutate,
       isPending: false,
     } as any)
   })
@@ -21,21 +28,21 @@ describe('useSettlementsActions', () => {
   it('вызывает paySettlement.mutate с корректными данными', () => {
     const { result } = renderHook(() => useSettlementsActions({ eventId: 'event-1' }))
     act(() => {
-      result.current.pay({ toUserId: 'user-2', amount: 500 })
+      result.current.pay({ paymentId: 'payment-1' })
     })
-    expect(mockMutate).toHaveBeenCalledWith({ eventId: 'event-1', toUserId: 'user-2', amount: 500 })
+    expect(mockPayMutate).toHaveBeenCalledWith({ eventId: 'event-1', paymentId: 'payment-1' })
   })
 
   it('не вызывает mutate когда eventId не определён', () => {
     const { result } = renderHook(() => useSettlementsActions({ eventId: undefined }))
     act(() => {
-      result.current.pay({ toUserId: 'user-2', amount: 500 })
+      result.current.pay({ paymentId: 'payment-1' })
     })
-    expect(mockMutate).not.toHaveBeenCalled()
+    expect(mockPayMutate).not.toHaveBeenCalled()
   })
 
   it('отражает isMutating из usePaySettlement', () => {
-    vi.mocked(usePaySettlement).mockReturnValue({ mutate: mockMutate, isPending: true } as any)
+    vi.mocked(usePaySettlement).mockReturnValue({ mutate: mockPayMutate, isPending: true } as any)
     const { result } = renderHook(() => useSettlementsActions({ eventId: 'event-1' }))
     expect(result.current.isMutating).toBe(true)
   })

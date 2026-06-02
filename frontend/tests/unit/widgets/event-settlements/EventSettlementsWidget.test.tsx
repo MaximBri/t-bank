@@ -9,8 +9,13 @@ vi.mock('@/shared/assets/icons/arrow-growth.svg?react', () => ({ default: () => 
 vi.mock('@/shared/assets/icons/arrow-bold.svg?react', () => ({ default: () => null }))
 
 vi.mock('@/entities/settlement', () => ({
+  useConfirmSettlement: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
   useGetEventSettlements: vi.fn(),
   usePaySettlement: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
+}))
+
+vi.mock('@/entities/event/api/hooks/useGetEvent', () => ({
+  useGetEvent: vi.fn(),
 }))
 
 vi.mock('@/entities/event/api/hooks/useGetEventParticipants', () => ({
@@ -23,6 +28,7 @@ vi.mock('react-router-dom', async () => {
 })
 
 import { useGetEventSettlements } from '@/entities/settlement'
+import { useGetEvent } from '@/entities/event/api/hooks/useGetEvent'
 import { useGetEventParticipants } from '@/entities/event/api/hooks/useGetEventParticipants'
 
 const mockParticipants = [
@@ -30,10 +36,22 @@ const mockParticipants = [
   { userId: 'user-2', login: 'bob', firstName: 'Bob', lastName: null },
 ]
 
-const mockSettlements = [{ fromUserId: 'user-1', toUserId: 'user-2', amount: 1500 }]
+const mockSettlements = [{
+  paymentId: 'payment-1',
+  debtorId: 'user-1',
+  debtorName: 'Alice Smith',
+  creditorId: 'user-2',
+  creditorName: 'Bob',
+  amount: 1500,
+  status: 'ACTIVE',
+  isCurrentUserRelated: true,
+}]
 
 beforeEach(() => {
   useUserStore.setState({ user: { id: 'user-1', login: 'user-1', firstName: 'Test', lastName: 'User' }, isAuthenticated: true })
+  vi.mocked(useGetEvent).mockReturnValue({
+    data: { isCompleted: true },
+  } as any)
   vi.mocked(useGetEventParticipants).mockReturnValue({
     data: mockParticipants,
     isLoading: false,

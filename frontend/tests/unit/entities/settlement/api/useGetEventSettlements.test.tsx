@@ -14,8 +14,26 @@ function wrapper({ children }: PropsWithChildren) {
 }
 
 const mockSettlements = [
-  { fromUserId: 'user-1', toUserId: 'user-2', amount: 300 },
-  { fromUserId: 'user-3', toUserId: 'user-1', amount: 150 },
+  {
+    paymentId: 'payment-1',
+    debtorId: 'user-1',
+    debtorName: 'User 1',
+    creditorId: 'user-2',
+    creditorName: 'User 2',
+    amount: 300,
+    status: 'ACTIVE',
+    isCurrentUserRelated: true,
+  },
+  {
+    paymentId: 'payment-2',
+    debtorId: 'user-3',
+    debtorName: 'User 3',
+    creditorId: 'user-1',
+    creditorName: 'User 1',
+    amount: 150,
+    status: 'ACTIVE',
+    isCurrentUserRelated: true,
+  },
 ]
 
 describe('useGetEventSettlements', () => {
@@ -24,14 +42,18 @@ describe('useGetEventSettlements', () => {
   })
 
   it('возвращает список взаиморасчётов при успешном запросе', async () => {
-    mock.onGet('/api/events/event-1/settlements').reply(200, mockSettlements)
+    mock.onGet('/api/events/event-1/settlements').reply(200, {
+      eventId: 'event-1',
+      totalOutstandingDebts: 450,
+      settlements: mockSettlements,
+    })
 
-    const { result } = renderHook(() => useGetEventSettlements('event-1'), { wrapper })
+    const { result } = renderHook(() => useGetEventSettlements('event-1', true), { wrapper })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(result.current.data).toHaveLength(2)
-    expect(result.current.data?.[0].fromUserId).toBe('user-1')
-    expect(result.current.data?.[0].toUserId).toBe('user-2')
+    expect(result.current.data?.[0].debtorId).toBe('user-1')
+    expect(result.current.data?.[0].creditorId).toBe('user-2')
     expect(result.current.data?.[0].amount).toBe(300)
   })
 
@@ -48,9 +70,13 @@ describe('useGetEventSettlements', () => {
   })
 
   it('возвращает пустой массив когда взаиморасчётов нет', async () => {
-    mock.onGet('/api/events/event-2/settlements').reply(200, [])
+    mock.onGet('/api/events/event-2/settlements').reply(200, {
+      eventId: 'event-2',
+      totalOutstandingDebts: 0,
+      settlements: [],
+    })
 
-    const { result } = renderHook(() => useGetEventSettlements('event-2'), { wrapper })
+    const { result } = renderHook(() => useGetEventSettlements('event-2', true), { wrapper })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(result.current.data).toHaveLength(0)
@@ -59,7 +85,7 @@ describe('useGetEventSettlements', () => {
   it('возвращает isError при ошибке сервера', async () => {
     mock.onGet('/api/events/event-err/settlements').reply(500)
 
-    const { result } = renderHook(() => useGetEventSettlements('event-err'), { wrapper })
+    const { result } = renderHook(() => useGetEventSettlements('event-err', true), { wrapper })
 
     await waitFor(() => expect(result.current.isError).toBe(true))
   })

@@ -26,60 +26,44 @@ describe('usePaySettlement', () => {
 
   it('выполняет initiate и markAsSent и возвращает paymentId', async () => {
     const paymentId = 'payment-abc'
-    mock.onPost('/api/events/event-1/payments/initiate').reply(200, paymentId)
     mock.onPost(`/api/events/event-1/payments/${paymentId}/sent`).reply(200)
 
     const { result } = renderHook(() => usePaySettlement(), { wrapper })
 
     await act(async () => {
-      result.current.mutate({ eventId: 'event-1', toUserId: 'user-2', amount: 500 })
+      result.current.mutate({ eventId: 'event-1', paymentId })
     })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(result.current.data).toBe(paymentId)
+    expect(result.current.data).toBeUndefined()
   })
 
-  it('отправляет корректные данные в теле запроса initiate', async () => {
+  it('отправляет запрос markAsSent по paymentId', async () => {
     const paymentId = 'payment-xyz'
-    let capturedBody: unknown
+    let wasCalled = false
 
-    mock.onPost('/api/events/event-1/payments/initiate').reply((config) => {
-      capturedBody = JSON.parse(config.data)
-      return [200, paymentId]
+    mock.onPost(`/api/events/event-1/payments/${paymentId}/sent`).reply(() => {
+      wasCalled = true
+      return [200]
     })
-    mock.onPost(`/api/events/event-1/payments/${paymentId}/sent`).reply(200)
 
     const { result } = renderHook(() => usePaySettlement(), { wrapper })
 
     await act(async () => {
-      result.current.mutate({ eventId: 'event-1', toUserId: 'user-3', amount: 750 })
+      result.current.mutate({ eventId: 'event-1', paymentId })
     })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(capturedBody).toEqual({ toUserId: 'user-3', amount: 750 })
-  })
-
-  it('возвращает isError если initiate завершился ошибкой', async () => {
-    mock.onPost('/api/events/event-1/payments/initiate').reply(500)
-
-    const { result } = renderHook(() => usePaySettlement(), { wrapper })
-
-    await act(async () => {
-      result.current.mutate({ eventId: 'event-1', toUserId: 'user-2', amount: 100 })
-    })
-
-    await waitFor(() => expect(result.current.isError).toBe(true))
+    expect(wasCalled).toBe(true)
   })
 
   it('возвращает isError если markAsSent завершился ошибкой', async () => {
-    const paymentId = 'payment-fail'
-    mock.onPost('/api/events/event-1/payments/initiate').reply(200, paymentId)
-    mock.onPost(`/api/events/event-1/payments/${paymentId}/sent`).reply(503)
+    mock.onPost('/api/events/event-1/payments/payment-fail/sent').reply(500)
 
     const { result } = renderHook(() => usePaySettlement(), { wrapper })
 
     await act(async () => {
-      result.current.mutate({ eventId: 'event-1', toUserId: 'user-2', amount: 200 })
+      result.current.mutate({ eventId: 'event-1', paymentId: 'payment-fail' })
     })
 
     await waitFor(() => expect(result.current.isError).toBe(true))

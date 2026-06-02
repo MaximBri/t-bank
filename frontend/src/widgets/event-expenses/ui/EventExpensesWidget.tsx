@@ -7,12 +7,17 @@ import { Button } from '@/shared/ui/button/Button'
 import { Text } from '@/shared/ui/text/Text'
 
 import { CreateExpenseModal } from '@/features/CreateExpenseModal'
-import { useGetEventExpenses, type ExpenseResponseDto } from '@/entities/expense'
+import {
+  useConfirmExpenseShare,
+  useGetEventExpenses,
+  useGetParticipantInbox,
+  useRejectExpenseShare,
+  type ExpenseResponseDto,
+} from '@/entities/expense'
 import { useGetEvent } from '@/entities/event/api/hooks/useGetEvent.ts'
 import { useGetEventParticipants } from '@/entities/event/api/hooks/useGetEventParticipants.ts'
 import { useUserStore } from '@/entities/user'
 
-import { useExpensesActions } from '@/widgets/event-expenses/lib/use-expenses-actions.ts'
 import { ExpenseRow } from '@/widgets/event-expenses/ui/ExpenseRow.tsx'
 
 export const EventExpensesWidget = () => {
@@ -21,12 +26,13 @@ export const EventExpensesWidget = () => {
   const { data: event } = useGetEvent(eventId)
   const { data: expensesResponse, isLoading } = useGetEventExpenses(eventId)
   const { data: participants = [] } = useGetEventParticipants(eventId)
-  const { isMutating, approve, reject, remove } = useExpensesActions({ eventId })
+  const { data: participantInbox = [] } = useGetParticipantInbox(!!currentUserId)
+  const confirmShare = useConfirmExpenseShare()
+  const rejectShare = useRejectExpenseShare()
 
   const [isCreateExpenseModalOpen, setCreateExpenseModalOpen] = useState<boolean>(false)
   const [editingExpense, setEditingExpense] = useState<ExpenseResponseDto | null>(null)
 
-  const isOwner = !!currentUserId && !!event && currentUserId === event.ownerId
   const isCompleted = !!event?.isCompleted
 
   const participantsById = useMemo(() => {
@@ -40,6 +46,14 @@ export const EventExpensesWidget = () => {
   }, [participants])
 
   const expenses = expensesResponse?.expenses ?? []
+  const pendingSharesByExpenseId = useMemo(() => {
+    const map = new Map<string, (typeof participantInbox)[number]>()
+    participantInbox.forEach((item) => {
+      map.set(item.expenseId, item)
+    })
+    return map
+  }, [participantInbox])
+  const isShareMutating = confirmShare.isPending || rejectShare.isPending
 
   return (
     <section className="flex flex-col gap-[15px] sm:gap-[20px]">
@@ -72,20 +86,25 @@ export const EventExpensesWidget = () => {
         <Text className="text-muted">Пока нет расходов</Text>
       ) : (
         <div className="overflow-hidden rounded-[16px] border-[2px] border-primary bg-secondary">
-          {expenses.map((expense) => (
-            <ExpenseRow
-              key={expense.id}
-              expense={expense}
-              payerName={participantsById.get(expense.payerId) ?? '—'}
-              isOwner={isOwner && !isCompleted}
-              isPayer={!!currentUserId && expense.payerId === currentUserId}
-              isMutating={isMutating}
-              onApprove={() => approve(expense.id)}
-              onReject={() => reject(expense.id)}
-              onEdit={() => setEditingExpense(expense)}
-              onDelete={() => remove(expense)}
-            />
-          ))}
+          {expenses.map((expense) => {
+            const pendingShare = pendingSharesByExpenseId.get(expense.id)
+
+            return (
+              <ExpenseRow
+                key={expense.id}
+                expense={expense}
+                payerName={participantsById.get(expense.payerId) ?? '—'}
+                isMutating={isShareMutating}
+                canDecideShare={!!pendingShare && !isCompleted}
+                onConfirmShare={() =>
+                  confirmShare.mutate({ expenseId: expense.id, eventId })
+                }
+                onRejectShare={() =>
+                  rejectShare.mutate({ expenseId: expense.id, eventId })
+                }
+              />
+            )
+          })}
         </div>
       )}
 
