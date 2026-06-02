@@ -1,6 +1,8 @@
 import clsx from 'clsx'
 import { useState } from 'react'
 
+import CheckIcon from '@/shared/assets/icons/check.svg?react'
+import CloseIcon from '@/shared/assets/icons/close.svg?react'
 import EyeIcon from '@/shared/assets/icons/eye.svg?react'
 
 import { ExpensePreviewModal } from './ExpensePreviewModal.tsx'
@@ -9,7 +11,7 @@ import { Button } from '@/shared/ui/button/Button'
 import { ButtonEnum } from '@/shared/ui/button/constants.ts'
 import { Text } from '@/shared/ui/text/Text'
 
-import { type ExpenseResponseDto } from '@/entities/expense'
+import { ExpenseResponseStatus, type ExpenseResponseDto } from '@/entities/expense'
 
 import {
   actionButtonClassName,
@@ -24,23 +26,25 @@ import { formatPrice } from '@/shared/lib/number/format-price.ts'
 type ExpenseRowProps = {
   expense: ExpenseResponseDto
   payerName: string
-  isOwner: boolean
-  isPayer: boolean
   isMutating: boolean
-  onApprove: () => void
-  onReject: () => void
-  onEdit: () => void
-  onDelete: () => void
+  canDecideShare: boolean
+  onConfirmShare: () => void
+  onRejectShare: () => void
 }
 
 export const ExpenseRow = ({
   expense,
   payerName,
+  isMutating,
+  canDecideShare,
+  onConfirmShare,
+  onRejectShare,
 }: ExpenseRowProps) => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const category = expense.categories[0]
   const totalPeople = expense.totalParticipantsCount + 1
   const perPerson = totalPeople > 0 ? expense.totalAmount / totalPeople : 0
+  const canDecideExpense = canDecideShare && expense.status === ExpenseResponseStatus.Pending
 
   return (
     <>
@@ -95,38 +99,36 @@ export const ExpenseRow = ({
             >
               <EyeIcon className={actionButtonIconClassName} />
             </Button>
-            {/*{canDecide ? (*/}
-            {/*  <>*/}
-            {/*    <button*/}
-            {/*      type="button"*/}
-            {/*      disabled={isMutating}*/}
-            {/*      onClick={onReject}*/}
-            {/*      className={clsx(*/}
-            {/*        actionButtonClassName,*/}
-            {/*        'flex justify-center items-center border border-error bg-error-light disabled:opacity-60',*/}
-            {/*      )}*/}
-            {/*      aria-label="Отклонить расход"*/}
-            {/*    >*/}
-            {/*      <CloseIcon className={clsx(*/}
-            {/*          actionButtonIconClassName,*/}
-            {/*          "text-error"*/}
-            {/*      )*/}
-            {/*      } />*/}
-            {/*    </button>*/}
-            {/*    <button*/}
-            {/*      type="button"*/}
-            {/*      disabled={isMutating}*/}
-            {/*      onClick={onApprove}*/}
-            {/*      className={clsx(*/}
-            {/*        actionButtonClassName,*/}
-            {/*        'max-h-[30px] sm:max-h-none flex justify-center items-center border border-green bg-green-light disabled:opacity-60',*/}
-            {/*      )}*/}
-            {/*      aria-label="Подтвердить расход"*/}
-            {/*    >*/}
-            {/*      <CheckIcon className={actionButtonIconClassName} />*/}
-            {/*    </button>*/}
-            {/*  </>*/}
-            {/*) : null}*/}
+            {canDecideExpense ? (
+              <>
+                <button
+                  type="button"
+                  disabled={isMutating}
+                  onClick={onRejectShare}
+                  className={clsx(
+                    actionButtonClassName,
+                    'flex items-center justify-center border-error bg-error-light disabled:opacity-60',
+                  )}
+                  aria-label="Отклонить расход"
+                  title="Отклонить расход"
+                >
+                  <CloseIcon className={clsx(actionButtonIconClassName, 'text-error')} />
+                </button>
+                <button
+                  type="button"
+                  disabled={isMutating}
+                  onClick={onConfirmShare}
+                  className={clsx(
+                    actionButtonClassName,
+                    'flex items-center justify-center border-green bg-green-light disabled:opacity-60',
+                  )}
+                  aria-label="Подтвердить расход"
+                  title="Подтвердить расход"
+                >
+                  <CheckIcon className={actionButtonIconClassName} />
+                </button>
+              </>
+            ) : null}
           </div>
           <div className="flex flex-col gap-[3px]">
             <Text className="text-right text-h3-d">{formatPrice(expense.totalAmount)}</Text>
