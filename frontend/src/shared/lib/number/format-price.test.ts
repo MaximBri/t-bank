@@ -26,8 +26,13 @@ describe('formatPrice', () => {
     expect(result).toMatch(/1[\s .,]000[\s .,]000/)
   })
 
-  it('не показывает дробные знаки', () => {
+  it('показывает дробные знаки когда они есть', () => {
     const result = formatPrice(99.99)
-    expect(result).not.toMatch(/\d+[.,]\d+/)
+    expect(result).toMatch(/99[,.]99/)
+  })
+
+  it('не показывает копейки для целых сумм', () => {
+    const result = formatPrice(100)
+    expect(result).not.toMatch(/100[,.]00/)
   })
 })

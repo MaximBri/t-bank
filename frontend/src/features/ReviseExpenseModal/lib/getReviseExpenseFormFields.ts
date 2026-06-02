@@ -38,6 +38,7 @@ export const getReviseExpenseFormFields = ({
     label: 'Сумма, руб',
     min: 0,
     max: 1_000_000_000_000_000,
+    step: 0.01,
     placeholder: 'Введите сумму',
     withoutClearButton: true,
     required: true,

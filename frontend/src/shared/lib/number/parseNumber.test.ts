@@ -33,4 +33,16 @@ describe('parseNumberValue', () => {
   it('парсит отрицательное число', () => {
     expect(parseNumberValue('-10')).toBe(-10)
   })
+
+  it('парсит дробное число с точкой', () => {
+    expect(parseNumberValue('42.75')).toBe(42.75)
+  })
+
+  it('парсит дробное число с запятой', () => {
+    expect(parseNumberValue('42,75')).toBe(42.75)
+  })
+
+  it('игнорирует пробелы вокруг числа', () => {
+    expect(parseNumberValue(' 42,75 ')).toBe(42.75)
+  })
 })

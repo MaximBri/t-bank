@@ -2,6 +2,7 @@ export function formatPrice(value: number, currency = 'RUB', locale = 'ru-RU'): 
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    maximumFractionDigits: 2,
   }).format(value)
 }

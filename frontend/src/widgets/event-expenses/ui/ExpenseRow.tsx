@@ -43,7 +43,7 @@ export const ExpenseRow = ({
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const category = expense.categories[0]
   const totalPeople = expense.totalParticipantsCount + 1
-  const perPerson = totalPeople > 0 ? expense.totalAmount / totalPeople : 0
+  const perPerson = totalPeople > 0 ? Math.ceil(expense.totalAmount / totalPeople) : 0
   const canDecideExpense = canDecideShare && expense.status === ExpenseResponseStatus.Pending
 
   return (
@@ -133,7 +133,7 @@ export const ExpenseRow = ({
           <div className="flex flex-col gap-[3px]">
             <Text className="text-right text-h3-d">{formatPrice(expense.totalAmount)}</Text>
             <Text className="text-right text-h3-d text-muted">
-              {formatPrice(Math.round(perPerson))} / чел
+              {formatPrice(perPerson)} / чел
             </Text>
           </div>
         </div>
