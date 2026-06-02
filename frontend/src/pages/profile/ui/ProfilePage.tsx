@@ -6,6 +6,8 @@ import {
   profileNavValues,
 } from '@/features/ProfileNav'
 import { useSectionChange } from '@/shared/lib/page-sections/use-section-change'
+import { APP_ROUTES } from '@/shared/routes'
+import { Breadcrumbs } from '@/shared/ui/breadcrumbs'
 import { Text } from '@/shared/ui/text/Text'
 
 import { profileSections } from '../lib/profileSections'
@@ -18,6 +20,12 @@ export const ProfilePage = () => {
 
   return (
     <div className="px-[10px] sm:px-[30px] flex flex-col gap-[15px] md:gap-[22px]">
+      <Breadcrumbs
+        items={[
+          { label: 'Главная', to: APP_ROUTES.HOME },
+          { label: 'Мой профиль' },
+        ]}
+      />
       <Text as="h1" variant="h1" className="hidden md:block">
         Мой профиль
       </Text>

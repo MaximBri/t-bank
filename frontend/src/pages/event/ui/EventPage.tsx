@@ -8,6 +8,8 @@ import { useLeaveEvent } from '@/entities/event/api/hooks/useLeaveEvent'
 import { LeaveEventModal } from '@/features/LeaveEventModal'
 import { renderActiveWidget } from '@/pages/event/lib/renderActiveWidget.tsx'
 import { useSectionChange } from '@/shared/lib/page-sections/use-section-change.ts'
+import { APP_ROUTES } from '@/shared/routes'
+import { Breadcrumbs } from '@/shared/ui/breadcrumbs'
 import { EventHeaderWidget } from '@/widgets/event-header'
 import { EventSection, EventSectionsNavWidget } from '@/widgets/event-sections-nav'
 import {
@@ -38,6 +40,12 @@ export const EventPage = () => {
     <>
       <main className="px-[10px] py-[10px] sm:px-[30px] sm:py-[20px]">
         <div className="mx-auto flex w-full flex-col gap-[15px] sm:gap-[20px]">
+          <Breadcrumbs
+            items={[
+              { label: 'Главная', to: APP_ROUTES.HOME },
+              { label: event?.title ?? 'Событие' },
+            ]}
+          />
           <EventHeaderWidget onLeaveEventClick={() => setLeaveEventModalOpen(true)} />
           <EventSectionsNavWidget
             activeSection={activeSection}
