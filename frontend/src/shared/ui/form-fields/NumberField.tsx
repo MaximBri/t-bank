@@ -42,15 +42,25 @@ export const NumberField = <
       withoutClearButton={withoutClearButton}
       defaultValue={(defaultValue ?? undefined) as TFieldValues[TName]}
       rules={rules}
-      isValuePresent={(value) => typeof value === 'number' && !Number.isNaN(value)}
+      isValuePresent={(value) =>
+        (typeof value === 'number' && !Number.isNaN(value)) ||
+        (typeof value === 'string' && value.trim() !== '')
+      }
       renderInput={({ field, errorMessage, id, inputClassName }) => {
-        const inputValue = typeof field.value === 'number' ? String(field.value) : ''
+        const inputValue =
+          typeof field.value === 'number' || typeof field.value === 'string'
+            ? String(field.value)
+            : ''
+        const decimalPattern =
+          min !== undefined && min >= 0
+            ? /^(\d+([.,]\d*)?|[.,]\d*)?$/
+            : /^-?(\d+([.,]\d*)?|[.,]\d*)?$/
 
         return (
           <input
             {...field}
             id={id}
-            type="number"
+            type="text"
             inputMode="decimal"
             value={inputValue}
             placeholder={placeholder}
@@ -58,7 +68,16 @@ export const NumberField = <
             min={min}
             max={max}
             step={step}
-            onChange={(event) => field.onChange(parseNumberValue(event.target.value))}
+            onChange={(event) => {
+              const nextValue = event.target.value
+              if (decimalPattern.test(nextValue)) {
+                field.onChange(nextValue)
+              }
+            }}
+            onBlur={(event) => {
+              field.onBlur()
+              field.onChange(parseNumberValue(event.target.value))
+            }}
             className={inputClassName}
             aria-invalid={errorMessage ? 'true' : 'false'}
             aria-describedby={errorMessage ? `${id}-error` : undefined}

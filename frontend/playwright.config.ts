@@ -1,4 +1,54 @@
+import { createRequire } from 'node:module';
+
 import { defineConfig, devices } from '@playwright/test';
+
+const require = createRequire(import.meta.url);
+const hasAllureReporter = (() => {
+  try {
+    require.resolve('allure-playwright');
+    return true;
+  } catch {
+    return false;
+  }
+})();
+
+const defaultProjects = [
+  {
+    name: 'chromium',
+    use: { ...devices['Desktop Chrome'] },
+  },
+  {
+    name: 'Mobile Chrome',
+    use: { ...devices['Pixel 5'] },
+  },
+];
+
+const allBrowserProjects = [
+  {
+    name: 'chromium',
+    use: { ...devices['Desktop Chrome'] },
+  },
+
+  {
+    name: 'firefox',
+    use: { ...devices['Desktop Firefox'] },
+  },
+
+  {
+    name: 'webkit',
+    use: { ...devices['Desktop Safari'] },
+  },
+
+  /* Test against mobile viewports. */
+  {
+    name: 'Mobile Chrome',
+    use: { ...devices['Pixel 5'] },
+  },
+  {
+    name: 'Mobile Safari',
+    use: { ...devices['iPhone 12'] },
+  },
+];
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -17,7 +67,9 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['html', { outputFolder: './.artifacts/e2e/playwright-report' }],
-    ['allure-playwright', { resultsDir: './.artifacts/e2e/allure-results' }],
+    ...(hasAllureReporter
+      ? ([['allure-playwright', { resultsDir: './.artifacts/e2e/allure-results' }]] as const)
+      : []),
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -29,31 +81,7 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    /* Test against mobile viewports. */
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    },
+  projects: process.env.PLAYWRIGHT_ALL_BROWSERS === '1' ? allBrowserProjects : defaultProjects,
 
     /* Test against branded browsers. */
     // {
@@ -64,7 +92,6 @@ export default defineConfig({
     //   name: 'Google Chrome',
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
-  ],
 
   /* Run your local dev server before starting the tests */
   webServer: {

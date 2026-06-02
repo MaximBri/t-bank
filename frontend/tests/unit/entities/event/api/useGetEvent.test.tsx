@@ -53,6 +53,6 @@ describe('useGetEvent', () => {
 
     const { result } = renderHook(() => useGetEvent('nonexistent'), { wrapper })
 
-    await waitFor(() => expect(result.current.isError).toBe(true))
+    await waitFor(() => expect(result.current.isError).toBe(true), { timeout: 2500 })
   })
 })

@@ -52,6 +52,7 @@ export const getCreateExpenseFormFields = ({
     label: 'Сумма, руб',
     min: 0,
     max: 1000000000000000,
+    step: 0.01,
     placeholder: 'Введите сумму',
     withoutClearButton: true,
     required: true,

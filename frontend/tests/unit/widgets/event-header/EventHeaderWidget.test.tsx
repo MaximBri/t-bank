@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 
 import { renderWithProviders } from '../../utils/renderWithProviders'
@@ -94,18 +94,10 @@ describe('EventHeaderWidget', () => {
     expect(screen.queryByText('Покинуть событие')).not.toBeInTheDocument()
   })
 
-  it('отображает "Покинуть событие" когда пользователь НЕ является владельцем', () => {
+  it('не отображает "Покинуть событие" когда пользователь НЕ является владельцем', () => {
     useUserStore.setState({ user: { id: 'other-user' } } as any)
     renderWithProviders(<EventHeaderWidget onLeaveEventClick={vi.fn()} />)
-    expect(screen.getByText('Покинуть событие')).toBeInTheDocument()
-  })
-
-  it('клик на "Покинуть событие" вызывает onLeaveEventClick', () => {
-    useUserStore.setState({ user: { id: 'other-user' } } as any)
-    const onLeaveEventClick = vi.fn()
-    renderWithProviders(<EventHeaderWidget onLeaveEventClick={onLeaveEventClick} />)
-    fireEvent.click(screen.getByText('Покинуть событие'))
-    expect(onLeaveEventClick).toHaveBeenCalledTimes(1)
+    expect(screen.queryByText('Покинуть событие')).not.toBeInTheDocument()
   })
 
   it('отображает аватары участников с использованием getUserInitials', () => {

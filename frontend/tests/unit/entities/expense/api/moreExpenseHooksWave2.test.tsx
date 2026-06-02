@@ -38,11 +38,22 @@ describe('useConfirmExpenseShare', () => {
 
 describe('useGetParticipantInbox', () => {
   it('возвращает список входящих расходов', async () => {
-    const items = [{ id: 'exp-1', title: 'Обед', amount: 300 }]
-    mock.onGet('/api/expenses/participant/inbox').reply(200, items)
+    mock.onGet('/api/expenses/participant/inbox').reply(200, {
+      list_inbox: [{
+        expense_id: 'exp-1',
+        expense_title: 'Обед',
+        amount_to_pay: 300,
+        expense_status: 'pending',
+      }],
+    })
     const { result } = renderHook(() => useGetParticipantInbox(), { wrapper })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(result.current.data).toEqual(items)
+    expect(result.current.data).toEqual([{
+      expenseId: 'exp-1',
+      expenseTitle: 'Обед',
+      amountToPay: 300,
+      expenseStatus: 'pending',
+    }])
   })
 
   it('не запрашивает данные когда enabled=false', async () => {
