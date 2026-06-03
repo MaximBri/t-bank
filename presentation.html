@@ -67,6 +67,36 @@
       }
       .reveal pre { width: 100%; font-size: 0.5em; box-shadow: none; }
       .reveal section img { border: none; box-shadow: none; }
+      .shot-frame {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 650px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 12px;
+      }
+      .shot {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 12px;
+        object-fit: contain;
+      }
+      .strength-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85em;
+      }
+      .strength-card {
+        min-height: 165px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 221, 45, 0.25);
+        border-radius: 16px;
+        padding: 0.75em;
+        font-size: 0.68em;
+      }
+      .strength-card h3 { font-size: 1.05em; margin-bottom: 0.35em; }
     </style>
   </head>
   <body>
@@ -87,7 +117,6 @@
               <span class="tag">Frontend</span>
               <span class="tag">Backend</span>
               <span class="tag">QA</span>
-              <span class="tag">CI/CD</span>
             </p>
           </div>
         </section>
@@ -121,6 +150,98 @@
           </div>
         </section>
 
+        <!-- PRODUCT WALKTHROUGH -->
+        <section data-background-gradient="linear-gradient(135deg, #2a2410 0%, #15151f 100%)">
+          <div class="center">
+            <h1 style="font-size: 1.75em">Продуктовый сценарий</h1>
+            <p class="subtitle">Реальные экраны приложения в порядке пользовательского flow</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>1. Регистрация</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/01-register.png" alt="Экран регистрации" />
+          </div>
+        </section>
+
+        <section>
+          <h2>2. Авторизация</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/02-login.png" alt="Экран авторизации" />
+          </div>
+        </section>
+
+        <section>
+          <h2>3. Главная страница с событиями</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/03-home-events.png" alt="Главная страница со списком событий" />
+          </div>
+        </section>
+
+        <section>
+          <h2>4. Форма создания события</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/04-create-event.png" alt="Форма создания события" />
+          </div>
+        </section>
+
+        <section>
+          <h2>5. Страница события: шапка</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/05-event-header.png" alt="Страница события, шапка события" />
+          </div>
+        </section>
+
+        <section>
+          <h2>6. Событие: расходы</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/05-event-expenses.png" alt="Страница события, секция расходов" />
+          </div>
+        </section>
+
+        <section>
+          <h2>7. Событие: взаиморасчёты</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/06-event-settlements.png" alt="Страница события, секция взаиморасчетов" />
+          </div>
+        </section>
+
+        <section>
+          <h2>8. Событие: участники</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/07-event-participants.png" alt="Страница события, секция участников" />
+          </div>
+        </section>
+
+        <section>
+          <h2>9. Событие: история</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/08-event-history.png" alt="Страница события, секция истории" />
+          </div>
+        </section>
+
+        <section>
+          <h2>10. Форма создания расхода</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/09-create-expense.png" alt="Форма создания расхода" />
+          </div>
+        </section>
+
+        <section>
+          <h2>11. Личный кабинет: профиль</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/10-profile-info.png" alt="Личный кабинет, вкладка профиля" />
+          </div>
+        </section>
+
+        <section>
+          <h2>12. Личный кабинет: безопасность</h2>
+          <div class="shot-frame">
+            <img class="shot" src="presentation-assets/screens/11-profile-security.png" alt="Личный кабинет, вкладка безопасности" />
+          </div>
+        </section>
+
         <!-- FRONTEND раздел -->
         <section data-background-gradient="linear-gradient(135deg, #1a1a2a 0%, #15151f 100%)">
           <div class="center">
@@ -146,7 +267,7 @@
           </p>
           <h2 style="margin-top: 0.7em">Особенности</h2>
           <ul>
-            <li><strong>Собственный UI-kit</strong>: переиспользуемые компоненты (формы, модалки, кнопки) — единый визуальный язык</li>
+            <li><strong>Собственный UI-kit</strong>: переиспользуемые компоненты (формы, модалки, кнопки) — единый визуальный стиль</li>
             <li><strong>Feature-Sliced Design</strong>: entities / features / widgets / pages — масштабируемая структура</li>
             <li>Валидация форм <strong>Zod + react-hook-form</strong> — единый источник правды по схеме</li>
             <li><strong>React Query</strong>: кэш, инвалидация, авто-рефетч после мутаций</li>
@@ -262,15 +383,37 @@
           </ul>
         </section>
 
+        <section>
+          <h2>Сильные стороны проекта</h2>
+          <div class="strength-grid">
+            <div class="strength-card">
+              <h3>Безопасность</h3>
+              <p>JWT access + refresh, защищённые маршруты, server-side проверка прав и редирект при 403.</p>
+            </div>
+            <div class="strength-card">
+              <h3>Архитектура</h3>
+              <p>FSD на frontend, доменное разделение backend, миграции Liquibase и явный API-контракт.</p>
+            </div>
+            <div class="strength-card">
+              <h3>Расчёт взаиморасчётов</h3>
+              <p>Автоматический пересчёт долей и алгоритм минимизации переводов вместо ручных таблиц.</p>
+            </div>
+            <div class="strength-card">
+              <h3>Качество</h3>
+              <p>Unit, e2e и API-тесты покрывают критичные сценарии и снижают риск регрессий при изменениях.</p>
+            </div>
+          </div>
+        </section>
+
         <!-- Итог -->
         <section data-background-gradient="linear-gradient(135deg, #1a1a1a 0%, #2a2410 100%)">
           <h2>Итог</h2>
-          <p><span class="ok">Готово и работает:</span></p>
+          <p><span class="ok">T&#8209;Ивент закрывает полный сценарий совместных расходов:</span></p>
           <ul>
-            <li>Полный core-флоу: события, роли, приглашения, расходы, авто-деление, взаиморасчёты</li>
-            <li>Безопасность (аутентификация, разграничение доступа), транзакции БД</li>
-            <li>S3-хранилище изображений, CI/CD пайплайн</li>
-            <li>QA-артефакты: OpenAPI, Postman, тест-кейсы, чек-листы, e2e</li>
+            <li>Пользователь создаёт событие, приглашает участников и фиксирует расходы в одном месте</li>
+            <li>Участники подтверждают траты, а система автоматически считает доли и взаиморасчёты</li>
+            <li>Доступ защищён: JWT-сессия, приватные маршруты и серверная проверка прав</li>
+            <li>Проект можно развивать дальше: архитектура разделена по доменам, API описан, критичные сценарии покрыты тестами</li>
           </ul>
         </section>
 
