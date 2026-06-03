@@ -135,7 +135,7 @@ export const EventHeaderWidget = ({ onLeaveEventClick }: EventHeaderWidgetProps)
           <Text className="ml-auto text-left font-normal text-h3-d lg:text-h2-d">
             {formatParticipantsCount(event.countOfParticipants)}
           </Text>
-          <div className="max-w-[180px] flex -space-x-[10px] font-medium lg:-space-x-[35px]">
+          <div className="flex -space-x-[10px] font-medium lg:-space-x-[35px]">
             {visibleParticipants.map((participant, index) => (
               <div
                 key={participant.userId}
