@@ -87,6 +87,8 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: frontend
+        env:
+          VITE_BACKEND_PORT: 8080
         run: npm run test:e2e
 
       - name: Upload Playwright report
